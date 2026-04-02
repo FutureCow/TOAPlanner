@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { RequestWithUser } from '@/types'
 import { Subject, Status } from '@prisma/client'
 import { format } from 'date-fns'
@@ -28,16 +28,16 @@ export default function RequestsTab() {
   const [search, setSearch] = useState('')
   const [deleting, setDeleting] = useState(false)
 
-  async function load() {
+  const load = useCallback(async () => {
     const params = new URLSearchParams()
     if (subject) params.set('subject', subject)
     if (status) params.set('status', status)
     if (search) params.set('search', search)
     const res = await fetch(`/api/admin/requests?${params}`)
     if (res.ok) setRequests(await res.json())
-  }
+  }, [subject, status, search])
 
-  useEffect(() => { load() }, [subject, status, search])
+  useEffect(() => { load() }, [load])
 
   function toggleAll(checked: boolean) {
     setSelected(checked ? new Set(requests.map(r => r.id)) : new Set())
@@ -50,7 +50,7 @@ export default function RequestsTab() {
     await fetch('/api/admin/requests', {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ids: [...selected] }),
+      body: JSON.stringify({ ids: Array.from(selected) }),
     })
     setSelected(new Set())
     setDeleting(false)
@@ -98,7 +98,7 @@ export default function RequestsTab() {
             <input type="checkbox" checked={selected.has(r.id)}
               onChange={e => {
                 const next = new Set(selected)
-                e.target.checked ? next.add(r.id) : next.delete(r.id)
+                if (e.target.checked) { next.add(r.id) } else { next.delete(r.id) }
                 setSelected(next)
               }} />
             <span className="text-slate-200 font-medium truncate">{r.title}</span>

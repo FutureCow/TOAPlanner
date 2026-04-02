@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { UserRow } from '@/types'
 import { format } from 'date-fns'
 import { nl } from 'date-fns/locale'
@@ -49,7 +50,7 @@ export default function UsersTab() {
             className="grid px-3 py-2.5 gap-2 border-b border-slate-800 items-center hover:bg-slate-900/50 last:border-b-0"
             style={{ gridTemplateColumns: '2rem 2.5fr 1rem 3fr 1.5fr 1.2fr 1.5rem' }}>
             {u.image
-              ? <img src={u.image} className="w-7 h-7 rounded-full object-cover" alt="" />
+              ? <Image src={u.image} width={28} height={28} className="w-7 h-7 rounded-full object-cover" alt="" />
               : <div className="w-7 h-7 rounded-full bg-slate-700 flex items-center justify-center text-xs font-bold text-slate-400">
                   {u.abbreviation.slice(0, 1).toUpperCase()}
                 </div>

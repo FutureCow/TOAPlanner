@@ -27,7 +27,8 @@ export default function WeekCalendar({ subject, session }: Props) {
   const today = toDateString(new Date())
 
   const load = useCallback(async () => {
-    const params = new URLSearchParams({ weekStart: toDateString(weekDates[0]) })
+    const dates = getWeekDates(currentDate)
+    const params = new URLSearchParams({ weekStart: toDateString(dates[0]) })
     if (subject) params.set('subject', subject)
     const res = await fetch(`/api/requests?${params}`)
     if (res.ok) setRequests(await res.json())

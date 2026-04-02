@@ -1,4 +1,5 @@
 'use client'
+import { Suspense } from 'react'
 import { signIn } from 'next-auth/react'
 import { useSearchParams } from 'next/navigation'
 
@@ -8,7 +9,7 @@ const ERROR_MESSAGES: Record<string, string> = {
   Default: 'Er is iets misgegaan. Probeer opnieuw.',
 }
 
-export default function LoginPage() {
+function LoginContent() {
   const params = useSearchParams()
   const error = params.get('error')
   const message = error ? (ERROR_MESSAGES[error] ?? ERROR_MESSAGES.Default) : null
@@ -31,5 +32,13 @@ export default function LoginPage() {
         </button>
       </div>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginContent />
+    </Suspense>
   )
 }
