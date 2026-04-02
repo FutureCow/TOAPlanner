@@ -1,0 +1,54 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String    @id
+  email        String    @unique
+  name         String
+  image        String?
+  abbreviation String
+  isTeacher    Boolean   @default(true)
+  isTOA        Boolean   @default(false)
+  isAdmin      Boolean   @default(false)
+  allowed      Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  requests     Request[]
+}
+
+model Request {
+  id          String   @id @default(cuid())
+  title       String
+  classroom   String
+  date        DateTime
+  period      Int
+  subject     Subject
+  status      Status   @default(PENDING)
+  createdById String?
+  createdBy   User?    @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AppSettings {
+  id               Int     @id @default(1)
+  registrationOpen Boolean @default(true)
+}
+
+enum Subject {
+  NATUURKUNDE
+  SCHEIKUNDE
+  BIOLOGIE
+  PROJECT
+}
+
+enum Status {
+  PENDING
+  APPROVED_WITH_TOA
+  APPROVED_WITHOUT_TOA
+  REJECTED
+}
