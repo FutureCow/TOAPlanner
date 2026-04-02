@@ -9,7 +9,10 @@ const config: Config = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
-  testMatch: ['<rootDir>/tests/**/*.[jt]s?(x)', '<rootDir>/tests/**/*.spec.[jt]s?(x)'],
+  testMatch: ['<rootDir>/tests/**/*.[jt]s?(x)'],
+  transform: {
+    '^.+\\.(t|j)sx?$': ['ts-jest', { tsconfig: { jsx: 'react-jsx' } }],
+  },
 }
 
 export default createJestConfig(config)

@@ -1,5 +1,5 @@
 {
-  "name": "toa-scaffold",
+  "name": "toa-planner",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "jest"
+    "test": "jest --passWithNoTests"
   },
   "dependencies": {
     "@prisma/client": "^7.6.0",
