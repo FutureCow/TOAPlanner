@@ -78,6 +78,27 @@ rc-update add nginx default
 npm install -g pm2
 ```
 
+Op Alpine Linux staat het npm global bin-pad niet standaard in `$PATH`. Voeg het toe:
+
+```bash
+# Controleer waar npm global binaries staan
+npm config get prefix
+# Uitvoer is meestal: /usr/local
+
+# Voeg toe aan PATH (voor de huidige sessie)
+export PATH="$(npm config get prefix)/bin:$PATH"
+
+# Maak dit permanent voor alle sessies
+echo 'export PATH="$(npm config get prefix)/bin:$PATH"' >> /etc/profile
+source /etc/profile
+```
+
+Controleer of pm2 nu beschikbaar is:
+
+```bash
+pm2 --version
+```
+
 ---
 
 ## 6. App installeren
