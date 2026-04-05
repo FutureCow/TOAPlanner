@@ -18,7 +18,6 @@ function schoolYearEnd(from: string): Date {
 function weeklyDates(from: string, end: Date): string[] {
   const dates: string[] = []
   const d = new Date(from + 'T00:00:00Z')
-  const dow = d.getUTCDay()
   while (d < end) {
     dates.push(d.toISOString().slice(0, 10))
     d.setUTCDate(d.getUTCDate() + 7)
