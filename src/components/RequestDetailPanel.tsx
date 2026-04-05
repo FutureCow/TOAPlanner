@@ -70,7 +70,7 @@ export default function RequestDetailPanel({ request, session, onClose, onEdit, 
         <div className="flex items-start justify-between mb-3">
           <div>
             <h3 className="font-bold text-white text-base">
-              {request.klas ? <><span className="text-slate-400 font-normal">{request.klas} – </span>{request.title}</> : request.title}
+              {request.klas && !request.title.startsWith(request.klas) ? <><span className="text-slate-400 font-normal">{request.klas} – </span>{request.title}</> : request.title}
             </h3>
             <p className="text-slate-400 text-xs mt-0.5 capitalize">
               {dateLabel} · {periodLabel} · {request.classroom}

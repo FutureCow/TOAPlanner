@@ -52,7 +52,7 @@ export default function RequestBlock({ request, isFirst, onClick }: Props) {
       className={`border-l-[3px] rounded px-1.5 py-1 cursor-pointer hover:brightness-125 transition-all mb-1 ${STATUS_STYLES[request.status]}`}
     >
       <div className="font-semibold text-xs leading-tight line-clamp-2">
-        {request.klas ? (
+        {request.klas && !request.title.startsWith(request.klas) ? (
           <><span className="opacity-70">{request.klas}</span> – {request.title}</>
         ) : request.title}
       </div>

@@ -191,7 +191,7 @@ export default function RequestModal({ date, period, subject, request, onClose, 
                 value={title}
                 onChange={e => setTitle(e.target.value)}
                 className="w-full bg-slate-800 border border-slate-600 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
-                placeholder="bijv. NS1 H4 proef 3 Lampjes"
+                placeholder="bijv. H4 proef 3 Lampjes"
               />
             </div>
           </div>
