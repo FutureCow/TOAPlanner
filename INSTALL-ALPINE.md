@@ -132,10 +132,20 @@ Vul in:
 DATABASE_URL="postgresql://toa_user:kies_een_sterk_wachtwoord@localhost:5432/toa_planner"
 NEXTAUTH_URL="https://jouwdomein.nl"
 NEXTAUTH_SECRET="plak_hier_de_gegenereerde_sleutel"
+ALLOWED_DOMAIN="jouwschool.nl"
+
+# Google login (verplicht als je Google gebruikt)
 GOOGLE_CLIENT_ID="jouw-client-id.apps.googleusercontent.com"
 GOOGLE_CLIENT_SECRET="jouw-client-secret"
-ALLOWED_DOMAIN="jouwschool.nl"
+
+# Microsoft login (optioneel — laat leeg als je Google gebruikt)
+# AZURE_AD_CLIENT_ID="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+# AZURE_AD_CLIENT_SECRET="jouw-azure-client-secret"
+# AZURE_AD_TENANT_ID="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+# NEXT_PUBLIC_AZURE_AD_ENABLED=1
 ```
+
+> **Google én Microsoft tegelijk?** Dat werkt — vul dan beide blokken in. Gebruikers zien twee inlogknoppen.
 
 Genereer een geheime sleutel:
 
@@ -235,9 +245,51 @@ echo "0 3 * * * certbot renew --quiet" >> /etc/crontabs/root
 
 ---
 
-## 13. Eerste beheerder instellen
+## 13. Inlogmethode instellen
 
-Log in via de app met je schoolaccount. Stel daarna jezelf in als beheerder via psql:
+### Optie A: Google (Gmail / Google Workspace)
+
+1. Ga naar [console.cloud.google.com](https://console.cloud.google.com) → **APIs & Services** → **Credentials**
+2. Klik **Create Credentials** → **OAuth 2.0 Client ID** → **Web application**
+3. Voeg toe bij **Authorized redirect URIs**:
+   ```
+   https://jouwdomein.nl/api/auth/callback/google
+   ```
+4. Kopieer de Client ID en Client Secret naar `.env` (`GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`)
+
+### Optie B: Microsoft 365 / Azure AD
+
+Gebruik dit als je school Microsoft 365 gebruikt.
+
+1. Ga naar [portal.azure.com](https://portal.azure.com) → **Azure Active Directory** → **App-registraties** → **Nieuwe registratie**
+2. Naam: bijv. `TOA Planner`
+3. Ondersteunde accounttypen: *Accounts in deze organisatiemap* (eenmalig, alleen jouw school)
+4. Omleidings-URI (type: Web):
+   ```
+   https://jouwdomein.nl/api/auth/callback/azure-ad
+   ```
+5. Na registratie:
+   - Kopieer **Application (client) ID** → `AZURE_AD_CLIENT_ID` in `.env`
+   - Kopieer **Directory (tenant) ID** → `AZURE_AD_TENANT_ID` in `.env`
+6. Ga naar **Certificaten en geheimen** → **Nieuw clientgeheim** → kopieer de *waarde* → `AZURE_AD_CLIENT_SECRET`
+7. Voeg toe aan `.env`:
+   ```env
+   NEXT_PUBLIC_AZURE_AD_ENABLED=1
+   ```
+8. Herbouw de app na het wijzigen van `NEXT_PUBLIC_*`-variabelen:
+   ```bash
+   npm run build && pm2 restart toa-planner
+   ```
+
+> **Beide methodes tegelijk?** Vul gewoon alle variabelen in. De loginpagina toont dan twee knoppen.
+
+---
+
+## 14. Eerste beheerder instellen
+
+Log in via de app met je schoolaccount. De *allereerste* gebruiker krijgt automatisch beheerdersrechten. Daarna kun je anderen via het adminpaneel instellen.
+
+Als je al eerder ingelogd hebt (bijv. op een bestaande installatie), stel dan jezelf in als beheerder via psql:
 
 ```bash
 su - postgres -c "psql toa_planner" <<EOF
