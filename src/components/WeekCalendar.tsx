@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import type { Session } from 'next-auth'
 import { RequestWithUser, SubjectConfig } from '@/types'
 import { getWeekDates, getWeekLabel, prevWeek, nextWeek, toDateString } from '@/lib/week'
@@ -84,7 +84,7 @@ export default function WeekCalendar({ subject, session, subjectConfig }: Props)
                 className={`p-2 text-center font-semibold text-slate-300 relative ${
                   isToday ? 'ring-2 ring-inset rounded' : ''
                 } ${isAbsent ? 'opacity-60' : ''}`}
-                style={isToday ? { ringColor: accentColor } : undefined}
+                style={isToday ? { '--tw-ring-color': accentColor } as React.CSSProperties : undefined}
                 title={isAbsent ? 'TOA niet aanwezig' : undefined}
               >
                 {isAbsent && (
