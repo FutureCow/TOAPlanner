@@ -127,23 +127,23 @@ function SubjectCard({ subject, onSaved, onDeleted }: SubjectCardProps) {
       {error && <p className="text-red-400 text-xs">{error}</p>}
 
       {/* Actions */}
-      <div className="flex gap-2 pt-1">
+      <div className="flex items-center justify-between pt-1">
         <button
           onClick={handleDelete}
-          className="px-3 py-1.5 bg-red-900/50 hover:bg-red-900 border border-red-800 text-red-400 hover:text-red-300 rounded text-xs transition-colors"
+          className="text-xs text-red-500/60 hover:text-red-400 transition-colors"
         >
           Verwijderen
         </button>
         <button
           onClick={handleSave}
           disabled={saving}
-          className={`flex-1 py-1.5 rounded text-xs font-medium transition-colors ${
+          className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
             success
               ? 'bg-green-700 text-white'
               : 'bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white'
           }`}
         >
-          {saving ? 'Opslaan…' : success ? '✓ Opgeslagen' : 'Opslaan'}
+          {saving ? 'Opslaan…' : success ? '✓' : 'Opslaan'}
         </button>
       </div>
     </div>
