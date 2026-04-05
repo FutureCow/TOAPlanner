@@ -1,0 +1,138 @@
+<h2>Weekkalender — v3</h2>
+<p class="subtitle">Klik op een aanvraag om te bewerken/verwijderen · "+" om een extra aanvraag toe te voegen aan hetzelfde uur</p>
+
+<div style="max-width:960px;margin:0 auto;display:grid;grid-template-columns:1fr 320px;gap:1.5rem;align-items:start">
+
+  <!-- Left: calendar -->
+  <div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;padding:.75rem 1rem;background:#1e293b;border-radius:8px">
+      <div style="font-weight:700;font-size:1rem;color:#e2e8f0">31 MAART – 04 APRIL, 2026</div>
+      <div style="display:flex;gap:.5rem">
+        <div style="padding:.3rem .55rem;background:#0f172a;border-radius:5px;font-size:.75rem;color:#94a3b8">Vandaag</div>
+        <div style="padding:.3rem .55rem;background:#0f172a;border-radius:5px;font-size:.85rem;color:#94a3b8">‹</div>
+        <div style="padding:.3rem .55rem;background:#0f172a;border-radius:5px;font-size:.85rem;color:#94a3b8">›</div>
+      </div>
+    </div>
+
+    <div style="border:1px solid #334155;border-radius:8px;overflow:hidden;font-size:.72rem">
+      <div style="display:grid;grid-template-columns:2rem 1fr 1fr 1fr 1fr 1fr;background:#1e293b;border-bottom:2px solid #334155">
+        <div></div>
+        <div style="padding:.4rem;text-align:center;font-weight:600;color:#94a3b8">Maa <span style="color:#e2e8f0">31</span></div>
+        <div style="padding:.4rem;text-align:center;font-weight:600;color:#94a3b8">Din <span style="color:#e2e8f0">01</span></div>
+        <div style="padding:.4rem;text-align:center;font-weight:600;color:#94a3b8;border:2px solid #3b82f6;border-radius:4px">Woe <span style="background:#3b82f6;color:white;border-radius:50%;padding:0 3px">02</span></div>
+        <div style="padding:.4rem;text-align:center;font-weight:600;color:#94a3b8">Don <span style="color:#e2e8f0">03</span></div>
+        <div style="padding:.4rem;text-align:center;font-weight:600;color:#94a3b8">Vri <span style="color:#e2e8f0">04</span></div>
+      </div>
+
+      <!-- Period 1 -->
+      <div style="display:grid;grid-template-columns:2rem 1fr 1fr 1fr 1fr 1fr;border-bottom:1px solid #1e293b">
+        <div style="text-align:center;color:#475569;font-weight:600;background:#0f172a;border-right:1px solid #334155;display:flex;align-items:center;justify-content:center;font-size:.7rem">1</div>
+        <div style="padding:.2rem;background:#0f172a;border-right:1px solid #1e293b;min-height:3.2rem;position:relative;cursor:pointer" onmouseenter="this.querySelector('.add-btn').style.opacity='1'" onmouseleave="this.querySelector('.add-btn').style.opacity='0'">
+          <div class="add-btn" style="opacity:0;transition:opacity .15s;position:absolute;bottom:2px;right:2px;background:#1e40af;color:white;border-radius:3px;width:16px;height:16px;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700">+</div>
+        </div>
+        <div style="padding:.2rem;background:#0f172a;border-right:1px solid #1e293b;position:relative" onmouseenter="this.querySelector('.add-btn').style.opacity='1'" onmouseleave="this.querySelector('.add-btn').style.opacity='0'">
+          <div style="background:#374151;border-left:3px solid #9ca3af;border-radius:3px;padding:.2rem .3rem;color:#d1d5db;cursor:pointer" onmouseenter="this.style.filter='brightness(1.2)'" onmouseleave="this.style.filter=''">
+            <div style="font-weight:600;line-height:1.3">Goldberg<br><span style="font-weight:400;color:#9ca3af">Ander lokaal</span></div>
+            <div style="color:#9ca3af;font-size:.65rem;margin-top:.1rem">W107 · <strong>BEEM</strong></div>
+          </div>
+          <div class="add-btn" style="opacity:0;transition:opacity .15s;position:absolute;bottom:2px;right:2px;background:#1e40af;color:white;border-radius:3px;width:16px;height:16px;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700">+</div>
+        </div>
+        <div style="padding:.2rem;background:#0f172a;border-right:1px solid #1e293b;min-height:3.2rem;position:relative;cursor:pointer" onmouseenter="this.querySelector('.add-btn').style.opacity='1'" onmouseleave="this.querySelector('.add-btn').style.opacity='0'">
+          <div class="add-btn" style="opacity:0;transition:opacity .15s;position:absolute;bottom:2px;right:2px;background:#1e40af;color:white;border-radius:3px;width:16px;height:16px;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700">+</div>
+        </div>
+        <div style="padding:.2rem;background:#0f172a;border-right:1px solid #1e293b;min-height:3.2rem;position:relative;cursor:pointer" onmouseenter="this.querySelector('.add-btn').style.opacity='1'" onmouseleave="this.querySelector('.add-btn').style.opacity='0'">
+          <div class="add-btn" style="opacity:0;transition:opacity .15s;position:absolute;bottom:2px;right:2px;background:#1e40af;color:white;border-radius:3px;width:16px;height:16px;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700">+</div>
+        </div>
+        <div style="padding:.2rem;background:#0f172a;min-height:3.2rem;position:relative;cursor:pointer" onmouseenter="this.querySelector('.add-btn').style.opacity='1'" onmouseleave="this.querySelector('.add-btn').style.opacity='0'">
+          <div class="add-btn" style="opacity:0;transition:opacity .15s;position:absolute;bottom:2px;right:2px;background:#1e40af;color:white;border-radius:3px;width:16px;height:16px;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700">+</div>
+        </div>
+      </div>
+
+      <!-- Period 2 — woensdag heeft 2 aanvragen -->
+      <div style="display:grid;grid-template-columns:2rem 1fr 1fr 1fr 1fr 1fr;border-bottom:1px solid #1e293b">
+        <div style="text-align:center;color:#475569;font-weight:600;background:#0f172a;border-right:1px solid #334155;display:flex;align-items:center;justify-content:center;font-size:.7rem">2</div>
+        <div style="padding:.2rem;background:#0f172a;border-right:1px solid #1e293b;position:relative" onmouseenter="this.querySelector('.add-btn').style.opacity='1'" onmouseleave="this.querySelector('.add-btn').style.opacity='0'">
+          <div style="background:#14532d;border-left:3px solid #22c55e;border-radius:3px;padding:.2rem .3rem;color:#bbf7d0;cursor:pointer" onmouseenter="this.style.filter='brightness(1.2)'" onmouseleave="this.style.filter=''">
+            <div style="font-weight:600;line-height:1.3">NS1 H4 proef 3<br><span style="font-weight:400;color:#86efac">Lampjes</span></div>
+            <div style="color:#86efac;font-size:.65rem;margin-top:.1rem">W107 · <strong>BEEM</strong></div>
+          </div>
+          <div class="add-btn" style="opacity:0;transition:opacity .15s;position:absolute;bottom:2px;right:2px;background:#1e40af;color:white;border-radius:3px;width:16px;height:16px;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700">+</div>
+        </div>
+        <div style="padding:.2rem;background:#0f172a;border-right:1px solid #1e293b;min-height:3.2rem;position:relative;cursor:pointer" onmouseenter="this.querySelector('.add-btn').style.opacity='1'" onmouseleave="this.querySelector('.add-btn').style.opacity='0'">
+          <div class="add-btn" style="opacity:0;transition:opacity .15s;position:absolute;bottom:2px;right:2px;background:#1e40af;color:white;border-radius:3px;width:16px;height:16px;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700">+</div>
+        </div>
+        <!-- Woensdag: 2 aanvragen gestapeld -->
+        <div style="padding:.2rem;background:#0f172a;border-right:1px solid #1e293b;position:relative" onmouseenter="this.querySelector('.add-btn').style.opacity='1'" onmouseleave="this.querySelector('.add-btn').style.opacity='0'">
+          <div style="background:#14532d;border-left:3px solid #22c55e;border-radius:3px;padding:.2rem .3rem;color:#bbf7d0;margin-bottom:.15rem;cursor:pointer" onmouseenter="this.style.filter='brightness(1.2)'" onmouseleave="this.style.filter=''">
+            <div style="font-weight:600;line-height:1.3">Systeemborden<br><span style="font-weight:400;color:#86efac">Serie/parallel</span></div>
+            <div style="color:#86efac;font-size:.65rem;margin-top:.1rem">W104 · <strong>JOUC</strong></div>
+          </div>
+          <div style="background:#374151;border-left:3px solid #9ca3af;border-radius:3px;padding:.2rem .3rem;color:#d1d5db;cursor:pointer" onmouseenter="this.style.filter='brightness(1.2)'" onmouseleave="this.style.filter=''">
+            <div style="font-weight:600;line-height:1.3">HA Proef 3 en 4<br><span style="font-weight:400;color:#9ca3af">serie/parallel</span></div>
+            <div style="color:#9ca3af;font-size:.65rem;margin-top:.1rem">W104 · <strong>BLAM</strong></div>
+          </div>
+          <div class="add-btn" style="opacity:0;transition:opacity .15s;position:absolute;bottom:2px;right:2px;background:#1e40af;color:white;border-radius:3px;width:16px;height:16px;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700">+</div>
+        </div>
+        <div style="padding:.2rem;background:#0f172a;border-right:1px solid #1e293b;min-height:3.2rem;position:relative;cursor:pointer" onmouseenter="this.querySelector('.add-btn').style.opacity='1'" onmouseleave="this.querySelector('.add-btn').style.opacity='0'">
+          <div class="add-btn" style="opacity:0;transition:opacity .15s;position:absolute;bottom:2px;right:2px;background:#1e40af;color:white;border-radius:3px;width:16px;height:16px;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700">+</div>
+        </div>
+        <div style="padding:.2rem;background:#0f172a;min-height:3.2rem;position:relative;cursor:pointer" onmouseenter="this.querySelector('.add-btn').style.opacity='1'" onmouseleave="this.querySelector('.add-btn').style.opacity='0'">
+          <div class="add-btn" style="opacity:0;transition:opacity .15s;position:absolute;bottom:2px;right:2px;background:#1e40af;color:white;border-radius:3px;width:16px;height:16px;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700">+</div>
+        </div>
+      </div>
+
+      <!-- Periods 3-5 faded -->
+      <div style="display:grid;grid-template-columns:2rem 1fr 1fr 1fr 1fr 1fr;border-bottom:1px solid #1e293b;min-height:3rem;opacity:.35">
+        <div style="text-align:center;color:#475569;font-weight:600;background:#0f172a;border-right:1px solid #334155;display:flex;align-items:center;justify-content:center;font-size:.7rem">3</div>
+        <div style="background:#0f172a;border-right:1px solid #1e293b"></div><div style="background:#0f172a;border-right:1px solid #1e293b"></div><div style="background:#0f172a;border-right:1px solid #1e293b"></div><div style="background:#0f172a;border-right:1px solid #1e293b"></div><div style="background:#0f172a"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:2rem 1fr 1fr 1fr 1fr 1fr;min-height:1.5rem;opacity:.15">
+        <div style="text-align:center;color:#475569;background:#0f172a;border-right:1px solid #334155;display:flex;align-items:center;justify-content:center">…</div>
+        <div style="background:#0f172a;border-right:1px solid #1e293b"></div><div style="background:#0f172a;border-right:1px solid #1e293b"></div><div style="background:#0f172a;border-right:1px solid #1e293b"></div><div style="background:#0f172a;border-right:1px solid #1e293b"></div><div style="background:#0f172a"></div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:1rem;margin-top:.6rem;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:.35rem;font-size:.7rem;color:#94a3b8"><div style="width:9px;height:9px;background:#9ca3af;border-radius:2px"></div>Aangevraagd</div>
+      <div style="display:flex;align-items:center;gap:.35rem;font-size:.7rem;color:#94a3b8"><div style="width:9px;height:9px;background:#22c55e;border-radius:2px"></div>Met TOA</div>
+      <div style="display:flex;align-items:center;gap:.35rem;font-size:.7rem;color:#94a3b8"><div style="width:9px;height:9px;background:#f59e0b;border-radius:2px"></div>Zonder TOA</div>
+      <div style="display:flex;align-items:center;gap:.35rem;font-size:.7rem;color:#94a3b8"><div style="width:9px;height:9px;background:#ef4444;border-radius:2px"></div>Afgekeurd</div>
+    </div>
+  </div>
+
+  <!-- Right: detail panel mockup -->
+  <div>
+    <div style="background:#1e293b;border:1px solid #334155;border-radius:8px;padding:1rem;margin-bottom:1rem">
+      <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:.05em;color:#64748b;margin-bottom:.5rem">Aanvraag detail (klik op een blok)</div>
+      <div style="font-weight:700;color:#e2e8f0;font-size:.95rem;margin-bottom:.15rem">NS1 H4 proef 3 Lampjes</div>
+      <div style="font-size:.75rem;color:#94a3b8;margin-bottom:.75rem">Maandag 31 maart · 2e uur · W107</div>
+      <div style="font-size:.75rem;color:#94a3b8;margin-bottom:.15rem">Aangevraagd door <strong style="color:#e2e8f0">BEEM</strong></div>
+
+      <!-- Status selector (TOA only) -->
+      <div style="margin:.75rem 0;padding:.6rem;background:#0f172a;border-radius:6px">
+        <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:.05em;color:#64748b;margin-bottom:.4rem">Status (alleen TOA)</div>
+        <div style="display:flex;gap:.3rem;flex-wrap:wrap">
+          <div style="padding:.25rem .5rem;border-radius:4px;font-size:.7rem;font-weight:600;background:#374151;color:#9ca3af;cursor:pointer">⬜ Aangevraagd</div>
+          <div style="padding:.25rem .5rem;border-radius:4px;font-size:.7rem;font-weight:600;background:#14532d;color:#86efac;cursor:pointer;border:1px solid #22c55e">✓ Met TOA</div>
+          <div style="padding:.25rem .5rem;border-radius:4px;font-size:.7rem;font-weight:600;background:#713f12;color:#fde68a;cursor:pointer">◑ Zonder TOA</div>
+          <div style="padding:.25rem .5rem;border-radius:4px;font-size:.7rem;font-weight:600;background:#7f1d1d;color:#fca5a5;cursor:pointer">✗ Afgekeurd</div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div style="display:flex;gap:.5rem;margin-top:.5rem">
+        <div style="flex:1;padding:.4rem;background:#1e3a5f;border:1px solid #2563eb;border-radius:5px;text-align:center;font-size:.75rem;color:#93c5fd;cursor:pointer;font-weight:600">✏ Bewerken</div>
+        <div style="padding:.4rem .6rem;background:#3b0f0f;border:1px solid #dc2626;border-radius:5px;text-align:center;font-size:.75rem;color:#fca5a5;cursor:pointer;font-weight:600">🗑</div>
+      </div>
+      <div style="font-size:.65rem;color:#475569;margin-top:.4rem;text-align:center">Bewerken/verwijderen: eigen aanvraag of TOA</div>
+    </div>
+
+    <!-- New request hint -->
+    <div style="background:#0f172a;border:1px dashed #334155;border-radius:8px;padding:.75rem;text-align:center">
+      <div style="font-size:.75rem;color:#64748b">Hover over een uur-cel</div>
+      <div style="font-size:1.5rem;margin:.25rem 0">+</div>
+      <div style="font-size:.75rem;color:#64748b">Klik <strong style="color:#93c5fd">+</strong> om extra aanvraag<br>toe te voegen aan dat uur</div>
+    </div>
+  </div>
+
+</div>

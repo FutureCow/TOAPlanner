@@ -1,0 +1,123 @@
+<h2>Weekkalender — v2</h2>
+<p class="subtitle">2 regels per aanvraag, meerdere aanvragen per uur mogelijk</p>
+
+<div style="max-width:900px;margin:0 auto">
+
+  <!-- Header bar -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;padding:.75rem 1rem;background:#1e293b;border-radius:8px">
+    <div style="font-weight:700;font-size:1.1rem;color:#e2e8f0">31 MAART – 04 APRIL, 2026</div>
+    <div style="display:flex;align-items:center;gap:.5rem">
+      <div style="padding:.35rem .6rem;background:#0f172a;border-radius:5px;font-size:.8rem;color:#94a3b8;cursor:pointer">Vandaag</div>
+      <div style="padding:.35rem .6rem;background:#0f172a;border-radius:5px;font-size:.9rem;color:#94a3b8;cursor:pointer">‹</div>
+      <div style="padding:.35rem .6rem;background:#0f172a;border-radius:5px;font-size:.9rem;color:#94a3b8;cursor:pointer">›</div>
+      <div style="margin-left:.5rem;padding:.35rem .75rem;background:#334155;border-radius:5px;font-size:.8rem;color:#94a3b8">beem ▾</div>
+    </div>
+  </div>
+
+  <!-- Calendar grid -->
+  <div style="border:1px solid #334155;border-radius:8px;overflow:hidden;font-size:.75rem">
+
+    <!-- Day headers -->
+    <div style="display:grid;grid-template-columns:2.5rem 1fr 1fr 1fr 1fr 1fr;background:#1e293b;border-bottom:2px solid #334155">
+      <div style="padding:.5rem;"></div>
+      <div style="padding:.5rem;text-align:center;font-weight:600;color:#94a3b8">Maa <span style="color:#e2e8f0">31</span></div>
+      <div style="padding:.5rem;text-align:center;font-weight:600;color:#94a3b8">Din <span style="color:#e2e8f0">01</span></div>
+      <div style="padding:.5rem;text-align:center;font-weight:600;color:#94a3b8;border:2px solid #3b82f6;border-radius:4px">Woe <span style="background:#3b82f6;color:white;border-radius:50%;padding:0 4px">02</span></div>
+      <div style="padding:.5rem;text-align:center;font-weight:600;color:#94a3b8">Don <span style="color:#e2e8f0">03</span></div>
+      <div style="padding:.5rem;text-align:center;font-weight:600;color:#94a3b8">Vri <span style="color:#e2e8f0">04</span></div>
+    </div>
+
+    <!-- Period 1 -->
+    <div style="display:grid;grid-template-columns:2.5rem 1fr 1fr 1fr 1fr 1fr;border-bottom:1px solid #1e293b">
+      <div style="padding:.4rem .3rem;text-align:center;color:#475569;font-weight:600;background:#0f172a;border-right:1px solid #334155;display:flex;align-items:center;justify-content:center">1</div>
+      <div style="padding:.25rem;background:#0f172a;border-right:1px solid #1e293b;cursor:pointer;min-height:3.5rem" onmouseenter="this.style.background='#1e293b'" onmouseleave="this.style.background='#0f172a'"></div>
+      <div style="padding:.25rem;background:#0f172a;border-right:1px solid #1e293b;cursor:pointer" onmouseenter="this.style.background='#1e293b'" onmouseleave="this.style.background='#0f172a'">
+        <div style="background:#374151;border-left:3px solid #9ca3af;border-radius:3px;padding:.25rem .35rem;color:#d1d5db">
+          <div style="font-weight:600;line-height:1.3">Goldberg<br><span style="font-weight:400;color:#9ca3af">Ander lokaal</span></div>
+          <div style="color:#9ca3af;font-size:.7rem;margin-top:.15rem">W107 · <strong>BEEM</strong></div>
+        </div>
+      </div>
+      <div style="padding:.25rem;background:#0f172a;border-right:1px solid #1e293b;cursor:pointer" onmouseenter="this.style.background='#1e293b'" onmouseleave="this.style.background='#0f172a'"></div>
+      <div style="padding:.25rem;background:#0f172a;border-right:1px solid #1e293b;cursor:pointer" onmouseenter="this.style.background='#1e293b'" onmouseleave="this.style.background='#0f172a'"></div>
+      <div style="padding:.25rem;background:#0f172a;cursor:pointer" onmouseenter="this.style.background='#1e293b'" onmouseleave="this.style.background='#0f172a'"></div>
+    </div>
+
+    <!-- Period 2 -->
+    <div style="display:grid;grid-template-columns:2.5rem 1fr 1fr 1fr 1fr 1fr;border-bottom:1px solid #1e293b">
+      <div style="padding:.4rem .3rem;text-align:center;color:#475569;font-weight:600;background:#0f172a;border-right:1px solid #334155;display:flex;align-items:center;justify-content:center">2</div>
+      <div style="padding:.25rem;background:#0f172a;border-right:1px solid #1e293b;cursor:pointer" onmouseenter="this.style.background='#1e293b'" onmouseleave="this.style.background='#0f172a'">
+        <div style="background:#14532d;border-left:3px solid #22c55e;border-radius:3px;padding:.25rem .35rem;color:#bbf7d0;margin-bottom:.2rem">
+          <div style="font-weight:600;line-height:1.3">NS1 H4 proef 3<br><span style="font-weight:400;color:#86efac">Lampjes</span></div>
+          <div style="color:#86efac;font-size:.7rem;margin-top:.15rem">W107 · <strong>BEEM</strong></div>
+        </div>
+      </div>
+      <div style="padding:.25rem;background:#0f172a;border-right:1px solid #1e293b;cursor:pointer" onmouseenter="this.style.background='#1e293b'" onmouseleave="this.style.background='#0f172a'"></div>
+      <!-- Woensdag: 2 aanvragen in zelfde uur -->
+      <div style="padding:.25rem;background:#0f172a;border-right:1px solid #1e293b;cursor:pointer" onmouseenter="this.style.background='#1e293b'" onmouseleave="this.style.background='#0f172a'">
+        <div style="background:#14532d;border-left:3px solid #22c55e;border-radius:3px;padding:.25rem .35rem;color:#bbf7d0;margin-bottom:.2rem">
+          <div style="font-weight:600;line-height:1.3">Systeemborden<br><span style="font-weight:400;color:#86efac">Serie/parallel</span></div>
+          <div style="color:#86efac;font-size:.7rem;margin-top:.15rem">W104 · <strong>JOUC</strong></div>
+        </div>
+        <div style="background:#374151;border-left:3px solid #9ca3af;border-radius:3px;padding:.25rem .35rem;color:#d1d5db">
+          <div style="font-weight:600;line-height:1.3">HA Proef 3 en 4<br><span style="font-weight:400;color:#9ca3af">serie/parallel</span></div>
+          <div style="color:#9ca3af;font-size:.7rem;margin-top:.15rem">W104 · <strong>BLAM</strong></div>
+        </div>
+      </div>
+      <div style="padding:.25rem;background:#0f172a;border-right:1px solid #1e293b;cursor:pointer" onmouseenter="this.style.background='#1e293b'" onmouseleave="this.style.background='#0f172a'"></div>
+      <div style="padding:.25rem;background:#0f172a;cursor:pointer" onmouseenter="this.style.background='#1e293b'" onmouseleave="this.style.background='#0f172a'"></div>
+    </div>
+
+    <!-- Period 3 -->
+    <div style="display:grid;grid-template-columns:2.5rem 1fr 1fr 1fr 1fr 1fr;border-bottom:1px solid #1e293b">
+      <div style="padding:.4rem .3rem;text-align:center;color:#475569;font-weight:600;background:#0f172a;border-right:1px solid #334155;display:flex;align-items:center;justify-content:center">3</div>
+      <div style="padding:.25rem;background:#0f172a;border-right:1px solid #1e293b;cursor:pointer" onmouseenter="this.style.background='#1e293b'" onmouseleave="this.style.background='#0f172a'">
+        <div style="background:#374151;border-left:3px solid #9ca3af;border-radius:3px;padding:.25rem .35rem;color:#d1d5db">
+          <div style="font-weight:600;line-height:1.3">PO systeemborden<br><span style="font-weight:400;color:#9ca3af"> </span></div>
+          <div style="color:#9ca3af;font-size:.7rem;margin-top:.15rem">W107 · <strong>LOSM</strong></div>
+        </div>
+      </div>
+      <div style="padding:.25rem;background:#0f172a;border-right:1px solid #1e293b;cursor:pointer;min-height:3.5rem" onmouseenter="this.style.background='#1e293b'" onmouseleave="this.style.background='#0f172a'"></div>
+      <div style="padding:.25rem;background:#0f172a;border-right:1px solid #1e293b;cursor:pointer" onmouseenter="this.style.background='#1e293b'" onmouseleave="this.style.background='#0f172a'"></div>
+      <div style="padding:.25rem;background:#0f172a;border-right:1px solid #1e293b;cursor:pointer" onmouseenter="this.style.background='#1e293b'" onmouseleave="this.style.background='#0f172a'"></div>
+      <div style="padding:.25rem;background:#0f172a;cursor:pointer" onmouseenter="this.style.background='#1e293b'" onmouseleave="this.style.background='#0f172a'"></div>
+    </div>
+
+    <!-- Period 4 -->
+    <div style="display:grid;grid-template-columns:2.5rem 1fr 1fr 1fr 1fr 1fr;border-bottom:1px solid #1e293b">
+      <div style="padding:.4rem .3rem;text-align:center;color:#475569;font-weight:600;background:#0f172a;border-right:1px solid #334155;display:flex;align-items:center;justify-content:center">4</div>
+      <div style="padding:.25rem;background:#0f172a;border-right:1px solid #1e293b;cursor:pointer;min-height:3.5rem" onmouseenter="this.style.background='#1e293b'" onmouseleave="this.style.background='#0f172a'"></div>
+      <div style="padding:.25rem;background:#0f172a;border-right:1px solid #1e293b;cursor:pointer" onmouseenter="this.style.background='#1e293b'" onmouseleave="this.style.background='#0f172a'"></div>
+      <div style="padding:.25rem;background:#0f172a;border-right:1px solid #1e293b;cursor:pointer" onmouseenter="this.style.background='#1e293b'" onmouseleave="this.style.background='#0f172a'">
+        <div style="background:#374151;border-left:3px solid #9ca3af;border-radius:3px;padding:.25rem .35rem;color:#d1d5db">
+          <div style="font-weight:600;line-height:1.3">SK1 H4 proef 5/6/7<br><span style="font-weight:400;color:#9ca3af">Lampjes</span></div>
+          <div style="color:#9ca3af;font-size:.7rem;margin-top:.15rem">W102 · <strong>BEEM</strong></div>
+        </div>
+      </div>
+      <div style="padding:.25rem;background:#0f172a;border-right:1px solid #1e293b;cursor:pointer" onmouseenter="this.style.background='#1e293b'" onmouseleave="this.style.background='#0f172a'">
+        <div style="background:#713f12;border-left:3px solid #f59e0b;border-radius:3px;padding:.25rem .35rem;color:#fef3c7">
+          <div style="font-weight:600;line-height:1.3">Surveilleren Kwizl<br><span style="font-weight:400;color:#fde68a">11:05-12:05</span></div>
+          <div style="color:#fde68a;font-size:.7rem;margin-top:.15rem">W102 · <strong>VERL</strong></div>
+        </div>
+      </div>
+      <div style="padding:.25rem;background:#0f172a;cursor:pointer" onmouseenter="this.style.background='#1e293b'" onmouseleave="this.style.background='#0f172a'"></div>
+    </div>
+
+    <!-- Periods 5-10 faded -->
+    <div style="display:grid;grid-template-columns:2.5rem 1fr 1fr 1fr 1fr 1fr;border-bottom:1px solid #1e293b;min-height:3.5rem;opacity:.4">
+      <div style="padding:.4rem .3rem;text-align:center;color:#475569;font-weight:600;background:#0f172a;border-right:1px solid #334155;display:flex;align-items:center;justify-content:center">5</div>
+      <div style="background:#0f172a;border-right:1px solid #1e293b"></div><div style="background:#0f172a;border-right:1px solid #1e293b"></div><div style="background:#0f172a;border-right:1px solid #1e293b"></div><div style="background:#0f172a;border-right:1px solid #1e293b"></div><div style="background:#0f172a"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:2.5rem 1fr 1fr 1fr 1fr 1fr;min-height:2rem;opacity:.2">
+      <div style="padding:.4rem .3rem;text-align:center;color:#475569;font-weight:600;background:#0f172a;border-right:1px solid #334155;display:flex;align-items:center;justify-content:center">…</div>
+      <div style="background:#0f172a;border-right:1px solid #1e293b"></div><div style="background:#0f172a;border-right:1px solid #1e293b"></div><div style="background:#0f172a;border-right:1px solid #1e293b"></div><div style="background:#0f172a;border-right:1px solid #1e293b"></div><div style="background:#0f172a"></div>
+    </div>
+  </div>
+
+  <!-- Legend -->
+  <div style="display:flex;gap:1rem;margin-top:.75rem;flex-wrap:wrap">
+    <div style="display:flex;align-items:center;gap:.4rem;font-size:.75rem;color:#94a3b8"><div style="width:10px;height:10px;background:#9ca3af;border-radius:2px"></div> Aangevraagd</div>
+    <div style="display:flex;align-items:center;gap:.4rem;font-size:.75rem;color:#94a3b8"><div style="width:10px;height:10px;background:#22c55e;border-radius:2px"></div> Goedgekeurd (met TOA)</div>
+    <div style="display:flex;align-items:center;gap:.4rem;font-size:.75rem;color:#94a3b8"><div style="width:10px;height:10px;background:#f59e0b;border-radius:2px"></div> Goedgekeurd (zonder TOA)</div>
+    <div style="display:flex;align-items:center;gap:.4rem;font-size:.75rem;color:#94a3b8"><div style="width:10px;height:10px;background:#ef4444;border-radius:2px"></div> Afgekeurd</div>
+  </div>
+</div>

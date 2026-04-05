@@ -1,0 +1,150 @@
+<h2>Admin-omgeving — Mockup</h2>
+<p class="subtitle">Twee tabbladen: Aanvragen beheren en Gebruikersbeheer</p>
+
+<div style="max-width:900px;margin:0 auto">
+
+  <!-- Tab switcher -->
+  <div style="display:flex;gap:.5rem;margin-bottom:1rem">
+    <div id="tab-req" style="padding:.4rem .9rem;background:#2563eb;color:white;border-radius:6px;font-size:.8rem;font-weight:600;cursor:pointer" onclick="showTab('req')">📋 Aanvragen</div>
+    <div id="tab-usr" style="padding:.4rem .9rem;background:#1e293b;color:#94a3b8;border-radius:6px;font-size:.8rem;cursor:pointer" onclick="showTab('usr')">👥 Gebruikers</div>
+  </div>
+
+  <!-- AANVRAGEN TAB -->
+  <div id="panel-req">
+    <!-- Filters + bulk delete -->
+    <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem;flex-wrap:wrap">
+      <select style="background:#1e293b;color:#94a3b8;border:1px solid #334155;border-radius:5px;padding:.3rem .5rem;font-size:.75rem">
+        <option>Alle vakken</option><option>Natuurkunde</option><option>Scheikunde</option><option>Biologie</option><option>Project/NLT</option>
+      </select>
+      <select style="background:#1e293b;color:#94a3b8;border:1px solid #334155;border-radius:5px;padding:.3rem .5rem;font-size:.75rem">
+        <option>Alle statussen</option><option>Aangevraagd</option><option>Met TOA</option><option>Zonder TOA</option><option>Afgekeurd</option>
+      </select>
+      <input placeholder="Zoek op naam of docent…" style="background:#1e293b;color:#e2e8f0;border:1px solid #334155;border-radius:5px;padding:.3rem .6rem;font-size:.75rem;flex:1;min-width:150px">
+      <div id="bulk-del" style="display:none;padding:.35rem .7rem;background:#7f1d1d;border:1px solid #dc2626;border-radius:5px;font-size:.75rem;color:#fca5a5;cursor:pointer;font-weight:600">🗑 Verwijder geselecteerde (3)</div>
+    </div>
+
+    <!-- Table -->
+    <div style="border:1px solid #334155;border-radius:8px;overflow:hidden;font-size:.75rem">
+      <!-- Header -->
+      <div style="display:grid;grid-template-columns:1.5rem 3fr 1.2fr 1fr 1fr 1.2fr 1.5fr;background:#1e293b;border-bottom:2px solid #334155;padding:.4rem .5rem;gap:.5rem;align-items:center">
+        <input type="checkbox" style="cursor:pointer" onchange="document.querySelectorAll('.row-cb').forEach(c=>c.checked=this.checked);document.getElementById('bulk-del').style.display=this.checked?'block':'none'">
+        <div style="font-weight:600;color:#64748b;font-size:.65rem;text-transform:uppercase">Proef</div>
+        <div style="font-weight:600;color:#64748b;font-size:.65rem;text-transform:uppercase">Vak</div>
+        <div style="font-weight:600;color:#64748b;font-size:.65rem;text-transform:uppercase">Datum</div>
+        <div style="font-weight:600;color:#64748b;font-size:.65rem;text-transform:uppercase">Uur</div>
+        <div style="font-weight:600;color:#64748b;font-size:.65rem;text-transform:uppercase">Docent</div>
+        <div style="font-weight:600;color:#64748b;font-size:.65rem;text-transform:uppercase">Status</div>
+      </div>
+
+      <!-- Rows -->
+      <div style="display:grid;grid-template-columns:1.5rem 3fr 1.2fr 1fr 1fr 1.2fr 1.5fr;padding:.4rem .5rem;gap:.5rem;align-items:center;border-bottom:1px solid #1e293b" onmouseenter="this.style.background='#0f172a'" onmouseleave="this.style.background=''">
+        <input type="checkbox" class="row-cb" style="cursor:pointer">
+        <div style="color:#e2e8f0;font-weight:500">NS1 H4 proef 3 Lampjes</div>
+        <div style="color:#94a3b8">Natuurkunde</div>
+        <div style="color:#94a3b8">31 mrt</div>
+        <div style="color:#94a3b8">2e uur</div>
+        <div style="color:#94a3b8"><strong>BEEM</strong></div>
+        <div><span style="background:#14532d;color:#86efac;padding:.15rem .4rem;border-radius:4px;font-size:.65rem;font-weight:600">✓ Met TOA</span></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1.5rem 3fr 1.2fr 1fr 1fr 1.2fr 1.5fr;padding:.4rem .5rem;gap:.5rem;align-items:center;border-bottom:1px solid #1e293b" onmouseenter="this.style.background='#0f172a'" onmouseleave="this.style.background=''">
+        <input type="checkbox" class="row-cb" style="cursor:pointer">
+        <div style="color:#e2e8f0;font-weight:500">Systeemborden serie/parallel</div>
+        <div style="color:#94a3b8">Natuurkunde</div>
+        <div style="color:#94a3b8">01 apr</div>
+        <div style="color:#94a3b8">2e uur</div>
+        <div style="color:#94a3b8"><strong>JOUC</strong></div>
+        <div><span style="background:#374151;color:#9ca3af;padding:.15rem .4rem;border-radius:4px;font-size:.65rem;font-weight:600">Aangevraagd</span></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1.5rem 3fr 1.2fr 1fr 1fr 1.2fr 1.5fr;padding:.4rem .5rem;gap:.5rem;align-items:center;border-bottom:1px solid #1e293b" onmouseenter="this.style.background='#0f172a'" onmouseleave="this.style.background=''">
+        <input type="checkbox" class="row-cb" style="cursor:pointer">
+        <div style="color:#e2e8f0;font-weight:500">HA Proef 3 en 4 serie/parallel</div>
+        <div style="color:#94a3b8">Scheikunde</div>
+        <div style="color:#94a3b8">01 apr</div>
+        <div style="color:#94a3b8">2e uur</div>
+        <div style="color:#94a3b8"><strong>BLAM</strong></div>
+        <div><span style="background:#713f12;color:#fde68a;padding:.15rem .4rem;border-radius:4px;font-size:.65rem;font-weight:600">◑ Zonder TOA</span></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1.5rem 3fr 1.2fr 1fr 1fr 1.2fr 1.5fr;padding:.4rem .5rem;gap:.5rem;align-items:center" onmouseenter="this.style.background='#0f172a'" onmouseleave="this.style.background=''">
+        <input type="checkbox" class="row-cb" style="cursor:pointer">
+        <div style="color:#e2e8f0;font-weight:500">SK1 H4 proef 5/6/7 Lampjes</div>
+        <div style="color:#94a3b8">Scheikunde</div>
+        <div style="color:#94a3b8">02 apr</div>
+        <div style="color:#94a3b8">4e uur</div>
+        <div style="color:#94a3b8"><strong>BEEM</strong></div>
+        <div><span style="background:#7f1d1d;color:#fca5a5;padding:.15rem .4rem;border-radius:4px;font-size:.65rem;font-weight:600">✗ Afgekeurd</span></div>
+      </div>
+    </div>
+    <div style="font-size:.7rem;color:#475569;margin-top:.4rem">Selecteer rijen met het vakje links om ze bulk te verwijderen.</div>
+  </div>
+
+  <!-- GEBRUIKERS TAB (hidden) -->
+  <div id="panel-usr" style="display:none">
+    <div style="border:1px solid #334155;border-radius:8px;overflow:hidden;font-size:.75rem">
+      <div style="display:grid;grid-template-columns:2.5rem 2.5fr 1.5fr 1.2fr 1.2fr 1.5fr;background:#1e293b;border-bottom:2px solid #334155;padding:.4rem .5rem;gap:.5rem">
+        <div></div>
+        <div style="font-weight:600;color:#64748b;font-size:.65rem;text-transform:uppercase">Naam / E-mail</div>
+        <div style="font-weight:600;color:#64748b;font-size:.65rem;text-transform:uppercase">Afkorting</div>
+        <div style="font-weight:600;color:#64748b;font-size:.65rem;text-transform:uppercase">Rol</div>
+        <div style="font-weight:600;color:#64748b;font-size:.65rem;text-transform:uppercase">Toegang</div>
+        <div style="font-weight:600;color:#64748b;font-size:.65rem;text-transform:uppercase">Lid sinds</div>
+      </div>
+
+      <!-- User rows -->
+      <div style="display:grid;grid-template-columns:2.5rem 2.5fr 1.5fr 1.2fr 1.2fr 1.5fr;padding:.4rem .5rem;gap:.5rem;align-items:center;border-bottom:1px solid #1e293b" onmouseenter="this.style.background='#0f172a'" onmouseleave="this.style.background=''">
+        <img src="https://ui-avatars.com/api/?name=B+E&background=2563eb&color=fff&size=28" style="border-radius:50%;width:24px;height:24px">
+        <div><div style="color:#e2e8f0;font-weight:500">Jan de Vries</div><div style="color:#475569;font-size:.65rem">beem@school.nl</div></div>
+        <div style="color:#94a3b8;font-weight:600">BEEM</div>
+        <div>
+          <select style="background:#1e293b;color:#94a3b8;border:1px solid #334155;border-radius:4px;padding:.15rem .3rem;font-size:.7rem">
+            <option>TEACHER</option><option>TOA</option><option selected>ADMIN</option>
+          </select>
+        </div>
+        <div>
+          <div style="display:inline-flex;align-items:center;gap:.3rem;background:#14532d;border:1px solid #22c55e;padding:.15rem .5rem;border-radius:4px;cursor:pointer;font-size:.7rem;color:#86efac;font-weight:600">✓ Toegestaan</div>
+        </div>
+        <div style="color:#475569;font-size:.7rem">12 jan 2026</div>
+      </div>
+      <div style="display:grid;grid-template-columns:2.5rem 2.5fr 1.5fr 1.2fr 1.2fr 1.5fr;padding:.4rem .5rem;gap:.5rem;align-items:center;border-bottom:1px solid #1e293b" onmouseenter="this.style.background='#0f172a'" onmouseleave="this.style.background=''">
+        <img src="https://ui-avatars.com/api/?name=J+O&background=7c3aed&color=fff&size=28" style="border-radius:50%;width:24px;height:24px">
+        <div><div style="color:#e2e8f0;font-weight:500">Petra Jansen</div><div style="color:#475569;font-size:.65rem">jouc@school.nl</div></div>
+        <div style="color:#94a3b8;font-weight:600">JOUC</div>
+        <div>
+          <select style="background:#1e293b;color:#94a3b8;border:1px solid #334155;border-radius:4px;padding:.15rem .3rem;font-size:.7rem">
+            <option selected>TEACHER</option><option>TOA</option><option>ADMIN</option>
+          </select>
+        </div>
+        <div>
+          <div style="display:inline-flex;align-items:center;gap:.3rem;background:#14532d;border:1px solid #22c55e;padding:.15rem .5rem;border-radius:4px;cursor:pointer;font-size:.7rem;color:#86efac;font-weight:600">✓ Toegestaan</div>
+        </div>
+        <div style="color:#475569;font-size:.7rem">3 feb 2026</div>
+      </div>
+      <div style="display:grid;grid-template-columns:2.5rem 2.5fr 1.5fr 1.2fr 1.2fr 1.5fr;padding:.4rem .5rem;gap:.5rem;align-items:center" onmouseenter="this.style.background='#0f172a'" onmouseleave="this.style.background=''">
+        <img src="https://ui-avatars.com/api/?name=L+O&background=dc2626&color=fff&size=28" style="border-radius:50%;width:24px;height:24px">
+        <div><div style="color:#e2e8f0;font-weight:500">Marc Losmann</div><div style="color:#475569;font-size:.65rem">losm@school.nl</div></div>
+        <div style="color:#94a3b8;font-weight:600">LOSM</div>
+        <div>
+          <select style="background:#1e293b;color:#94a3b8;border:1px solid #334155;border-radius:4px;padding:.15rem .3rem;font-size:.7rem">
+            <option selected>TEACHER</option><option>TOA</option><option>ADMIN</option>
+          </select>
+        </div>
+        <div>
+          <div style="display:inline-flex;align-items:center;gap:.3rem;background:#7f1d1d;border:1px solid #dc2626;padding:.15rem .5rem;border-radius:4px;cursor:pointer;font-size:.7rem;color:#fca5a5;font-weight:600">✗ Geblokkeerd</div>
+        </div>
+        <div style="color:#475569;font-size:.7rem">20 mrt 2026</div>
+      </div>
+    </div>
+    <div style="font-size:.7rem;color:#475569;margin-top:.4rem">Rol en toegang worden direct opgeslagen bij wijziging.</div>
+  </div>
+
+</div>
+
+<script>
+function showTab(t) {
+  document.getElementById('panel-req').style.display = t==='req' ? 'block' : 'none';
+  document.getElementById('panel-usr').style.display = t==='usr' ? 'block' : 'none';
+  document.getElementById('tab-req').style.background = t==='req' ? '#2563eb' : '#1e293b';
+  document.getElementById('tab-req').style.color = t==='req' ? 'white' : '#94a3b8';
+  document.getElementById('tab-usr').style.background = t==='usr' ? '#2563eb' : '#1e293b';
+  document.getElementById('tab-usr').style.color = t==='usr' ? 'white' : '#94a3b8';
+}
+</script>

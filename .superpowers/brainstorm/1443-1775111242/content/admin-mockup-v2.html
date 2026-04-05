@@ -1,0 +1,99 @@
+<h2>Admin — Gebruikersbeheer v2</h2>
+<p class="subtitle">Meerdere rollen per gebruiker via checkboxes</p>
+
+<div style="max-width:900px;margin:0 auto">
+
+  <div style="border:1px solid #334155;border-radius:8px;overflow:hidden;font-size:.75rem">
+    <!-- Header -->
+    <div style="display:grid;grid-template-columns:2.5rem 2.5fr 1.2fr 3fr 1.5fr 1.4fr;background:#1e293b;border-bottom:2px solid #334155;padding:.4rem .6rem;gap:.5rem;align-items:center">
+      <div></div>
+      <div style="font-weight:600;color:#64748b;font-size:.65rem;text-transform:uppercase">Naam / E-mail</div>
+      <div style="font-weight:600;color:#64748b;font-size:.65rem;text-transform:uppercase">Afkorting</div>
+      <div style="font-weight:600;color:#64748b;font-size:.65rem;text-transform:uppercase">Rollen</div>
+      <div style="font-weight:600;color:#64748b;font-size:.65rem;text-transform:uppercase">Toegang</div>
+      <div style="font-weight:600;color:#64748b;font-size:.65rem;text-transform:uppercase">Lid sinds</div>
+    </div>
+
+    <!-- User 1: Teacher + Admin -->
+    <div style="display:grid;grid-template-columns:2.5rem 2.5fr 1.2fr 3fr 1.5fr 1.4fr;padding:.5rem .6rem;gap:.5rem;align-items:center;border-bottom:1px solid #1e293b" onmouseenter="this.style.background='#0f172a'" onmouseleave="this.style.background=''">
+      <img src="https://ui-avatars.com/api/?name=B+E&background=2563eb&color=fff&size=28" style="border-radius:50%;width:24px;height:24px">
+      <div><div style="color:#e2e8f0;font-weight:500">Jan de Vries</div><div style="color:#475569;font-size:.65rem">beem@school.nl</div></div>
+      <div style="color:#94a3b8;font-weight:600">BEEM</div>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+        <label style="display:flex;align-items:center;gap:.3rem;cursor:pointer;color:#94a3b8;font-size:.72rem">
+          <input type="checkbox" checked> Docent
+        </label>
+        <label style="display:flex;align-items:center;gap:.3rem;cursor:pointer;color:#94a3b8;font-size:.72rem">
+          <input type="checkbox"> TOA
+        </label>
+        <label style="display:flex;align-items:center;gap:.3rem;cursor:pointer;color:#94a3b8;font-size:.72rem">
+          <input type="checkbox" checked> Admin
+        </label>
+      </div>
+      <div><div style="display:inline-flex;align-items:center;gap:.3rem;background:#14532d;border:1px solid #22c55e;padding:.2rem .5rem;border-radius:4px;cursor:pointer;font-size:.7rem;color:#86efac;font-weight:600">✓ Toegestaan</div></div>
+      <div style="color:#475569;font-size:.7rem">12 jan 2026</div>
+    </div>
+
+    <!-- User 2: Teacher only -->
+    <div style="display:grid;grid-template-columns:2.5rem 2.5fr 1.2fr 3fr 1.5fr 1.4fr;padding:.5rem .6rem;gap:.5rem;align-items:center;border-bottom:1px solid #1e293b" onmouseenter="this.style.background='#0f172a'" onmouseleave="this.style.background=''">
+      <img src="https://ui-avatars.com/api/?name=J+O&background=7c3aed&color=fff&size=28" style="border-radius:50%;width:24px;height:24px">
+      <div><div style="color:#e2e8f0;font-weight:500">Petra Jansen</div><div style="color:#475569;font-size:.65rem">jouc@school.nl</div></div>
+      <div style="color:#94a3b8;font-weight:600">JOUC</div>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+        <label style="display:flex;align-items:center;gap:.3rem;cursor:pointer;color:#94a3b8;font-size:.72rem">
+          <input type="checkbox" checked> Docent
+        </label>
+        <label style="display:flex;align-items:center;gap:.3rem;cursor:pointer;color:#94a3b8;font-size:.72rem">
+          <input type="checkbox"> TOA
+        </label>
+        <label style="display:flex;align-items:center;gap:.3rem;cursor:pointer;color:#94a3b8;font-size:.72rem">
+          <input type="checkbox"> Admin
+        </label>
+      </div>
+      <div><div style="display:inline-flex;align-items:center;gap:.3rem;background:#14532d;border:1px solid #22c55e;padding:.2rem .5rem;border-radius:4px;cursor:pointer;font-size:.7rem;color:#86efac;font-weight:600">✓ Toegestaan</div></div>
+      <div style="color:#475569;font-size:.7rem">3 feb 2026</div>
+    </div>
+
+    <!-- User 3: Teacher + TOA, blocked -->
+    <div style="display:grid;grid-template-columns:2.5rem 2.5fr 1.2fr 3fr 1.5fr 1.4fr;padding:.5rem .6rem;gap:.5rem;align-items:center;border-bottom:1px solid #1e293b" onmouseenter="this.style.background='#0f172a'" onmouseleave="this.style.background=''">
+      <img src="https://ui-avatars.com/api/?name=L+O&background=0891b2&color=fff&size=28" style="border-radius:50%;width:24px;height:24px">
+      <div><div style="color:#e2e8f0;font-weight:500">Sandra Loom</div><div style="color:#475569;font-size:.65rem">losm@school.nl</div></div>
+      <div style="color:#94a3b8;font-weight:600">LOSM</div>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+        <label style="display:flex;align-items:center;gap:.3rem;cursor:pointer;color:#94a3b8;font-size:.72rem">
+          <input type="checkbox" checked> Docent
+        </label>
+        <label style="display:flex;align-items:center;gap:.3rem;cursor:pointer;color:#94a3b8;font-size:.72rem">
+          <input type="checkbox" checked> TOA
+        </label>
+        <label style="display:flex;align-items:center;gap:.3rem;cursor:pointer;color:#94a3b8;font-size:.72rem">
+          <input type="checkbox"> Admin
+        </label>
+      </div>
+      <div><div style="display:inline-flex;align-items:center;gap:.3rem;background:#7f1d1d;border:1px solid #dc2626;padding:.2rem .5rem;border-radius:4px;cursor:pointer;font-size:.7rem;color:#fca5a5;font-weight:600">✗ Geblokkeerd</div></div>
+      <div style="color:#475569;font-size:.7rem">20 mrt 2026</div>
+    </div>
+
+    <!-- User 4: TOA only -->
+    <div style="display:grid;grid-template-columns:2.5rem 2.5fr 1.2fr 3fr 1.5fr 1.4fr;padding:.5rem .6rem;gap:.5rem;align-items:center" onmouseenter="this.style.background='#0f172a'" onmouseleave="this.style.background=''">
+      <img src="https://ui-avatars.com/api/?name=B+L&background=059669&color=fff&size=28" style="border-radius:50%;width:24px;height:24px">
+      <div><div style="color:#e2e8f0;font-weight:500">Kees Blam</div><div style="color:#475569;font-size:.65rem">blam@school.nl</div></div>
+      <div style="color:#94a3b8;font-weight:600">BLAM</div>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+        <label style="display:flex;align-items:center;gap:.3rem;cursor:pointer;color:#94a3b8;font-size:.72rem">
+          <input type="checkbox"> Docent
+        </label>
+        <label style="display:flex;align-items:center;gap:.3rem;cursor:pointer;color:#94a3b8;font-size:.72rem">
+          <input type="checkbox" checked> TOA
+        </label>
+        <label style="display:flex;align-items:center;gap:.3rem;cursor:pointer;color:#94a3b8;font-size:.72rem">
+          <input type="checkbox"> Admin
+        </label>
+      </div>
+      <div><div style="display:inline-flex;align-items:center;gap:.3rem;background:#14532d;border:1px solid #22c55e;padding:.2rem .5rem;border-radius:4px;cursor:pointer;font-size:.7rem;color:#86efac;font-weight:600">✓ Toegestaan</div></div>
+      <div style="color:#475569;font-size:.7rem">1 apr 2026</div>
+    </div>
+  </div>
+
+  <div style="font-size:.7rem;color:#475569;margin-top:.5rem">Wijzigingen worden direct opgeslagen. Een gebruiker kan meerdere rollen tegelijk hebben.</div>
+</div>

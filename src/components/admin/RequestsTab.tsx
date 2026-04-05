@@ -1,19 +1,73 @@
 'use client'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { RequestWithUser, SubjectConfig } from '@/types'
 import { Status } from '@prisma/client'
 import { format } from 'date-fns'
 import { nl } from 'date-fns/locale'
 
 const STATUS_LABELS: Record<Status, string> = {
-  PENDING: 'Aangevraagd', APPROVED_WITH_TOA: 'Met TOA',
-  APPROVED_WITHOUT_TOA: 'Zonder TOA', REJECTED: 'Afgekeurd',
+  PENDING: 'Aangevraagd',
+  APPROVED_WITH_TOA: 'Met TOA',
+  APPROVED_WITHOUT_TOA: 'Zonder TOA',
+  REJECTED: 'Afgekeurd',
 }
 const STATUS_STYLES: Record<Status, string> = {
   PENDING: 'bg-slate-700 text-slate-300',
   APPROVED_WITH_TOA: 'bg-green-900 text-green-300',
   APPROVED_WITHOUT_TOA: 'bg-amber-900 text-amber-300',
   REJECTED: 'bg-red-900 text-red-300',
+}
+const STATUS_VALUES: Status[] = ['PENDING', 'APPROVED_WITH_TOA', 'APPROVED_WITHOUT_TOA', 'REJECTED']
+
+function StatusCell({ request, onUpdated }: { request: RequestWithUser; onUpdated: () => void }) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!open) return
+    function handle(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handle)
+    return () => document.removeEventListener('mousedown', handle)
+  }, [open])
+
+  async function changeStatus(status: Status) {
+    setOpen(false)
+    await fetch(`/api/requests/${request.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status }),
+    })
+    onUpdated()
+  }
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        onClick={() => setOpen(o => !o)}
+        title="Klik om status te wijzigen"
+        className={`px-1.5 py-0.5 rounded text-[0.65rem] font-medium cursor-pointer hover:opacity-80 transition-opacity ${STATUS_STYLES[request.status]}`}
+      >
+        {STATUS_LABELS[request.status]} ▾
+      </button>
+      {open && (
+        <div className="absolute right-0 top-6 z-20 bg-slate-800 border border-slate-600 rounded shadow-xl min-w-[130px]">
+          {STATUS_VALUES.map(s => (
+            <button
+              key={s}
+              onClick={() => changeStatus(s)}
+              className={`w-full text-left px-3 py-1.5 text-xs hover:bg-slate-700 transition-colors ${
+                s === request.status ? 'font-bold text-white' : 'text-slate-300'
+              }`}
+            >
+              {STATUS_LABELS[s]}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
 }
 
 export default function RequestsTab() {
@@ -26,10 +80,7 @@ export default function RequestsTab() {
   const [deleting, setDeleting] = useState(false)
 
   useEffect(() => {
-    fetch('/api/admin/subjects')
-      .then(r => r.ok ? r.json() : [])
-      .then(setSubjects)
-      .catch(() => {})
+    fetch('/api/admin/subjects').then(r => r.ok ? r.json() : []).then(setSubjects).catch(() => {})
   }, [])
 
   const load = useCallback(async () => {
@@ -45,6 +96,13 @@ export default function RequestsTab() {
 
   function toggleAll(checked: boolean) {
     setSelected(checked ? new Set(requests.map(r => r.id)) : new Set())
+  }
+
+  async function deleteRequest(id: string) {
+    if (!confirm('Aanvraag verwijderen?')) return
+    await fetch(`/api/requests/${id}`, { method: 'DELETE' })
+    setSelected(prev => { const next = new Set(prev); next.delete(id); return next })
+    load()
   }
 
   async function bulkDelete() {
@@ -76,7 +134,7 @@ export default function RequestsTab() {
         <select value={status} onChange={e => setStatus(e.target.value)}
           className="bg-slate-800 border border-slate-700 text-slate-300 rounded px-2 py-1.5 text-xs">
           <option value="">Alle statussen</option>
-          {Object.entries(STATUS_LABELS).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+          {STATUS_VALUES.map(v => <option key={v} value={v}>{STATUS_LABELS[v]}</option>)}
         </select>
         <input value={search} onChange={e => setSearch(e.target.value)}
           placeholder="Zoek op naam of docent…"
@@ -90,33 +148,49 @@ export default function RequestsTab() {
       </div>
 
       <div className="border border-slate-700 rounded-lg overflow-hidden text-xs">
+        {/* Header */}
         <div className="grid bg-slate-900 border-b-2 border-slate-600 px-3 py-2 gap-2 font-semibold text-slate-500 uppercase tracking-wide text-[0.65rem]"
-          style={{ gridTemplateColumns: '1.5rem 3fr 1.2fr 1fr 0.8fr 1.2fr 1.5fr' }}>
+          style={{ gridTemplateColumns: '1.5rem 1fr 1fr 1.2fr 1fr 0.8fr 1.2fr 1.4fr 1.5rem' }}>
           <input type="checkbox" onChange={e => toggleAll(e.target.checked)}
             checked={selected.size === requests.length && requests.length > 0} />
-          <span>Proef</span><span>Vak</span><span>Datum</span><span>Uur</span><span>Docent</span><span>Status</span>
+          <span>Klas</span>
+          <span>Proef</span>
+          <span>Vak</span>
+          <span>Datum</span>
+          <span>Uur</span>
+          <span>Docent</span>
+          <span>Status</span>
+          <span></span>
         </div>
+
         {requests.length === 0 && (
           <p className="text-center text-slate-600 py-8 text-sm">Geen aanvragen gevonden</p>
         )}
+
         {requests.map(r => (
           <div key={r.id}
             className="grid px-3 py-2 gap-2 border-b border-slate-800 items-center hover:bg-slate-900/50 last:border-b-0"
-            style={{ gridTemplateColumns: '1.5rem 3fr 1.2fr 1fr 0.8fr 1.2fr 1.5fr' }}>
+            style={{ gridTemplateColumns: '1.5rem 1fr 1fr 1.2fr 1fr 0.8fr 1.2fr 1.4fr 1.5rem' }}>
             <input type="checkbox" checked={selected.has(r.id)}
               onChange={e => {
                 const next = new Set(selected)
-                if (e.target.checked) { next.add(r.id) } else { next.delete(r.id) }
+                if (e.target.checked) next.add(r.id); else next.delete(r.id)
                 setSelected(next)
               }} />
+            <span className="text-slate-400 font-medium truncate">{r.klas || '—'}</span>
             <span className="text-slate-200 font-medium truncate">{r.title}</span>
-            <span className="text-slate-400">{subjectLabel(r.subject)}</span>
-            <span className="text-slate-400">{format(new Date(r.date), 'd MMM', { locale: nl })}</span>
-            <span className="text-slate-400">{r.period}e</span>
+            <span className="text-slate-400 truncate">{subjectLabel(r.subject)}</span>
+            <span className="text-slate-400 whitespace-nowrap">{format(new Date(r.date), 'd MMM', { locale: nl })}</span>
+            <span className="text-slate-400">{r.period === 0 ? 'Dag' : `${r.period}e`}</span>
             <span className="text-slate-300 font-semibold">{r.createdBy?.abbreviation.toUpperCase() ?? '—'}</span>
-            <span className={`px-1.5 py-0.5 rounded text-[0.65rem] font-medium inline-block ${STATUS_STYLES[r.status]}`}>
-              {STATUS_LABELS[r.status]}
-            </span>
+            <StatusCell request={r} onUpdated={load} />
+            <button
+              onClick={() => deleteRequest(r.id)}
+              className="text-slate-600 hover:text-red-400 transition-colors"
+              title="Verwijderen"
+            >
+              🗑
+            </button>
           </div>
         ))}
       </div>

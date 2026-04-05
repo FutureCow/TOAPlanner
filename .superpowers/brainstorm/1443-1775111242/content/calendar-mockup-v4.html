@@ -1,0 +1,103 @@
+<h2>Weekkalender — v4</h2>
+<p class="subtitle">4 vakken als tabbladen in de navigatie, elk met eigen kalender</p>
+
+<div style="max-width:900px;margin:0 auto">
+
+  <!-- Top navbar -->
+  <div style="background:#1e293b;border-radius:8px;padding:.6rem 1rem;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between">
+    <div style="display:flex;align-items:center;gap:1.5rem">
+      <!-- Logo placeholder -->
+      <div style="font-size:.8rem;font-weight:700;color:#94a3b8;white-space:nowrap">🏫 De Amersfoortse Berg</div>
+      <!-- Tabs -->
+      <nav style="display:flex;gap:.25rem">
+        <div style="padding:.35rem .75rem;background:#2563eb;color:white;border-radius:5px;font-size:.8rem;font-weight:600;cursor:pointer">Natuurkunde</div>
+        <div style="padding:.35rem .75rem;color:#94a3b8;border-radius:5px;font-size:.8rem;cursor:pointer" onmouseenter="this.style.background='#0f172a'" onmouseleave="this.style.background=''">Scheikunde</div>
+        <div style="padding:.35rem .75rem;color:#94a3b8;border-radius:5px;font-size:.8rem;cursor:pointer" onmouseenter="this.style.background='#0f172a'" onmouseleave="this.style.background=''">Biologie</div>
+        <div style="padding:.35rem .75rem;color:#94a3b8;border-radius:5px;font-size:.8rem;cursor:pointer" onmouseenter="this.style.background='#0f172a'" onmouseleave="this.style.background=''">Project/NLT</div>
+        <div style="width:1px;background:#334155;margin:0 .25rem"></div>
+        <div style="padding:.35rem .75rem;color:#64748b;border-radius:5px;font-size:.8rem;cursor:pointer" onmouseenter="this.style.background='#0f172a'" onmouseleave="this.style.background=''">Overzicht</div>
+      </nav>
+    </div>
+    <!-- User + week nav -->
+    <div style="display:flex;align-items:center;gap:.5rem">
+      <div style="padding:.3rem .55rem;background:#0f172a;border-radius:5px;font-size:.75rem;color:#94a3b8;cursor:pointer">Vandaag</div>
+      <div style="padding:.3rem .55rem;background:#0f172a;border-radius:5px;font-size:.85rem;color:#94a3b8;cursor:pointer">‹</div>
+      <div style="padding:.3rem .55rem;background:#0f172a;border-radius:5px;font-size:.85rem;color:#94a3b8;cursor:pointer">›</div>
+      <div style="padding:.3rem .6rem;background:#334155;border-radius:5px;font-size:.75rem;color:#94a3b8;cursor:pointer">beem ▾</div>
+    </div>
+  </div>
+
+  <!-- Week label -->
+  <div style="font-weight:700;font-size:.95rem;color:#e2e8f0;margin-bottom:.75rem;padding-left:.25rem">
+    31 MAART – 04 APRIL, 2026 <span style="font-size:.75rem;font-weight:400;color:#64748b;margin-left:.5rem">Natuurkunde</span>
+  </div>
+
+  <!-- Calendar grid -->
+  <div style="border:1px solid #334155;border-radius:8px;overflow:hidden;font-size:.72rem">
+    <div style="display:grid;grid-template-columns:2rem 1fr 1fr 1fr 1fr 1fr;background:#1e293b;border-bottom:2px solid #334155">
+      <div></div>
+      <div style="padding:.4rem;text-align:center;font-weight:600;color:#94a3b8">Maa <span style="color:#e2e8f0">31</span></div>
+      <div style="padding:.4rem;text-align:center;font-weight:600;color:#94a3b8">Din <span style="color:#e2e8f0">01</span></div>
+      <div style="padding:.4rem;text-align:center;font-weight:600;color:#94a3b8;border:2px solid #3b82f6;border-radius:4px">Woe <span style="background:#3b82f6;color:white;border-radius:50%;padding:0 3px">02</span></div>
+      <div style="padding:.4rem;text-align:center;font-weight:600;color:#94a3b8">Don <span style="color:#e2e8f0">03</span></div>
+      <div style="padding:.4rem;text-align:center;font-weight:600;color:#94a3b8">Vri <span style="color:#e2e8f0">04</span></div>
+    </div>
+
+    <!-- Periods 1-5 -->
+    <div style="display:grid;grid-template-columns:2rem 1fr 1fr 1fr 1fr 1fr;border-bottom:1px solid #1e293b">
+      <div style="text-align:center;color:#475569;font-weight:600;background:#0f172a;border-right:1px solid #334155;display:flex;align-items:center;justify-content:center;font-size:.7rem">1</div>
+      <div style="padding:.2rem;background:#0f172a;border-right:1px solid #1e293b;min-height:3.2rem;position:relative;cursor:pointer" onmouseenter="this.querySelector('.pb').style.opacity='1'" onmouseleave="this.querySelector('.pb').style.opacity='0'"><div class="pb" style="opacity:0;transition:.15s;position:absolute;bottom:2px;right:2px;background:#1e40af;color:white;border-radius:3px;width:14px;height:14px;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700">+</div></div>
+      <div style="padding:.2rem;background:#0f172a;border-right:1px solid #1e293b;position:relative" onmouseenter="this.querySelector('.pb').style.opacity='1'" onmouseleave="this.querySelector('.pb').style.opacity='0'">
+        <div style="background:#374151;border-left:3px solid #9ca3af;border-radius:3px;padding:.2rem .3rem;color:#d1d5db;cursor:pointer" onmouseenter="this.style.filter='brightness(1.2)'" onmouseleave="this.style.filter=''">
+          <div style="font-weight:600;line-height:1.3">Goldberg<br><span style="font-weight:400;color:#9ca3af">Ander lokaal</span></div>
+          <div style="color:#9ca3af;font-size:.65rem;margin-top:.1rem">W107 · <strong>BEEM</strong></div>
+        </div>
+        <div class="pb" style="opacity:0;transition:.15s;position:absolute;bottom:2px;right:2px;background:#1e40af;color:white;border-radius:3px;width:14px;height:14px;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700">+</div>
+      </div>
+      <div style="padding:.2rem;background:#0f172a;border-right:1px solid #1e293b;min-height:3.2rem;position:relative;cursor:pointer" onmouseenter="this.querySelector('.pb').style.opacity='1'" onmouseleave="this.querySelector('.pb').style.opacity='0'"><div class="pb" style="opacity:0;transition:.15s;position:absolute;bottom:2px;right:2px;background:#1e40af;color:white;border-radius:3px;width:14px;height:14px;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700">+</div></div>
+      <div style="padding:.2rem;background:#0f172a;border-right:1px solid #1e293b;min-height:3.2rem;position:relative;cursor:pointer" onmouseenter="this.querySelector('.pb').style.opacity='1'" onmouseleave="this.querySelector('.pb').style.opacity='0'"><div class="pb" style="opacity:0;transition:.15s;position:absolute;bottom:2px;right:2px;background:#1e40af;color:white;border-radius:3px;width:14px;height:14px;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700">+</div></div>
+      <div style="padding:.2rem;background:#0f172a;min-height:3.2rem;position:relative;cursor:pointer" onmouseenter="this.querySelector('.pb').style.opacity='1'" onmouseleave="this.querySelector('.pb').style.opacity='0'"><div class="pb" style="opacity:0;transition:.15s;position:absolute;bottom:2px;right:2px;background:#1e40af;color:white;border-radius:3px;width:14px;height:14px;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700">+</div></div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:2rem 1fr 1fr 1fr 1fr 1fr;border-bottom:1px solid #1e293b">
+      <div style="text-align:center;color:#475569;font-weight:600;background:#0f172a;border-right:1px solid #334155;display:flex;align-items:center;justify-content:center;font-size:.7rem">2</div>
+      <div style="padding:.2rem;background:#0f172a;border-right:1px solid #1e293b;position:relative" onmouseenter="this.querySelector('.pb').style.opacity='1'" onmouseleave="this.querySelector('.pb').style.opacity='0'">
+        <div style="background:#14532d;border-left:3px solid #22c55e;border-radius:3px;padding:.2rem .3rem;color:#bbf7d0;cursor:pointer" onmouseenter="this.style.filter='brightness(1.2)'" onmouseleave="this.style.filter=''">
+          <div style="font-weight:600;line-height:1.3">NS1 H4 proef 3<br><span style="font-weight:400;color:#86efac">Lampjes</span></div>
+          <div style="color:#86efac;font-size:.65rem;margin-top:.1rem">W107 · <strong>BEEM</strong></div>
+        </div>
+        <div class="pb" style="opacity:0;transition:.15s;position:absolute;bottom:2px;right:2px;background:#1e40af;color:white;border-radius:3px;width:14px;height:14px;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700">+</div>
+      </div>
+      <div style="padding:.2rem;background:#0f172a;border-right:1px solid #1e293b;min-height:3.2rem;position:relative;cursor:pointer" onmouseenter="this.querySelector('.pb').style.opacity='1'" onmouseleave="this.querySelector('.pb').style.opacity='0'"><div class="pb" style="opacity:0;transition:.15s;position:absolute;bottom:2px;right:2px;background:#1e40af;color:white;border-radius:3px;width:14px;height:14px;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700">+</div></div>
+      <div style="padding:.2rem;background:#0f172a;border-right:1px solid #1e293b;position:relative" onmouseenter="this.querySelector('.pb').style.opacity='1'" onmouseleave="this.querySelector('.pb').style.opacity='0'">
+        <div style="background:#14532d;border-left:3px solid #22c55e;border-radius:3px;padding:.2rem .3rem;color:#bbf7d0;margin-bottom:.15rem;cursor:pointer" onmouseenter="this.style.filter='brightness(1.2)'" onmouseleave="this.style.filter=''">
+          <div style="font-weight:600;line-height:1.3">Systeemborden<br><span style="font-weight:400;color:#86efac">Serie/parallel</span></div>
+          <div style="color:#86efac;font-size:.65rem;margin-top:.1rem">W104 · <strong>JOUC</strong></div>
+        </div>
+        <div style="background:#374151;border-left:3px solid #9ca3af;border-radius:3px;padding:.2rem .3rem;color:#d1d5db;cursor:pointer" onmouseenter="this.style.filter='brightness(1.2)'" onmouseleave="this.style.filter=''">
+          <div style="font-weight:600;line-height:1.3">HA Proef 3 en 4<br><span style="font-weight:400;color:#9ca3af">serie/parallel</span></div>
+          <div style="color:#9ca3af;font-size:.65rem;margin-top:.1rem">W104 · <strong>BLAM</strong></div>
+        </div>
+        <div class="pb" style="opacity:0;transition:.15s;position:absolute;bottom:2px;right:2px;background:#1e40af;color:white;border-radius:3px;width:14px;height:14px;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700">+</div>
+      </div>
+      <div style="padding:.2rem;background:#0f172a;border-right:1px solid #1e293b;min-height:3.2rem;position:relative;cursor:pointer" onmouseenter="this.querySelector('.pb').style.opacity='1'" onmouseleave="this.querySelector('.pb').style.opacity='0'"><div class="pb" style="opacity:0;transition:.15s;position:absolute;bottom:2px;right:2px;background:#1e40af;color:white;border-radius:3px;width:14px;height:14px;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700">+</div></div>
+      <div style="padding:.2rem;background:#0f172a;min-height:3.2rem;position:relative;cursor:pointer" onmouseenter="this.querySelector('.pb').style.opacity='1'" onmouseleave="this.querySelector('.pb').style.opacity='0'"><div class="pb" style="opacity:0;transition:.15s;position:absolute;bottom:2px;right:2px;background:#1e40af;color:white;border-radius:3px;width:14px;height:14px;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700">+</div></div>
+    </div>
+
+    <!-- Remaining rows faded -->
+    <div style="display:grid;grid-template-columns:2rem 1fr 1fr 1fr 1fr 1fr;border-bottom:1px solid #1e293b;min-height:3rem;opacity:.4">
+      <div style="text-align:center;color:#475569;font-weight:600;background:#0f172a;border-right:1px solid #334155;display:flex;align-items:center;justify-content:center;font-size:.7rem">3</div>
+      <div style="background:#0f172a;border-right:1px solid #1e293b"></div><div style="background:#0f172a;border-right:1px solid #1e293b"></div><div style="background:#0f172a;border-right:1px solid #1e293b"></div><div style="background:#0f172a;border-right:1px solid #1e293b"></div><div style="background:#0f172a"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:2rem 1fr 1fr 1fr 1fr 1fr;min-height:1.2rem;opacity:.15">
+      <div style="background:#0f172a;border-right:1px solid #334155;display:flex;align-items:center;justify-content:center;font-size:.65rem;color:#475569">…</div>
+      <div style="background:#0f172a;border-right:1px solid #1e293b"></div><div style="background:#0f172a;border-right:1px solid #1e293b"></div><div style="background:#0f172a;border-right:1px solid #1e293b"></div><div style="background:#0f172a;border-right:1px solid #1e293b"></div><div style="background:#0f172a"></div>
+    </div>
+  </div>
+
+  <!-- Info note -->
+  <div style="margin-top:.75rem;padding:.6rem .9rem;background:#0f172a;border:1px solid #334155;border-radius:6px;font-size:.75rem;color:#64748b">
+    💡 Elk tabblad (Natuurkunde, Scheikunde, Biologie, Project/NLT) heeft zijn eigen kalender met eigen aanvragen. Het tabblad <strong style="color:#94a3b8">Overzicht</strong> toont alle vakken gecombineerd in één kalender.
+  </div>
+
+</div>

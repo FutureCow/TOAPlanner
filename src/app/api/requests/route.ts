@@ -37,15 +37,16 @@ export async function POST(req: NextRequest) {
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await req.json()
-  const { title, classroom, date, period, subject } = body
+  const { title, klas, classroom, date, period, subject } = body
 
-  if (!title || !classroom || !date || !period || !subject) {
+  if (!title || !classroom || !date || period === undefined || !subject) {
     return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
   }
 
   const request = await prisma.request.create({
     data: {
       title,
+      klas: klas ?? '',
       classroom,
       date: new Date(date + 'T00:00:00.000Z'),
       period: Number(period),

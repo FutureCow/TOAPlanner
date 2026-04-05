@@ -20,6 +20,9 @@ export async function buildSignInResult(
     const settings = await prisma.appSettings.findUnique({ where: { id: 1 } })
     if (!settings?.registrationOpen) return '/login?error=RegistrationClosed'
 
+    // First user in the database becomes admin automatically
+    const userCount = await prisma.user.count()
+
     await prisma.user.create({
       data: {
         id,
@@ -27,6 +30,7 @@ export async function buildSignInResult(
         name: name ?? email,
         image,
         abbreviation: generateAbbreviation(email),
+        isAdmin: userCount === 0,
       },
     })
   } else {
@@ -68,6 +72,7 @@ export const authOptions: NextAuthOptions = {
             isTeacher: true,
             isTOA: true,
             isAdmin: true,
+            defaultPage: true,
           },
         })
         if (dbUser) {
@@ -76,6 +81,7 @@ export const authOptions: NextAuthOptions = {
           token.isTeacher = dbUser.isTeacher
           token.isTOA = dbUser.isTOA
           token.isAdmin = dbUser.isAdmin
+          token.defaultPage = dbUser.defaultPage
         }
       }
       return token
@@ -86,6 +92,7 @@ export const authOptions: NextAuthOptions = {
       session.user.isTeacher = token.isTeacher
       session.user.isTOA = token.isTOA
       session.user.isAdmin = token.isAdmin
+      session.user.defaultPage = token.defaultPage
       return session
     },
   },

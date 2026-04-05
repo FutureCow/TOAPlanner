@@ -26,7 +26,11 @@ export default function RequestBlock({ request, onClick }: Props) {
       onClick={() => onClick(request)}
       className={`border-l-[3px] rounded px-1.5 py-1 cursor-pointer hover:brightness-125 transition-all mb-1 ${STATUS_STYLES[request.status]}`}
     >
-      <div className="font-semibold text-xs leading-tight line-clamp-2">{request.title}</div>
+      <div className="font-semibold text-xs leading-tight line-clamp-2">
+        {request.klas ? (
+          <><span className="opacity-70">{request.klas}</span> – {request.title}</>
+        ) : request.title}
+      </div>
       <div className={`text-[0.65rem] mt-0.5 ${ABBR_STYLES[request.status]}`}>
         {request.classroom} · <strong>{request.createdBy?.abbreviation.toUpperCase() ?? '—'}</strong>
       </div>

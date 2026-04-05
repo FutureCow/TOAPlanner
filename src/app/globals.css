@@ -2,26 +2,91 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── Font size scale ─────────────────────────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --font-scale: 1;
+}
+html.font-klein  { --font-scale: 0.875; }
+html.font-middel { --font-scale: 1; }
+html.font-groot  { --font-scale: 1.125; }
+
+html {
+  font-size: calc(16px * var(--font-scale));
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ─── Light theme overrides ──────────────────────────────────────────────── */
+/* When data-theme="light" is set on <html>, invert the dark slate palette    */
+
+html[data-theme="light"] body {
+  background-color: #f2f2f7 !important;
+  color: #1d1d1f !important;
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+/* Backgrounds */
+html[data-theme="light"] .bg-slate-950  { background-color: #f2f2f7 !important; }
+html[data-theme="light"] .bg-slate-900  { background-color: #ffffff !important; }
+html[data-theme="light"] .bg-slate-800  { background-color: #f2f2f7 !important; }
+html[data-theme="light"] .bg-slate-700  { background-color: #e5e5ea !important; }
+html[data-theme="light"] .bg-slate-600  { background-color: #d1d1d6 !important; }
+
+/* Backgrounds with opacity fractions */
+html[data-theme="light"] .bg-slate-900\/50 { background-color: rgba(255,255,255,0.7) !important; }
+html[data-theme="light"] .bg-slate-900\/40 { background-color: rgba(240,240,245,0.6) !important; }
+
+/* Text */
+html[data-theme="light"] .text-white    { color: #1d1d1f !important; }
+html[data-theme="light"] .text-slate-50 { color: #1d1d1f !important; }
+html[data-theme="light"] .text-slate-100 { color: #1d1d1f !important; }
+html[data-theme="light"] .text-slate-200 { color: #1d1d1f !important; }
+html[data-theme="light"] .text-slate-300 { color: #3a3a3c !important; }
+html[data-theme="light"] .text-slate-400 { color: #636366 !important; }
+html[data-theme="light"] .text-slate-500 { color: #8e8e93 !important; }
+html[data-theme="light"] .text-slate-600 { color: #aeaeb2 !important; }
+
+/* Borders */
+html[data-theme="light"] .border-slate-800   { border-color: #e5e5ea !important; }
+html[data-theme="light"] .border-slate-700   { border-color: #d1d1d6 !important; }
+html[data-theme="light"] .border-slate-600   { border-color: #c7c7cc !important; }
+html[data-theme="light"] .border-b-2         {}
+html[data-theme="light"] .border-slate-600.border-b-2 { border-color: #c7c7cc !important; }
+
+/* Inputs */
+html[data-theme="light"] input[class*="bg-slate"],
+html[data-theme="light"] select[class*="bg-slate"],
+html[data-theme="light"] textarea[class*="bg-slate"] {
+  background-color: #ffffff !important;
+  color: #1d1d1f !important;
+  border-color: #d1d1d6 !important;
+}
+html[data-theme="light"] input::placeholder,
+html[data-theme="light"] textarea::placeholder {
+  color: #aeaeb2 !important;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+/* Nav bar */
+html[data-theme="light"] nav.bg-slate-900 {
+  background-color: #ffffff !important;
+  border-color: #e5e5ea !important;
 }
+
+/* Hover states */
+html[data-theme="light"] .hover\:bg-slate-800:hover { background-color: #e5e5ea !important; }
+html[data-theme="light"] .hover\:bg-slate-700:hover { background-color: #d1d1d6 !important; }
+
+/* Status badges — keep their colors */
+html[data-theme="light"] .bg-green-950 { background-color: #d1fae5 !important; }
+html[data-theme="light"] .text-green-300 { color: #059669 !important; }
+html[data-theme="light"] .bg-amber-950 { background-color: #fef3c7 !important; }
+html[data-theme="light"] .text-amber-300 { color: #d97706 !important; }
+html[data-theme="light"] .bg-red-950 { background-color: #fee2e2 !important; }
+html[data-theme="light"] .text-red-300 { color: #dc2626 !important; }
+html[data-theme="light"] .bg-slate-700.text-slate-300 {
+  background-color: #e5e5ea !important;
+  color: #3a3a3c !important;
+}
+html[data-theme="light"] .border-green-700 { border-color: #34d399 !important; }
+html[data-theme="light"] .border-amber-700 { border-color: #fbbf24 !important; }
+html[data-theme="light"] .border-red-800   { border-color: #f87171 !important; }
+
+/* Login page */
+html[data-theme="light"] .min-h-screen.bg-slate-950 { background-color: #f2f2f7 !important; }

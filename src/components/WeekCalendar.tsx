@@ -9,6 +9,7 @@ import RequestDetailPanel from './RequestDetailPanel'
 
 const DAYS_SHORT = ['Maa', 'Din', 'Woe', 'Don', 'Vri']
 const PERIODS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+const GRID_COLS = '2rem repeat(5, 1fr)'
 
 interface Props {
   subject: string | null  // subject id (slug), null = all subjects
@@ -104,9 +105,39 @@ export default function WeekCalendar({ subject, session, subjectConfig }: Props)
           })}
         </div>
 
+        {/* Hele Dag row */}
+        <div className="grid border-b border-slate-800" style={{ gridTemplateColumns: GRID_COLS }}>
+          <div className="flex items-center justify-center text-slate-500 font-semibold bg-slate-900/50 border-r border-slate-700 text-[0.6rem] px-0.5 text-center leading-tight py-1">
+            Dag
+          </div>
+          {weekDates.map((date, di) => {
+            const cell = getCell(date, 0)
+            const isAbsent = absenceDays.includes(di)
+            return (
+              <div
+                key={di}
+                className={`relative p-1 min-h-[2rem] border-r border-slate-800/50 last:border-r-0 group ${isAbsent ? 'bg-slate-900/40' : ''}`}
+                title={isAbsent ? 'TOA niet aanwezig op deze dag' : undefined}
+              >
+                {cell.map(r => (
+                  <RequestBlock key={r.id} request={r} onClick={setSelected} />
+                ))}
+                <button
+                  onClick={() => setModal({ date, period: 0 })}
+                  className="absolute bottom-1 right-1 w-5 h-5 text-white rounded text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                  style={{ backgroundColor: accentColor }}
+                  title="Hele dag aanvraag toevoegen"
+                >
+                  +
+                </button>
+              </div>
+            )
+          })}
+        </div>
+
         {/* Period rows */}
         {PERIODS.map(period => (
-          <div key={period} className="grid border-b border-slate-800/50 last:border-b-0" style={{ gridTemplateColumns: '2rem repeat(5, 1fr)' }}>
+          <div key={period} className="grid border-b border-slate-800/50 last:border-b-0" style={{ gridTemplateColumns: GRID_COLS }}>
             <div className="flex items-center justify-center text-slate-600 font-semibold bg-slate-900/50 border-r border-slate-700 text-[0.7rem]">
               {period}
             </div>

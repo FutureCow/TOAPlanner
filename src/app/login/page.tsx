@@ -25,7 +25,7 @@ function LoginContent() {
           </p>
         )}
         <button
-          onClick={() => signIn('google', { callbackUrl: '/natuurkunde' })}
+          onClick={() => signIn('google', { callbackUrl: '/' })}
           className="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2.5 rounded-lg transition-colors"
         >
           Inloggen met Google

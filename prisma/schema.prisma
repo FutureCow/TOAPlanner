@@ -16,6 +16,7 @@ model User {
   isTOA        Boolean   @default(false)
   isAdmin      Boolean   @default(false)
   allowed      Boolean   @default(true)
+  defaultPage  String?
   createdAt    DateTime  @default(now())
   requests     Request[]
 }
@@ -23,6 +24,7 @@ model User {
 model Request {
   id          String   @id @default(cuid())
   title       String
+  klas        String   @default("")
   classroom   String
   date        DateTime
   period      Int
@@ -35,7 +37,7 @@ model Request {
 }
 
 model SubjectConfig {
-  id          String  @id       // slug, e.g. "natuurkunde"
+  id          String  @id
   name        String
   accentColor String  @default("#2563eb")
   absenceDays Int[]   @default([])

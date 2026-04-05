@@ -13,6 +13,7 @@ export interface SubjectConfig {
 export interface RequestWithUser {
   id: string
   title: string
+  klas: string
   classroom: string
   date: string
   period: number
@@ -38,6 +39,7 @@ export interface UserRow {
   isTOA: boolean
   isAdmin: boolean
   allowed: boolean
+  defaultPage: string | null
   createdAt: string
 }
 
@@ -54,6 +56,7 @@ declare module 'next-auth' {
       isTeacher: boolean
       isTOA: boolean
       isAdmin: boolean
+      defaultPage?: string | null
     }
   }
 }
@@ -64,5 +67,6 @@ declare module 'next-auth/jwt' {
     isTeacher: boolean
     isTOA: boolean
     isAdmin: boolean
+    defaultPage?: string | null
   }
 }
