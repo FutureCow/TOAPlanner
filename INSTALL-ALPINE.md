@@ -256,8 +256,10 @@ EOF
 cd /opt/toa-planner
 git pull
 npm install
+npx prisma generate
 npm run build
 npx prisma migrate deploy
+npx prisma db seed
 pm2 restart toa-planner
 ```
 
