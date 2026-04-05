@@ -7,7 +7,6 @@ import RequestBlock from './RequestBlock'
 import RequestModal from './RequestModal'
 import RequestDetailPanel from './RequestDetailPanel'
 
-const DAYS = ['Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag']
 const DAYS_SHORT = ['Maa', 'Din', 'Woe', 'Don', 'Vri']
 const PERIODS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
