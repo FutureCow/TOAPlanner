@@ -77,6 +77,8 @@ export default function RequestsTab() {
   const [subject, setSubject] = useState('')
   const [status, setStatus] = useState('')
   const [search, setSearch] = useState('')
+  const [weekFilter, setWeekFilter] = useState('')
+  const [pageSize, setPageSize] = useState(50)
   const [deleting, setDeleting] = useState(false)
 
   useEffect(() => {
@@ -88,9 +90,11 @@ export default function RequestsTab() {
     if (subject) params.set('subject', subject)
     if (status) params.set('status', status)
     if (search) params.set('search', search)
+    if (weekFilter) params.set('weekStart', weekFilter)
+    params.set('limit', String(pageSize))
     const res = await fetch(`/api/admin/requests?${params}`)
     if (res.ok) setRequests(await res.json())
-  }, [subject, status, search])
+  }, [subject, status, search, weekFilter, pageSize])
 
   useEffect(() => { load() }, [load])
 
@@ -139,6 +143,26 @@ export default function RequestsTab() {
         <input value={search} onChange={e => setSearch(e.target.value)}
           placeholder="Zoek op naam of docent…"
           className="flex-1 min-w-[150px] bg-slate-800 border border-slate-700 text-slate-300 rounded px-2 py-1.5 text-xs" />
+        <div className="flex items-center gap-1">
+          <label className="text-xs text-slate-500 whitespace-nowrap">Week:</label>
+          <input
+            type="date"
+            value={weekFilter}
+            onChange={e => setWeekFilter(e.target.value)}
+            className="bg-slate-800 border border-slate-700 text-slate-300 rounded px-2 py-1.5 text-xs"
+            title="Filter op week (kies een dag in de gewenste week)"
+          />
+          {weekFilter && (
+            <button onClick={() => setWeekFilter('')} className="text-slate-500 hover:text-slate-300 text-xs">✕</button>
+          )}
+        </div>
+        <select value={pageSize} onChange={e => setPageSize(Number(e.target.value))}
+          className="bg-slate-800 border border-slate-700 text-slate-300 rounded px-2 py-1.5 text-xs">
+          <option value={25}>25</option>
+          <option value={50}>50</option>
+          <option value={100}>100</option>
+          <option value={250}>250</option>
+        </select>
         {selected.size > 0 && (
           <button onClick={bulkDelete} disabled={deleting}
             className="px-3 py-1.5 bg-red-900 border border-red-700 text-red-300 rounded text-xs font-semibold disabled:opacity-50">

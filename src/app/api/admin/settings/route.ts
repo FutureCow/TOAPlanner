@@ -15,11 +15,14 @@ export async function PATCH(req: NextRequest) {
   const session = await getServerSession(authOptions)
   if (!session?.user.isAdmin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 
-  const { registrationOpen } = await req.json()
+  const body = await req.json()
+  const update: Record<string, unknown> = {}
+  if (body.registrationOpen !== undefined) update.registrationOpen = body.registrationOpen
+  if (body.schoolLogo !== undefined) update.schoolLogo = body.schoolLogo || null
   const settings = await prisma.appSettings.upsert({
     where: { id: 1 },
-    update: { registrationOpen },
-    create: { id: 1, registrationOpen },
+    update,
+    create: { id: 1, registrationOpen: true, ...update },
   })
   return NextResponse.json(settings)
 }

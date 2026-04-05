@@ -73,7 +73,8 @@ export default function WeekCalendar({ subject, session, subjectConfig }: Props)
       </div>
 
       {/* Calendar grid */}
-      <div className="border border-slate-700 rounded-lg overflow-hidden text-xs">
+      <div className="border border-slate-700 rounded-lg overflow-x-auto text-xs">
+      <div className="min-w-[540px]">
         {/* Day headers */}
         <div
           className="grid border-b-2 border-slate-600"
@@ -184,6 +185,7 @@ export default function WeekCalendar({ subject, session, subjectConfig }: Props)
             })}
           </div>
         ))}
+      </div>
       </div>
 
       {/* Legend */}

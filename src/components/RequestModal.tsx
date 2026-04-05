@@ -53,6 +53,7 @@ export default function RequestModal({ date, period, subject, request, onClose, 
   const [selectedSubject, setSelectedSubject] = useState<string>(request?.subject ?? subject ?? '')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+  const [seriesPrompt, setSeriesPrompt] = useState(false)
 
   const isEditing = !!request
   const isHeleDag = selectedPeriod === 0
@@ -75,41 +76,60 @@ export default function RequestModal({ date, period, subject, request, onClose, 
     if (selectedPeriodEnd < selectedPeriod) setSelectedPeriodEnd(selectedPeriod)
   }, [selectedPeriod, selectedPeriodEnd])
 
+  const patchPayload = () => ({
+    title: title.trim(),
+    klas: klas.trim(),
+    classroom: classroom.trim(),
+    date: selectedDate,
+    period: selectedPeriod,
+    periodEnd: !isHeleDag && multiHour && selectedPeriodEnd > selectedPeriod ? selectedPeriodEnd : null,
+    subject: selectedSubject,
+  })
+
+  async function applyEdit(scope: 'one' | 'series') {
+    setSaving(true)
+    setError('')
+    const payload = patchPayload()
+    let res: Response
+    if (scope === 'series' && request!.recurringGroupId) {
+      res = await fetch('/api/requests', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ recurringGroupId: request!.recurringGroupId, ...payload }),
+      })
+    } else {
+      res = await fetch(`/api/requests/${request!.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+    }
+    setSaving(false)
+    if (res.ok) { onSaved() } else {
+      setError((await res.json().catch(() => ({}))).error ?? 'Er is iets misgegaan.')
+    }
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!title.trim() || !classroom.trim()) {
       setError('Vul alle verplichte velden in.')
       return
     }
-    setSaving(true)
-    setError('')
-
-    const pEnd = !isHeleDag && multiHour && selectedPeriodEnd > selectedPeriod
-      ? selectedPeriodEnd
-      : null
 
     if (isEditing) {
-      const res = await fetch(`/api/requests/${request!.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: title.trim(),
-          klas: klas.trim(),
-          classroom: classroom.trim(),
-          date: selectedDate,
-          period: selectedPeriod,
-          periodEnd: pEnd,
-          subject: selectedSubject,
-        }),
-      })
-      setSaving(false)
-      if (res.ok) { onSaved() } else {
-        setError((await res.json().catch(() => ({}))).error ?? 'Er is iets misgegaan.')
+      if (request!.recurringGroupId) {
+        setSeriesPrompt(true)
+      } else {
+        await applyEdit('one')
       }
       return
     }
 
     // New request — possibly recurring
+    setSaving(true)
+    setError('')
+    const { periodEnd: pEnd, ...basePayload } = { ...patchPayload(), date: undefined }
     const groupId = recurring ? crypto.randomUUID() : undefined
     const dates = recurring
       ? weeklyDates(selectedDate, schoolYearEnd(selectedDate))
@@ -121,13 +141,9 @@ export default function RequestModal({ date, period, subject, request, onClose, 
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            title: title.trim(),
-            klas: klas.trim(),
-            classroom: classroom.trim(),
+            ...basePayload,
             date: d,
-            period: selectedPeriod,
             periodEnd: pEnd,
-            subject: selectedSubject,
             recurringGroupId: groupId,
           }),
         })
@@ -150,7 +166,7 @@ export default function RequestModal({ date, period, subject, request, onClose, 
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={onClose}>
       <div
-        className="bg-slate-900 border border-slate-700 rounded-xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto"
+        className="relative bg-slate-900 border border-slate-700 rounded-xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto"
         onClick={e => e.stopPropagation()}
       >
         <h2 className="text-lg font-bold text-white mb-4">
@@ -267,25 +283,20 @@ export default function RequestModal({ date, period, subject, request, onClose, 
 
           {/* Recurring — only for new requests */}
           {!isEditing && !isHeleDag && (
-            <label className="flex items-start gap-2.5 cursor-pointer bg-slate-800 border border-slate-700 rounded-lg px-3 py-2.5">
+            <label className="flex items-center gap-2.5 cursor-pointer bg-slate-800 border border-slate-700 rounded-lg px-3 py-2.5">
               <input
                 type="checkbox"
                 checked={recurring}
                 onChange={e => setRecurring(e.target.checked)}
-                className="mt-0.5"
               />
-              <div>
-                <span className="text-sm text-slate-200 font-medium">Herhaling wekelijks</span>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  Maakt iedere week een aanvraag op dit uur tot 1 augustus{' '}
-                  {schoolYearEnd(selectedDate).getUTCFullYear()}
-                  {recurring && (
-                    <span className="text-blue-400 ml-1">
-                      ({weeklyDates(selectedDate, schoolYearEnd(selectedDate)).length} weken)
-                    </span>
-                  )}
-                </p>
-              </div>
+              <span className="text-sm text-slate-200">
+                Wekelijks herhalen
+                {recurring && (
+                  <span className="text-blue-400 ml-1 text-xs">
+                    ({weeklyDates(selectedDate, schoolYearEnd(selectedDate)).length}×)
+                  </span>
+                )}
+              </span>
             </label>
           )}
 
@@ -302,6 +313,35 @@ export default function RequestModal({ date, period, subject, request, onClose, 
             </button>
           </div>
         </form>
+
+        {/* Series edit prompt */}
+        {seriesPrompt && (
+          <div className="absolute inset-0 bg-slate-900/90 rounded-xl flex flex-col items-center justify-center gap-4 p-6">
+            <p className="text-white text-sm font-medium text-center">↺ Dit is een herhalende aanvraag. Wat wil je aanpassen?</p>
+            <div className="flex flex-col gap-2 w-full">
+              <button
+                onClick={() => { setSeriesPrompt(false); applyEdit('one') }}
+                disabled={saving}
+                className="w-full py-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 rounded text-sm font-medium text-white transition-colors"
+              >
+                Alleen deze aanvraag
+              </button>
+              <button
+                onClick={() => { setSeriesPrompt(false); applyEdit('series') }}
+                disabled={saving}
+                className="w-full py-2 bg-slate-700 hover:bg-slate-600 disabled:opacity-50 rounded text-sm font-medium text-slate-200 transition-colors"
+              >
+                Hele reeks aanpassen
+              </button>
+              <button
+                onClick={() => setSeriesPrompt(false)}
+                className="w-full py-1.5 text-slate-500 hover:text-slate-300 text-xs transition-colors"
+              >
+                Annuleren
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

@@ -49,6 +49,7 @@ model SubjectConfig {
 model AppSettings {
   id               Int     @id @default(1)
   registrationOpen Boolean @default(true)
+  schoolLogo       String? // URL or data-URL of school logo
 }
 
 enum Status {

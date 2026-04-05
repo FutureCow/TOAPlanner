@@ -15,9 +15,48 @@ html {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   COLORBLIND-FRIENDLY STATUS PALETTE
+   • Approved with TOA   → teal-green  (#0d9488 / teal-600)  — distinguishable
+   • Approved w/o TOA    → amber/orange (#d97706)             — stays as-is
+   • Rejected            → deep purple  (#7c3aed / violet)   — not red/green
+   • Pending             → slate grey                         — unchanged
+   Applied in both dark and light themes.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Dark theme: override green-* → teal-*, red-* → violet-* for status blocks */
+.bg-green-950  { background-color: #022c22 !important; }
+.bg-green-900  { background-color: #134e4a !important; }
+.bg-green-800  { background-color: #115e59 !important; }
+.border-green-500 { border-color: #0d9488 !important; }
+.border-green-600 { border-color: #0d9488 !important; }
+.border-green-700 { border-color: #14b8a6 !important; }
+.text-green-100 { color: #ccfbf1 !important; }
+.text-green-300 { color: #5eead4 !important; }
+.text-green-400 { color: #2dd4bf !important; }
+.text-green-500 { color: #14b8a6 !important; }
+.hover\:bg-green-800:hover { background-color: #115e59 !important; }
+.hover\:bg-green-900:hover { background-color: #134e4a !important; }
+
+/* Rejected: violet/purple instead of red */
+.bg-red-950  { background-color: #2e1065 !important; }
+.bg-red-900  { background-color: #3b0764 !important; }
+.bg-red-800  { background-color: #4c1d95 !important; }
+.border-red-500  { border-color: #8b5cf6 !important; }
+.border-red-600  { border-color: #7c3aed !important; }
+.border-red-700  { border-color: #6d28d9 !important; }
+.border-red-800  { border-color: #5b21b6 !important; }
+.text-red-100 { color: #ede9fe !important; }
+.text-red-300 { color: #c4b5fd !important; }
+.text-red-400 { color: #a78bfa !important; }
+.hover\:bg-red-800:hover { background-color: #4c1d95 !important; }
+.hover\:bg-red-900:hover { background-color: #3b0764 !important; }
+
+/* Pending (legend dot) */
+.bg-green-500 { background-color: #0d9488 !important; }
+.bg-red-500   { background-color: #7c3aed !important; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
    LIGHT THEME
-   Applied when <html data-theme="light"> is set.
-   Strategy: invert slate greys, keep status colors legible on white.
    ═══════════════════════════════════════════════════════════════════════════ */
 
 html[data-theme="light"] body {
@@ -25,7 +64,7 @@ html[data-theme="light"] body {
   color: #1d1d1f !important;
 }
 
-/* ── Slate backgrounds ──────────────────────────────────────────────────── */
+/* Slate backgrounds */
 html[data-theme="light"] .bg-slate-950  { background-color: #f2f2f7 !important; }
 html[data-theme="light"] .bg-slate-900  { background-color: #ffffff !important; }
 html[data-theme="light"] .bg-slate-800  { background-color: #f2f2f7 !important; }
@@ -34,16 +73,13 @@ html[data-theme="light"] .bg-slate-600  { background-color: #d1d1d6 !important; 
 html[data-theme="light"] .bg-slate-900\/50 { background-color: rgba(255,255,255,0.7) !important; }
 html[data-theme="light"] .bg-slate-900\/40 { background-color: rgba(240,240,245,0.6) !important; }
 
-/* ── Slate text ─────────────────────────────────────────────────────────── */
-/* Note: .text-white is intentionally NOT overridden globally — buttons and
-   colored backgrounds should keep white text. We only fix it on headings/labels. */
+/* Slate text */
 html[data-theme="light"] h1.text-white,
 html[data-theme="light"] h2.text-white,
 html[data-theme="light"] h3.text-white,
 html[data-theme="light"] p.text-white,
-html[data-theme="light"] span.text-white:not(button span):not([style] span) {
-  color: #1d1d1f !important;
-}
+html[data-theme="light"] label.text-white,
+html[data-theme="light"] span.text-white:not(button span) { color: #1d1d1f !important; }
 html[data-theme="light"] .text-slate-50  { color: #1d1d1f !important; }
 html[data-theme="light"] .text-slate-100 { color: #1d1d1f !important; }
 html[data-theme="light"] .text-slate-200 { color: #1d1d1f !important; }
@@ -52,13 +88,14 @@ html[data-theme="light"] .text-slate-400 { color: #636366 !important; }
 html[data-theme="light"] .text-slate-500 { color: #8e8e93 !important; }
 html[data-theme="light"] .text-slate-600 { color: #aeaeb2 !important; }
 
-/* ── Slate borders ──────────────────────────────────────────────────────── */
-html[data-theme="light"] .border-slate-800  { border-color: #e5e5ea !important; }
-html[data-theme="light"] .border-slate-800\/50 { border-color: rgba(229,229,234,0.7) !important; }
-html[data-theme="light"] .border-slate-700  { border-color: #d1d1d6 !important; }
-html[data-theme="light"] .border-slate-600  { border-color: #c7c7cc !important; }
+/* Slate borders */
+html[data-theme="light"] .border-slate-800    { border-color: #e5e5ea !important; }
+html[data-theme="light"] .border-slate-800\/50{ border-color: rgba(229,229,234,0.7) !important; }
+html[data-theme="light"] .border-slate-700    { border-color: #d1d1d6 !important; }
+html[data-theme="light"] .border-slate-600    { border-color: #c7c7cc !important; }
+html[data-theme="light"] .border-slate-400    { border-color: #aeaeb2 !important; }
 
-/* ── Inputs / selects ───────────────────────────────────────────────────── */
+/* Inputs / selects */
 html[data-theme="light"] input[class*="bg-slate"],
 html[data-theme="light"] select[class*="bg-slate"],
 html[data-theme="light"] textarea[class*="bg-slate"] {
@@ -69,26 +106,21 @@ html[data-theme="light"] textarea[class*="bg-slate"] {
 html[data-theme="light"] input::placeholder,
 html[data-theme="light"] textarea::placeholder { color: #aeaeb2 !important; }
 
-/* ── Nav bar ────────────────────────────────────────────────────────────── */
+/* Nav bar */
 html[data-theme="light"] nav.bg-slate-900 {
   background-color: #ffffff !important;
   border-color: #e5e5ea !important;
 }
 
-/* ── Hover states ───────────────────────────────────────────────────────── */
+/* Hover states */
 html[data-theme="light"] .hover\:bg-slate-800:hover { background-color: #e5e5ea !important; }
 html[data-theme="light"] .hover\:bg-slate-700:hover { background-color: #d1d1d6 !important; }
 html[data-theme="light"] .hover\:bg-slate-600:hover { background-color: #c7c7cc !important; }
 
-/* ── Login page ─────────────────────────────────────────────────────────── */
+/* Login page */
 html[data-theme="light"] .min-h-screen.bg-slate-950 { background-color: #f2f2f7 !important; }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   STATUS COLORS — light theme
-   All status badges, blocks and labels must be readable on white backgrounds.
-   Dark-mode classes (green-950, amber-950, red-950 bg + 100/300 text) need
-   full inversion to light bg + dark text.
-   ═══════════════════════════════════════════════════════════════════════════ */
+/* ── Status colors in light theme — colorblind-friendly versions ─────────── */
 
 /* PENDING (slate) */
 html[data-theme="light"] .bg-slate-700.text-slate-300,
@@ -96,58 +128,68 @@ html[data-theme="light"] .bg-slate-700.text-slate-200 {
   background-color: #e5e5ea !important;
   color: #3a3a3c !important;
 }
-html[data-theme="light"] .border-slate-400 { border-color: #aeaeb2 !important; }
 
-/* APPROVED_WITH_TOA (green) */
-html[data-theme="light"] .bg-green-950  { background-color: #d1fae5 !important; }
-html[data-theme="light"] .bg-green-900  { background-color: #d1fae5 !important; }
-html[data-theme="light"] .bg-green-800  { background-color: #a7f3d0 !important; }
-html[data-theme="light"] .text-green-100 { color: #065f46 !important; }
-html[data-theme="light"] .text-green-300 { color: #059669 !important; }
-html[data-theme="light"] .text-green-400 { color: #059669 !important; }
-html[data-theme="light"] .border-green-700 { border-color: #34d399 !important; }
-html[data-theme="light"] .border-green-600 { border-color: #34d399 !important; }
-html[data-theme="light"] .border-green-500 { border-color: #10b981 !important; }
-html[data-theme="light"] .hover\:bg-green-800:hover { background-color: #a7f3d0 !important; }
-html[data-theme="light"] .hover\:bg-green-900:hover { background-color: #d1fae5 !important; }
-/* ensure text inside green badge is dark */
+/* APPROVED_WITH_TOA → teal */
+html[data-theme="light"] .bg-green-950,
+html[data-theme="light"] .bg-green-900 { background-color: #ccfbf1 !important; }
+html[data-theme="light"] .bg-green-800 { background-color: #99f6e4 !important; }
+html[data-theme="light"] .text-green-100 { color: #134e4a !important; }
+html[data-theme="light"] .text-green-300,
+html[data-theme="light"] .text-green-400 { color: #0f766e !important; }
+html[data-theme="light"] .border-green-700,
+html[data-theme="light"] .border-green-600,
+html[data-theme="light"] .border-green-500 { border-color: #14b8a6 !important; }
+html[data-theme="light"] .hover\:bg-green-800:hover { background-color: #99f6e4 !important; }
+html[data-theme="light"] .hover\:bg-green-900:hover { background-color: #ccfbf1 !important; }
 html[data-theme="light"] .bg-green-950 *,
-html[data-theme="light"] .bg-green-900 * { color: #065f46 !important; }
+html[data-theme="light"] .bg-green-900 * { color: #134e4a !important; }
 
 /* APPROVED_WITHOUT_TOA (amber) */
-html[data-theme="light"] .bg-amber-950  { background-color: #fef3c7 !important; }
-html[data-theme="light"] .bg-amber-900  { background-color: #fef3c7 !important; }
-html[data-theme="light"] .bg-amber-800  { background-color: #fde68a !important; }
+html[data-theme="light"] .bg-amber-950,
+html[data-theme="light"] .bg-amber-900 { background-color: #fef3c7 !important; }
+html[data-theme="light"] .bg-amber-800 { background-color: #fde68a !important; }
 html[data-theme="light"] .text-amber-100 { color: #78350f !important; }
-html[data-theme="light"] .text-amber-300 { color: #b45309 !important; }
+html[data-theme="light"] .text-amber-300,
 html[data-theme="light"] .text-amber-400 { color: #b45309 !important; }
-html[data-theme="light"] .border-amber-700 { border-color: #fbbf24 !important; }
-html[data-theme="light"] .border-amber-600 { border-color: #f59e0b !important; }
+html[data-theme="light"] .border-amber-700,
+html[data-theme="light"] .border-amber-600,
 html[data-theme="light"] .border-amber-500 { border-color: #f59e0b !important; }
 html[data-theme="light"] .hover\:bg-amber-800:hover { background-color: #fde68a !important; }
 html[data-theme="light"] .hover\:bg-amber-900:hover { background-color: #fef3c7 !important; }
 html[data-theme="light"] .bg-amber-950 *,
 html[data-theme="light"] .bg-amber-900 * { color: #78350f !important; }
 
-/* REJECTED (red) */
-html[data-theme="light"] .bg-red-950  { background-color: #fee2e2 !important; }
-html[data-theme="light"] .bg-red-900  { background-color: #fee2e2 !important; }
-html[data-theme="light"] .bg-red-800  { background-color: #fecaca !important; }
-html[data-theme="light"] .text-red-100 { color: #7f1d1d !important; }
-html[data-theme="light"] .text-red-300 { color: #dc2626 !important; }
-html[data-theme="light"] .text-red-400 { color: #dc2626 !important; }
-html[data-theme="light"] .border-red-800  { border-color: #fca5a5 !important; }
-html[data-theme="light"] .border-red-700  { border-color: #f87171 !important; }
-html[data-theme="light"] .border-red-600  { border-color: #ef4444 !important; }
-html[data-theme="light"] .border-red-500  { border-color: #ef4444 !important; }
-html[data-theme="light"] .hover\:bg-red-800:hover { background-color: #fecaca !important; }
-html[data-theme="light"] .hover\:bg-red-900:hover { background-color: #fee2e2 !important; }
+/* REJECTED → violet/purple */
+html[data-theme="light"] .bg-red-950,
+html[data-theme="light"] .bg-red-900 { background-color: #ede9fe !important; }
+html[data-theme="light"] .bg-red-800  { background-color: #ddd6fe !important; }
+html[data-theme="light"] .text-red-100 { color: #3b0764 !important; }
+html[data-theme="light"] .text-red-300,
+html[data-theme="light"] .text-red-400 { color: #6d28d9 !important; }
+html[data-theme="light"] .border-red-800,
+html[data-theme="light"] .border-red-700,
+html[data-theme="light"] .border-red-600,
+html[data-theme="light"] .border-red-500 { border-color: #8b5cf6 !important; }
+html[data-theme="light"] .hover\:bg-red-800:hover { background-color: #ddd6fe !important; }
+html[data-theme="light"] .hover\:bg-red-900:hover { background-color: #ede9fe !important; }
 html[data-theme="light"] .bg-red-950 *,
-html[data-theme="light"] .bg-red-900 * { color: #7f1d1d !important; }
+html[data-theme="light"] .bg-red-900 * { color: #3b0764 !important; }
 
-/* ── RequestBlock: left border stripe ──────────────────────────────────── */
-/* Continuation bar in multi-period blocks */
-html[data-theme="light"] .border-green-500.border-l-\[3px\] { border-left-color: #10b981 !important; }
-html[data-theme="light"] .border-amber-500.border-l-\[3px\] { border-left-color: #f59e0b !important; }
-html[data-theme="light"] .border-red-500.border-l-\[3px\]   { border-left-color: #ef4444 !important; }
-html[data-theme="light"] .border-slate-400.border-l-\[3px\] { border-left-color: #aeaeb2 !important; }
+/* TOA-absence: amber text must stay visible in light theme */
+html[data-theme="light"] .text-amber-400 { color: #b45309 !important; }
+html[data-theme="light"] .text-amber-400\/70 { color: rgba(180,83,9,0.85) !important; }
+html[data-theme="light"] .bg-amber-900\/60 {
+  background-color: rgba(254,243,199,0.9) !important;
+  color: #78350f !important;
+}
+html[data-theme="light"] .border-amber-700 { border-color: #f59e0b !important; }
+
+/* Legend dots */
+html[data-theme="light"] .bg-green-500 { background-color: #0d9488 !important; }
+html[data-theme="light"] .bg-red-500   { background-color: #7c3aed !important; }
+html[data-theme="light"] .bg-amber-500 { background-color: #f59e0b !important; }
+html[data-theme="light"] .bg-slate-400 { background-color: #8e8e93 !important; }
+
+/* Blue button text stays white */
+html[data-theme="light"] .bg-blue-600,
+html[data-theme="light"] .bg-blue-500 { color: #ffffff !important; }

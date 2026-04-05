@@ -24,6 +24,7 @@ export default function NavBar() {
   const [subjects, setSubjects] = useState<SubjectConfig[]>([])
   const [theme, setTheme] = useState<'dark' | 'light'>('dark')
   const [fontSize, setFontSize] = useState<FontSize>('middel')
+  const [schoolLogo, setSchoolLogo] = useState<string | null>(null)
 
   useEffect(() => {
     const savedTheme = (localStorage.getItem('theme') ?? 'dark') as 'dark' | 'light'
@@ -37,6 +38,10 @@ export default function NavBar() {
     fetch('/api/subjects')
       .then(r => r.ok ? r.json() : [])
       .then(setSubjects)
+      .catch(() => {})
+    fetch('/api/settings')
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d?.schoolLogo) setSchoolLogo(d.schoolLogo) })
       .catch(() => {})
   }, [session])
 
@@ -55,7 +60,11 @@ export default function NavBar() {
 
   return (
     <nav className="bg-slate-900 border-b border-slate-800 px-4 py-2 flex items-center justify-between gap-4">
-      <div className="flex items-center gap-1 flex-wrap">
+      {schoolLogo && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={schoolLogo} alt="schoollogo" className="h-7 w-auto object-contain opacity-70 shrink-0" />
+      )}
+      <div className="flex items-center gap-1 flex-wrap flex-1">
         {subjects.map((s) => {
           const isActive = pathname === `/${s.id}`
           return (

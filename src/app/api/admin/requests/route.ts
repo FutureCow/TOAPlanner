@@ -14,11 +14,26 @@ export async function GET(req: NextRequest) {
   const subject = searchParams.get('subject')
   const status = searchParams.get('status') as Status | null
   const search = searchParams.get('search') ?? ''
+  const weekStart = searchParams.get('weekStart')
+  const limit = Math.min(Number(searchParams.get('limit') ?? '50'), 500)
+
+  let dateFilter: { gte?: Date; lt?: Date } | undefined
+  if (weekStart) {
+    const start = new Date(weekStart + 'T00:00:00.000Z')
+    // Find Monday of the given week
+    const dow = start.getUTCDay()
+    const monday = new Date(start)
+    monday.setUTCDate(start.getUTCDate() - (dow === 0 ? 6 : dow - 1))
+    const saturday = new Date(monday)
+    saturday.setUTCDate(monday.getUTCDate() + 5)
+    dateFilter = { gte: monday, lt: saturday }
+  }
 
   const requests = await prisma.request.findMany({
     where: {
       ...(subject ? { subject } : {}),
       ...(status ? { status } : {}),
+      ...(dateFilter ? { date: dateFilter } : {}),
       ...(search ? {
         OR: [
           { title: { contains: search, mode: 'insensitive' } },
@@ -28,6 +43,7 @@ export async function GET(req: NextRequest) {
     },
     include: INCLUDE_USER,
     orderBy: [{ date: 'desc' }, { period: 'asc' }],
+    take: limit,
   })
 
   return NextResponse.json(requests)

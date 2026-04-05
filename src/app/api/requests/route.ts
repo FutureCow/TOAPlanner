@@ -62,6 +62,33 @@ export async function POST(req: NextRequest) {
   return NextResponse.json(request, { status: 201 })
 }
 
+// Update an entire recurring series by recurringGroupId (title/klas/classroom/period/subject)
+export async function PATCH(req: NextRequest) {
+  const session = await getServerSession(authOptions)
+  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const body = await req.json()
+  const { recurringGroupId, title, klas, classroom, period, periodEnd, subject } = body
+  if (!recurringGroupId) return NextResponse.json({ error: 'recurringGroupId required' }, { status: 400 })
+
+  const where = session.user.isTOA || session.user.isAdmin
+    ? { recurringGroupId }
+    : { recurringGroupId, createdById: session.user.id }
+
+  const result = await prisma.request.updateMany({
+    where,
+    data: {
+      ...(title !== undefined ? { title } : {}),
+      ...(klas !== undefined ? { klas } : {}),
+      ...(classroom !== undefined ? { classroom } : {}),
+      ...(period !== undefined ? { period: Number(period) } : {}),
+      ...(periodEnd !== undefined ? { periodEnd: periodEnd != null ? Number(periodEnd) : null } : {}),
+      ...(subject !== undefined ? { subject } : {}),
+    },
+  })
+  return NextResponse.json({ updated: result.count })
+}
+
 // Delete an entire recurring series by recurringGroupId
 export async function DELETE(req: NextRequest) {
   const session = await getServerSession(authOptions)

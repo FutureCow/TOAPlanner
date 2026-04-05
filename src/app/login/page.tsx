@@ -9,6 +9,8 @@ const ERROR_MESSAGES: Record<string, string> = {
   Default: 'Er is iets misgegaan. Probeer opnieuw.',
 }
 
+const SHOW_AZURE = Boolean(process.env.NEXT_PUBLIC_AZURE_AD_ENABLED)
+
 function LoginContent() {
   const params = useSearchParams()
   const error = params.get('error')
@@ -24,12 +26,22 @@ function LoginContent() {
             {message}
           </p>
         )}
-        <button
-          onClick={() => signIn('google', { callbackUrl: '/' })}
-          className="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2.5 rounded-lg transition-colors"
-        >
-          Inloggen met Google
-        </button>
+        <div className="space-y-2">
+          <button
+            onClick={() => signIn('google', { callbackUrl: '/' })}
+            className="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2.5 rounded-lg transition-colors"
+          >
+            Inloggen met Google
+          </button>
+          {SHOW_AZURE && (
+            <button
+              onClick={() => signIn('azure-ad', { callbackUrl: '/' })}
+              className="w-full bg-slate-700 hover:bg-slate-600 text-white font-semibold py-2.5 rounded-lg transition-colors border border-slate-600"
+            >
+              Inloggen met Microsoft
+            </button>
+          )}
+        </div>
       </div>
     </div>
   )

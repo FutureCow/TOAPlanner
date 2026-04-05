@@ -6,9 +6,8 @@ const DAYS = ['Ma', 'Di', 'Wo', 'Do', 'Vr']
 const DAY_NAMES = ['Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag']
 
 const PRESET_COLORS = [
-  '#2563eb', '#16a34a', '#9333ea', '#ea580c',
-  '#0891b2', '#dc2626', '#ca8a04', '#db2777',
-  '#0d9488', '#4f46e5', '#7c3aed', '#b45309',
+  '#2563eb', '#0891b2', '#0d9488', '#16a34a',
+  '#ea580c', '#9333ea', '#db2777',
 ]
 
 interface SubjectCardProps {
@@ -81,7 +80,7 @@ function SubjectCard({ subject, onSaved, onDeleted }: SubjectCardProps) {
             <button
               key={c}
               onClick={() => setColor(c)}
-              className={`w-6 h-6 rounded-full border-2 transition-all ${color === c ? 'border-white scale-110' : 'border-transparent'}`}
+              className={`w-5 h-5 rounded-full border-2 transition-all ${color === c ? 'border-white scale-110' : 'border-transparent'}`}
               style={{ backgroundColor: c }}
               title={c}
             />
@@ -220,7 +219,7 @@ export default function SubjectsTab() {
                 <button
                   key={c}
                   onClick={() => setNewColor(c)}
-                  className={`w-6 h-6 rounded-full border-2 transition-all ${newColor === c ? 'border-white scale-110' : 'border-transparent'}`}
+                  className={`w-5 h-5 rounded-full border-2 transition-all ${newColor === c ? 'border-white scale-110' : 'border-transparent'}`}
                   style={{ backgroundColor: c }}
                 />
               ))}
