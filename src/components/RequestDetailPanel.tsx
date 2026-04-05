@@ -45,17 +45,43 @@ export default function RequestDetailPanel({ request, session, onClose, onEdit, 
     else setDeleting(false)
   }
 
+  async function handleDeleteSeries() {
+    if (!request.recurringGroupId) return
+    if (!confirm('Wil je de HELE reeks (alle weken) verwijderen?')) return
+    setDeleting(true)
+    const res = await fetch('/api/requests', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ recurringGroupId: request.recurringGroupId }),
+    })
+    if (res.ok) onDeleted()
+    else setDeleting(false)
+  }
+
+  const periodLabel = request.period === 0
+    ? 'Hele dag'
+    : request.periodEnd != null
+      ? `${request.period}e–${request.periodEnd}e uur`
+      : `${request.period}e uur`
+
   return (
     <div className="fixed inset-0 bg-black/60 flex items-end sm:items-center justify-center z-50 p-4" onClick={onClose}>
       <div className="bg-slate-900 border border-slate-700 rounded-xl p-5 w-full max-w-sm" onClick={e => e.stopPropagation()}>
         <div className="flex items-start justify-between mb-3">
           <div>
-            <h3 className="font-bold text-white text-base">{request.title}</h3>
-            <p className="text-slate-400 text-xs mt-0.5 capitalize">{dateLabel} · {request.period}e uur · {request.classroom}</p>
+            <h3 className="font-bold text-white text-base">
+              {request.klas ? <><span className="text-slate-400 font-normal">{request.klas} – </span>{request.title}</> : request.title}
+            </h3>
+            <p className="text-slate-400 text-xs mt-0.5 capitalize">
+              {dateLabel} · {periodLabel} · {request.classroom}
+            </p>
             {request.createdBy && (
               <p className="text-slate-500 text-xs mt-0.5">
                 Door <strong className="text-slate-300">{request.createdBy.abbreviation.toUpperCase()}</strong> — {request.createdBy.name}
               </p>
+            )}
+            {request.recurringGroupId && (
+              <p className="text-xs text-blue-400 mt-1">↺ Wekelijks herhalend</p>
             )}
           </div>
           <button onClick={onClose} className="text-slate-600 hover:text-slate-300 text-lg leading-none">×</button>
@@ -79,15 +105,23 @@ export default function RequestDetailPanel({ request, session, onClose, onEdit, 
         )}
 
         {canModify && (
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             <button onClick={onEdit}
               className="flex-1 py-1.5 bg-slate-700 hover:bg-slate-600 rounded text-xs font-medium transition-colors text-blue-300">
               ✏ Bewerken
             </button>
             <button onClick={handleDelete} disabled={deleting}
-              className="py-1.5 px-3 bg-red-950 hover:bg-red-900 border border-red-800 rounded text-xs font-medium transition-colors text-red-300 disabled:opacity-50">
+              className="py-1.5 px-3 bg-red-950 hover:bg-red-900 border border-red-800 rounded text-xs font-medium transition-colors text-red-300 disabled:opacity-50"
+              title="Alleen deze aanvraag verwijderen">
               {deleting ? '…' : '🗑'}
             </button>
+            {request.recurringGroupId && (
+              <button onClick={handleDeleteSeries} disabled={deleting}
+                className="py-1.5 px-2 bg-red-950 hover:bg-red-900 border border-red-700 rounded text-xs font-medium transition-colors text-red-400 disabled:opacity-50 whitespace-nowrap"
+                title="Hele reeks verwijderen">
+                🗑 Hele reeks
+              </button>
+            )}
           </div>
         )}
       </div>

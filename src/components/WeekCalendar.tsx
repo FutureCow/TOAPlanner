@@ -12,7 +12,7 @@ const PERIODS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 const GRID_COLS = '2rem repeat(5, 1fr)'
 
 interface Props {
-  subject: string | null  // subject id (slug), null = all subjects
+  subject: string | null
   session: Session
   subjectConfig?: SubjectConfig | null
 }
@@ -39,9 +39,16 @@ export default function WeekCalendar({ subject, session, subjectConfig }: Props)
 
   useEffect(() => { load() }, [load])
 
-  function getCell(date: Date, period: number): RequestWithUser[] {
+  /** Returns requests that span `period` on `date`, plus whether this is the first period */
+  function getCellRequests(date: Date, period: number): { request: RequestWithUser; isFirst: boolean }[] {
     const ds = toDateString(date)
-    return requests.filter(r => r.date.startsWith(ds) && r.period === period)
+    return requests
+      .filter(r => {
+        if (!r.date.startsWith(ds)) return false
+        const end = r.periodEnd ?? r.period
+        return r.period <= period && period <= end
+      })
+      .map(r => ({ request: r, isFirst: r.period === period }))
   }
 
   return (
@@ -70,10 +77,7 @@ export default function WeekCalendar({ subject, session, subjectConfig }: Props)
         {/* Day headers */}
         <div
           className="grid border-b-2 border-slate-600"
-          style={{
-            gridTemplateColumns: '2rem repeat(5, 1fr)',
-            backgroundColor: accentColor + '22',
-          }}
+          style={{ gridTemplateColumns: GRID_COLS, backgroundColor: accentColor + '22' }}
         >
           <div />
           {weekDates.map((d, i) => {
@@ -111,7 +115,7 @@ export default function WeekCalendar({ subject, session, subjectConfig }: Props)
             Dag
           </div>
           {weekDates.map((date, di) => {
-            const cell = getCell(date, 0)
+            const cells = getCellRequests(date, 0)
             const isAbsent = absenceDays.includes(di)
             return (
               <div
@@ -119,8 +123,8 @@ export default function WeekCalendar({ subject, session, subjectConfig }: Props)
                 className={`relative p-1 min-h-[2rem] border-r border-slate-800/50 last:border-r-0 group ${isAbsent ? 'bg-slate-900/40' : ''}`}
                 title={isAbsent ? 'TOA niet aanwezig op deze dag' : undefined}
               >
-                {cell.map(r => (
-                  <RequestBlock key={r.id} request={r} onClick={setSelected} />
+                {cells.map(({ request: r }) => (
+                  <RequestBlock key={r.id} request={r} isFirst onClick={setSelected} />
                 ))}
                 <button
                   onClick={() => setModal({ date, period: 0 })}
@@ -142,7 +146,7 @@ export default function WeekCalendar({ subject, session, subjectConfig }: Props)
               {period}
             </div>
             {weekDates.map((date, di) => {
-              const cell = getCell(date, period)
+              const cells = getCellRequests(date, period)
               const isAbsent = absenceDays.includes(di)
               return (
                 <div
@@ -152,7 +156,7 @@ export default function WeekCalendar({ subject, session, subjectConfig }: Props)
                   }`}
                   title={isAbsent ? 'TOA niet aanwezig op deze dag' : undefined}
                 >
-                  {isAbsent && cell.length === 0 && (
+                  {isAbsent && cells.length === 0 && (
                     <div
                       className="absolute inset-0 pointer-events-none opacity-[0.04]"
                       style={{
@@ -161,18 +165,20 @@ export default function WeekCalendar({ subject, session, subjectConfig }: Props)
                       }}
                     />
                   )}
-                  {cell.map(r => (
-                    <RequestBlock key={r.id} request={r} onClick={setSelected} />
+                  {cells.map(({ request: r, isFirst }) => (
+                    <RequestBlock key={r.id} request={r} isFirst={isFirst} onClick={setSelected} />
                   ))}
-                  {/* Add button */}
-                  <button
-                    onClick={() => setModal({ date, period })}
-                    className="absolute bottom-1 right-1 w-5 h-5 text-white rounded text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
-                    style={{ backgroundColor: accentColor }}
-                    title="Aanvraag toevoegen"
-                  >
-                    +
-                  </button>
+                  {/* Add button only shown when no continuations fill this cell */}
+                  {!cells.some(c => !c.isFirst) && (
+                    <button
+                      onClick={() => setModal({ date, period })}
+                      className="absolute bottom-1 right-1 w-5 h-5 text-white rounded text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                      style={{ backgroundColor: accentColor }}
+                      title="Aanvraag toevoegen"
+                    >
+                      +
+                    </button>
+                  )}
                 </div>
               )
             })}

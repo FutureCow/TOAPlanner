@@ -15,12 +15,37 @@ const ABBR_STYLES: Record<Status, string> = {
   REJECTED:             'text-red-400',
 }
 
+// Thin continuation bar colors for multi-period blocks
+const CONT_STYLES: Record<Status, string> = {
+  PENDING:              'bg-slate-600 border-slate-400',
+  APPROVED_WITH_TOA:    'bg-green-900 border-green-500',
+  APPROVED_WITHOUT_TOA: 'bg-amber-900 border-amber-500',
+  REJECTED:             'bg-red-900 border-red-500',
+}
+
 interface Props {
   request: RequestWithUser
+  isFirst: boolean
   onClick: (request: RequestWithUser) => void
 }
 
-export default function RequestBlock({ request, onClick }: Props) {
+export default function RequestBlock({ request, isFirst, onClick }: Props) {
+  if (!isFirst) {
+    // Continuation bar — thin strip showing the block continues
+    return (
+      <div
+        onClick={() => onClick(request)}
+        className={`border-l-[3px] rounded-sm px-1 py-0.5 cursor-pointer hover:brightness-125 transition-all mb-1 flex items-center gap-1 ${CONT_STYLES[request.status]}`}
+        title={`${request.klas ? request.klas + ' – ' : ''}${request.title} (vervolg)`}
+      >
+        <div className="w-1 h-1 rounded-full bg-current opacity-50" />
+        <span className="text-[0.6rem] opacity-60 truncate">
+          {request.klas ? `${request.klas} – ` : ''}{request.title}
+        </span>
+      </div>
+    )
+  }
+
   return (
     <div
       onClick={() => onClick(request)}
@@ -31,7 +56,12 @@ export default function RequestBlock({ request, onClick }: Props) {
           <><span className="opacity-70">{request.klas}</span> – {request.title}</>
         ) : request.title}
       </div>
-      <div className={`text-[0.65rem] mt-0.5 ${ABBR_STYLES[request.status]}`}>
+      <div className={`text-[0.65rem] mt-0.5 flex items-center gap-1 ${ABBR_STYLES[request.status]}`}>
+        {request.periodEnd != null && (
+          <span className="opacity-60 mr-0.5">
+            {request.period}–{request.periodEnd}u
+          </span>
+        )}
         {request.classroom} · <strong>{request.createdBy?.abbreviation.toUpperCase() ?? '—'}</strong>
       </div>
     </div>

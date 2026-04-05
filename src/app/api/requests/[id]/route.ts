@@ -24,7 +24,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   }
 
   const body = await req.json()
-  const { title, klas, classroom, date, period, subject, status } = body
+  const { title, klas, classroom, date, period, periodEnd, subject, status } = body
 
   const updateData: Record<string, unknown> = {}
   if (title !== undefined) updateData.title = title
@@ -32,6 +32,11 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   if (classroom !== undefined) updateData.classroom = classroom
   if (date !== undefined) updateData.date = new Date(date + 'T00:00:00.000Z')
   if (period !== undefined) updateData.period = Number(period)
+  if (periodEnd !== undefined) {
+    updateData.periodEnd = periodEnd != null && Number(periodEnd) !== Number(period ?? existing.period)
+      ? Number(periodEnd)
+      : null
+  }
   if (subject !== undefined) updateData.subject = subject
   if (status !== undefined && (isTOA || isAdmin)) updateData.status = status
 

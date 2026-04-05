@@ -17,6 +17,8 @@ export interface RequestWithUser {
   classroom: string
   date: string
   period: number
+  periodEnd: number | null   // null = same as period
+  recurringGroupId: string | null
   subject: string
   status: Status
   createdById: string | null

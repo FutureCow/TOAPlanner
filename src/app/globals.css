@@ -14,28 +14,37 @@ html {
   font-size: calc(16px * var(--font-scale));
 }
 
-/* ─── Light theme overrides ──────────────────────────────────────────────── */
-/* When data-theme="light" is set on <html>, invert the dark slate palette    */
+/* ═══════════════════════════════════════════════════════════════════════════
+   LIGHT THEME
+   Applied when <html data-theme="light"> is set.
+   Strategy: invert slate greys, keep status colors legible on white.
+   ═══════════════════════════════════════════════════════════════════════════ */
 
 html[data-theme="light"] body {
   background-color: #f2f2f7 !important;
   color: #1d1d1f !important;
 }
 
-/* Backgrounds */
+/* ── Slate backgrounds ──────────────────────────────────────────────────── */
 html[data-theme="light"] .bg-slate-950  { background-color: #f2f2f7 !important; }
 html[data-theme="light"] .bg-slate-900  { background-color: #ffffff !important; }
 html[data-theme="light"] .bg-slate-800  { background-color: #f2f2f7 !important; }
 html[data-theme="light"] .bg-slate-700  { background-color: #e5e5ea !important; }
 html[data-theme="light"] .bg-slate-600  { background-color: #d1d1d6 !important; }
-
-/* Backgrounds with opacity fractions */
 html[data-theme="light"] .bg-slate-900\/50 { background-color: rgba(255,255,255,0.7) !important; }
 html[data-theme="light"] .bg-slate-900\/40 { background-color: rgba(240,240,245,0.6) !important; }
 
-/* Text */
-html[data-theme="light"] .text-white    { color: #1d1d1f !important; }
-html[data-theme="light"] .text-slate-50 { color: #1d1d1f !important; }
+/* ── Slate text ─────────────────────────────────────────────────────────── */
+/* Note: .text-white is intentionally NOT overridden globally — buttons and
+   colored backgrounds should keep white text. We only fix it on headings/labels. */
+html[data-theme="light"] h1.text-white,
+html[data-theme="light"] h2.text-white,
+html[data-theme="light"] h3.text-white,
+html[data-theme="light"] p.text-white,
+html[data-theme="light"] span.text-white:not(button span):not([style] span) {
+  color: #1d1d1f !important;
+}
+html[data-theme="light"] .text-slate-50  { color: #1d1d1f !important; }
 html[data-theme="light"] .text-slate-100 { color: #1d1d1f !important; }
 html[data-theme="light"] .text-slate-200 { color: #1d1d1f !important; }
 html[data-theme="light"] .text-slate-300 { color: #3a3a3c !important; }
@@ -43,14 +52,13 @@ html[data-theme="light"] .text-slate-400 { color: #636366 !important; }
 html[data-theme="light"] .text-slate-500 { color: #8e8e93 !important; }
 html[data-theme="light"] .text-slate-600 { color: #aeaeb2 !important; }
 
-/* Borders */
-html[data-theme="light"] .border-slate-800   { border-color: #e5e5ea !important; }
-html[data-theme="light"] .border-slate-700   { border-color: #d1d1d6 !important; }
-html[data-theme="light"] .border-slate-600   { border-color: #c7c7cc !important; }
-html[data-theme="light"] .border-b-2         {}
-html[data-theme="light"] .border-slate-600.border-b-2 { border-color: #c7c7cc !important; }
+/* ── Slate borders ──────────────────────────────────────────────────────── */
+html[data-theme="light"] .border-slate-800  { border-color: #e5e5ea !important; }
+html[data-theme="light"] .border-slate-800\/50 { border-color: rgba(229,229,234,0.7) !important; }
+html[data-theme="light"] .border-slate-700  { border-color: #d1d1d6 !important; }
+html[data-theme="light"] .border-slate-600  { border-color: #c7c7cc !important; }
 
-/* Inputs */
+/* ── Inputs / selects ───────────────────────────────────────────────────── */
 html[data-theme="light"] input[class*="bg-slate"],
 html[data-theme="light"] select[class*="bg-slate"],
 html[data-theme="light"] textarea[class*="bg-slate"] {
@@ -59,34 +67,87 @@ html[data-theme="light"] textarea[class*="bg-slate"] {
   border-color: #d1d1d6 !important;
 }
 html[data-theme="light"] input::placeholder,
-html[data-theme="light"] textarea::placeholder {
-  color: #aeaeb2 !important;
-}
+html[data-theme="light"] textarea::placeholder { color: #aeaeb2 !important; }
 
-/* Nav bar */
+/* ── Nav bar ────────────────────────────────────────────────────────────── */
 html[data-theme="light"] nav.bg-slate-900 {
   background-color: #ffffff !important;
   border-color: #e5e5ea !important;
 }
 
-/* Hover states */
+/* ── Hover states ───────────────────────────────────────────────────────── */
 html[data-theme="light"] .hover\:bg-slate-800:hover { background-color: #e5e5ea !important; }
 html[data-theme="light"] .hover\:bg-slate-700:hover { background-color: #d1d1d6 !important; }
+html[data-theme="light"] .hover\:bg-slate-600:hover { background-color: #c7c7cc !important; }
 
-/* Status badges — keep their colors */
-html[data-theme="light"] .bg-green-950 { background-color: #d1fae5 !important; }
-html[data-theme="light"] .text-green-300 { color: #059669 !important; }
-html[data-theme="light"] .bg-amber-950 { background-color: #fef3c7 !important; }
-html[data-theme="light"] .text-amber-300 { color: #d97706 !important; }
-html[data-theme="light"] .bg-red-950 { background-color: #fee2e2 !important; }
-html[data-theme="light"] .text-red-300 { color: #dc2626 !important; }
-html[data-theme="light"] .bg-slate-700.text-slate-300 {
+/* ── Login page ─────────────────────────────────────────────────────────── */
+html[data-theme="light"] .min-h-screen.bg-slate-950 { background-color: #f2f2f7 !important; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   STATUS COLORS — light theme
+   All status badges, blocks and labels must be readable on white backgrounds.
+   Dark-mode classes (green-950, amber-950, red-950 bg + 100/300 text) need
+   full inversion to light bg + dark text.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* PENDING (slate) */
+html[data-theme="light"] .bg-slate-700.text-slate-300,
+html[data-theme="light"] .bg-slate-700.text-slate-200 {
   background-color: #e5e5ea !important;
   color: #3a3a3c !important;
 }
-html[data-theme="light"] .border-green-700 { border-color: #34d399 !important; }
-html[data-theme="light"] .border-amber-700 { border-color: #fbbf24 !important; }
-html[data-theme="light"] .border-red-800   { border-color: #f87171 !important; }
+html[data-theme="light"] .border-slate-400 { border-color: #aeaeb2 !important; }
 
-/* Login page */
-html[data-theme="light"] .min-h-screen.bg-slate-950 { background-color: #f2f2f7 !important; }
+/* APPROVED_WITH_TOA (green) */
+html[data-theme="light"] .bg-green-950  { background-color: #d1fae5 !important; }
+html[data-theme="light"] .bg-green-900  { background-color: #d1fae5 !important; }
+html[data-theme="light"] .bg-green-800  { background-color: #a7f3d0 !important; }
+html[data-theme="light"] .text-green-100 { color: #065f46 !important; }
+html[data-theme="light"] .text-green-300 { color: #059669 !important; }
+html[data-theme="light"] .text-green-400 { color: #059669 !important; }
+html[data-theme="light"] .border-green-700 { border-color: #34d399 !important; }
+html[data-theme="light"] .border-green-600 { border-color: #34d399 !important; }
+html[data-theme="light"] .border-green-500 { border-color: #10b981 !important; }
+html[data-theme="light"] .hover\:bg-green-800:hover { background-color: #a7f3d0 !important; }
+html[data-theme="light"] .hover\:bg-green-900:hover { background-color: #d1fae5 !important; }
+/* ensure text inside green badge is dark */
+html[data-theme="light"] .bg-green-950 *,
+html[data-theme="light"] .bg-green-900 * { color: #065f46 !important; }
+
+/* APPROVED_WITHOUT_TOA (amber) */
+html[data-theme="light"] .bg-amber-950  { background-color: #fef3c7 !important; }
+html[data-theme="light"] .bg-amber-900  { background-color: #fef3c7 !important; }
+html[data-theme="light"] .bg-amber-800  { background-color: #fde68a !important; }
+html[data-theme="light"] .text-amber-100 { color: #78350f !important; }
+html[data-theme="light"] .text-amber-300 { color: #b45309 !important; }
+html[data-theme="light"] .text-amber-400 { color: #b45309 !important; }
+html[data-theme="light"] .border-amber-700 { border-color: #fbbf24 !important; }
+html[data-theme="light"] .border-amber-600 { border-color: #f59e0b !important; }
+html[data-theme="light"] .border-amber-500 { border-color: #f59e0b !important; }
+html[data-theme="light"] .hover\:bg-amber-800:hover { background-color: #fde68a !important; }
+html[data-theme="light"] .hover\:bg-amber-900:hover { background-color: #fef3c7 !important; }
+html[data-theme="light"] .bg-amber-950 *,
+html[data-theme="light"] .bg-amber-900 * { color: #78350f !important; }
+
+/* REJECTED (red) */
+html[data-theme="light"] .bg-red-950  { background-color: #fee2e2 !important; }
+html[data-theme="light"] .bg-red-900  { background-color: #fee2e2 !important; }
+html[data-theme="light"] .bg-red-800  { background-color: #fecaca !important; }
+html[data-theme="light"] .text-red-100 { color: #7f1d1d !important; }
+html[data-theme="light"] .text-red-300 { color: #dc2626 !important; }
+html[data-theme="light"] .text-red-400 { color: #dc2626 !important; }
+html[data-theme="light"] .border-red-800  { border-color: #fca5a5 !important; }
+html[data-theme="light"] .border-red-700  { border-color: #f87171 !important; }
+html[data-theme="light"] .border-red-600  { border-color: #ef4444 !important; }
+html[data-theme="light"] .border-red-500  { border-color: #ef4444 !important; }
+html[data-theme="light"] .hover\:bg-red-800:hover { background-color: #fecaca !important; }
+html[data-theme="light"] .hover\:bg-red-900:hover { background-color: #fee2e2 !important; }
+html[data-theme="light"] .bg-red-950 *,
+html[data-theme="light"] .bg-red-900 * { color: #7f1d1d !important; }
+
+/* ── RequestBlock: left border stripe ──────────────────────────────────── */
+/* Continuation bar in multi-period blocks */
+html[data-theme="light"] .border-green-500.border-l-\[3px\] { border-left-color: #10b981 !important; }
+html[data-theme="light"] .border-amber-500.border-l-\[3px\] { border-left-color: #f59e0b !important; }
+html[data-theme="light"] .border-red-500.border-l-\[3px\]   { border-left-color: #ef4444 !important; }
+html[data-theme="light"] .border-slate-400.border-l-\[3px\] { border-left-color: #aeaeb2 !important; }
