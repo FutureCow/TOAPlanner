@@ -26,7 +26,7 @@ model Request {
   classroom   String
   date        DateTime
   period      Int
-  subject     Subject
+  subject     String
   status      Status   @default(PENDING)
   createdById String?
   createdBy   User?    @relation(fields: [createdById], references: [id], onDelete: SetNull)
@@ -34,16 +34,17 @@ model Request {
   updatedAt   DateTime @updatedAt
 }
 
+model SubjectConfig {
+  id          String  @id       // slug, e.g. "natuurkunde"
+  name        String
+  accentColor String  @default("#2563eb")
+  absenceDays Int[]   @default([])
+  sortOrder   Int     @default(0)
+}
+
 model AppSettings {
   id               Int     @id @default(1)
   registrationOpen Boolean @default(true)
-}
-
-enum Subject {
-  NATUURKUNDE
-  SCHEIKUNDE
-  BIOLOGIE
-  PROJECT
 }
 
 enum Status {

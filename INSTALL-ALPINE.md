@@ -156,7 +156,7 @@ npx prisma generate
 # Voer migraties uit
 npx prisma migrate deploy
 
-# Seed de database (aanmeldingen-instelling aanmaken)
+# Seed de database (aanmeldingen-instelling + 4 standaard vakken aanmaken)
 npx prisma db seed
 ```
 

@@ -1,6 +1,14 @@
-import { Subject, Status } from '@prisma/client'
+import { Status } from '@prisma/client'
 
-export type { Subject, Status }
+export type { Status }
+
+export interface SubjectConfig {
+  id: string
+  name: string
+  accentColor: string
+  absenceDays: number[]
+  sortOrder: number
+}
 
 export interface RequestWithUser {
   id: string
@@ -8,7 +16,7 @@ export interface RequestWithUser {
   classroom: string
   date: string
   period: number
-  subject: Subject
+  subject: string
   status: Status
   createdById: string | null
   createdBy: {

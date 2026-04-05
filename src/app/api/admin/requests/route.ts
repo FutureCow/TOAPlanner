@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import prisma from '@/lib/prisma'
-import { Subject, Status } from '@prisma/client'
+import { Status } from '@prisma/client'
 
 const INCLUDE_USER = { createdBy: { select: { id: true, name: true, abbreviation: true } } }
 
@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
   if (!session?.user.isAdmin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 
   const { searchParams } = new URL(req.url)
-  const subject = searchParams.get('subject') as Subject | null
+  const subject = searchParams.get('subject')
   const status = searchParams.get('status') as Status | null
   const search = searchParams.get('search') ?? ''
 

@@ -1,33 +1,39 @@
 'use client'
-import { useState } from 'react'
-import { RequestWithUser } from '@/types'
-import { Subject } from '@prisma/client'
+import { useState, useEffect } from 'react'
+import { RequestWithUser, SubjectConfig } from '@/types'
 import { toDateString } from '@/lib/week'
-
-const SUBJECTS: { value: Subject; label: string }[] = [
-  { value: 'NATUURKUNDE', label: 'Natuurkunde' },
-  { value: 'SCHEIKUNDE',  label: 'Scheikunde' },
-  { value: 'BIOLOGIE',   label: 'Biologie' },
-  { value: 'PROJECT',    label: 'Project/NLT' },
-]
 
 interface Props {
   date: Date
   period: number
-  subject: Subject | null
+  subject: string | null
   request?: RequestWithUser    // if editing
   onClose: () => void
   onSaved: () => void
 }
 
 export default function RequestModal({ date, period, subject, request, onClose, onSaved }: Props) {
+  const [subjects, setSubjects] = useState<SubjectConfig[]>([])
   const [title, setTitle] = useState(request?.title ?? '')
   const [classroom, setClassroom] = useState(request?.classroom ?? '')
   const [selectedDate, setSelectedDate] = useState(request ? request.date.slice(0, 10) : toDateString(date))
   const [selectedPeriod, setSelectedPeriod] = useState(request?.period ?? period)
-  const [selectedSubject, setSelectedSubject] = useState<Subject>(request?.subject ?? subject ?? 'NATUURKUNDE')
+  const [selectedSubject, setSelectedSubject] = useState<string>(request?.subject ?? subject ?? '')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+    fetch('/api/subjects')
+      .then(r => r.ok ? r.json() : [])
+      .then((data: SubjectConfig[]) => {
+        setSubjects(data)
+        if (!selectedSubject && data.length > 0) {
+          setSelectedSubject(subject ?? data[0].id)
+        }
+      })
+      .catch(() => {})
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -118,10 +124,10 @@ export default function RequestModal({ date, period, subject, request, onClose, 
             <label className="block text-xs text-slate-400 mb-1">Vak *</label>
             <select
               value={selectedSubject}
-              onChange={e => setSelectedSubject(e.target.value as Subject)}
+              onChange={e => setSelectedSubject(e.target.value)}
               className="w-full bg-slate-800 border border-slate-600 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
             >
-              {SUBJECTS.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
+              {subjects.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
             </select>
           </div>
 

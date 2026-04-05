@@ -1,22 +1,23 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
 import type { Session } from 'next-auth'
-import { Subject } from '@prisma/client'
-import { RequestWithUser } from '@/types'
+import { RequestWithUser, SubjectConfig } from '@/types'
 import { getWeekDates, getWeekLabel, prevWeek, nextWeek, toDateString } from '@/lib/week'
 import RequestBlock from './RequestBlock'
 import RequestModal from './RequestModal'
 import RequestDetailPanel from './RequestDetailPanel'
 
-const DAYS = ['Maa', 'Din', 'Woe', 'Don', 'Vri']
+const DAYS = ['Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag']
+const DAYS_SHORT = ['Maa', 'Din', 'Woe', 'Don', 'Vri']
 const PERIODS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
 interface Props {
-  subject: Subject | null
+  subject: string | null  // subject id (slug), null = all subjects
   session: Session
+  subjectConfig?: SubjectConfig | null
 }
 
-export default function WeekCalendar({ subject, session }: Props) {
+export default function WeekCalendar({ subject, session, subjectConfig }: Props) {
   const [currentDate, setCurrentDate] = useState(() => getWeekDates(new Date())[0])
   const [requests, setRequests] = useState<RequestWithUser[]>([])
   const [modal, setModal] = useState<{ date: Date; period: number } | null>(null)
@@ -25,6 +26,8 @@ export default function WeekCalendar({ subject, session }: Props) {
 
   const weekDates = getWeekDates(currentDate)
   const today = toDateString(new Date())
+  const accentColor = subjectConfig?.accentColor ?? '#475569'
+  const absenceDays = subjectConfig?.absenceDays ?? []
 
   const load = useCallback(async () => {
     const dates = getWeekDates(currentDate)
@@ -65,13 +68,41 @@ export default function WeekCalendar({ subject, session }: Props) {
       {/* Calendar grid */}
       <div className="border border-slate-700 rounded-lg overflow-hidden text-xs">
         {/* Day headers */}
-        <div className="grid border-b-2 border-slate-600 bg-slate-900" style={{ gridTemplateColumns: '2rem repeat(5, 1fr)' }}>
+        <div
+          className="grid border-b-2 border-slate-600"
+          style={{
+            gridTemplateColumns: '2rem repeat(5, 1fr)',
+            backgroundColor: accentColor + '22',
+          }}
+        >
           <div />
-          {weekDates.map((d, i) => (
-            <div key={i} className={`p-2 text-center font-semibold text-slate-400 ${toDateString(d) === today ? 'ring-2 ring-blue-500 ring-inset rounded' : ''}`}>
-              {DAYS[i]} <span className={toDateString(d) === today ? 'bg-blue-600 text-white rounded-full px-1' : 'text-slate-200'}>{d.getDate()}</span>
-            </div>
-          ))}
+          {weekDates.map((d, i) => {
+            const isToday = toDateString(d) === today
+            const isAbsent = absenceDays.includes(i)
+            return (
+              <div
+                key={i}
+                className={`p-2 text-center font-semibold text-slate-300 relative ${
+                  isToday ? 'ring-2 ring-inset rounded' : ''
+                } ${isAbsent ? 'opacity-60' : ''}`}
+                style={isToday ? { ringColor: accentColor } : undefined}
+                title={isAbsent ? 'TOA niet aanwezig' : undefined}
+              >
+                {isAbsent && (
+                  <span className="absolute top-0.5 right-0.5 text-[0.6rem] text-amber-400" title="TOA niet aanwezig">
+                    ✕
+                  </span>
+                )}
+                {DAYS_SHORT[i]}{' '}
+                <span
+                  className={`rounded-full px-1 ${isToday ? 'text-white' : 'text-slate-200'}`}
+                  style={isToday ? { backgroundColor: accentColor } : undefined}
+                >
+                  {d.getDate()}
+                </span>
+              </div>
+            )
+          })}
         </div>
 
         {/* Period rows */}
@@ -82,18 +113,32 @@ export default function WeekCalendar({ subject, session }: Props) {
             </div>
             {weekDates.map((date, di) => {
               const cell = getCell(date, period)
+              const isAbsent = absenceDays.includes(di)
               return (
                 <div
                   key={di}
-                  className="relative p-1 min-h-[3.5rem] border-r border-slate-800/50 last:border-r-0 group"
+                  className={`relative p-1 min-h-[3.5rem] border-r border-slate-800/50 last:border-r-0 group ${
+                    isAbsent ? 'bg-slate-900/40' : ''
+                  }`}
+                  title={isAbsent ? 'TOA niet aanwezig op deze dag' : undefined}
                 >
+                  {isAbsent && cell.length === 0 && (
+                    <div
+                      className="absolute inset-0 pointer-events-none opacity-[0.04]"
+                      style={{
+                        backgroundImage: 'repeating-linear-gradient(45deg, currentColor 0, currentColor 1px, transparent 0, transparent 50%)',
+                        backgroundSize: '8px 8px',
+                      }}
+                    />
+                  )}
                   {cell.map(r => (
                     <RequestBlock key={r.id} request={r} onClick={setSelected} />
                   ))}
                   {/* Add button */}
                   <button
                     onClick={() => setModal({ date, period })}
-                    className="absolute bottom-1 right-1 w-5 h-5 bg-blue-800 hover:bg-blue-600 text-white rounded text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                    className="absolute bottom-1 right-1 w-5 h-5 text-white rounded text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                    style={{ backgroundColor: accentColor }}
                     title="Aanvraag toevoegen"
                   >
                     +
@@ -106,7 +151,7 @@ export default function WeekCalendar({ subject, session }: Props) {
       </div>
 
       {/* Legend */}
-      <div className="flex gap-4 mt-2 flex-wrap">
+      <div className="flex gap-4 mt-2 flex-wrap items-center">
         {[
           { color: 'bg-slate-400', label: 'Aangevraagd' },
           { color: 'bg-green-500', label: 'Met TOA' },
@@ -118,6 +163,12 @@ export default function WeekCalendar({ subject, session }: Props) {
             {label}
           </div>
         ))}
+        {absenceDays.length > 0 && (
+          <div className="flex items-center gap-1 text-xs text-slate-500">
+            <span className="text-amber-400 text-[0.65rem]">✕</span>
+            TOA afwezig
+          </div>
+        )}
       </div>
 
       {/* Modals */}

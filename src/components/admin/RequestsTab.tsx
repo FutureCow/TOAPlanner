@@ -1,14 +1,10 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
-import { RequestWithUser } from '@/types'
-import { Subject, Status } from '@prisma/client'
+import { RequestWithUser, SubjectConfig } from '@/types'
+import { Status } from '@prisma/client'
 import { format } from 'date-fns'
 import { nl } from 'date-fns/locale'
 
-const SUBJECT_LABELS: Record<Subject, string> = {
-  NATUURKUNDE: 'Natuurkunde', SCHEIKUNDE: 'Scheikunde',
-  BIOLOGIE: 'Biologie', PROJECT: 'Project/NLT',
-}
 const STATUS_LABELS: Record<Status, string> = {
   PENDING: 'Aangevraagd', APPROVED_WITH_TOA: 'Met TOA',
   APPROVED_WITHOUT_TOA: 'Zonder TOA', REJECTED: 'Afgekeurd',
@@ -22,11 +18,19 @@ const STATUS_STYLES: Record<Status, string> = {
 
 export default function RequestsTab() {
   const [requests, setRequests] = useState<RequestWithUser[]>([])
+  const [subjects, setSubjects] = useState<SubjectConfig[]>([])
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [subject, setSubject] = useState('')
   const [status, setStatus] = useState('')
   const [search, setSearch] = useState('')
   const [deleting, setDeleting] = useState(false)
+
+  useEffect(() => {
+    fetch('/api/admin/subjects')
+      .then(r => r.ok ? r.json() : [])
+      .then(setSubjects)
+      .catch(() => {})
+  }, [])
 
   const load = useCallback(async () => {
     const params = new URLSearchParams()
@@ -57,13 +61,17 @@ export default function RequestsTab() {
     load()
   }
 
+  function subjectLabel(id: string) {
+    return subjects.find(s => s.id === id)?.name ?? id
+  }
+
   return (
     <div>
       <div className="flex gap-2 mb-3 flex-wrap">
         <select value={subject} onChange={e => setSubject(e.target.value)}
           className="bg-slate-800 border border-slate-700 text-slate-300 rounded px-2 py-1.5 text-xs">
           <option value="">Alle vakken</option>
-          {Object.entries(SUBJECT_LABELS).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+          {subjects.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
         </select>
         <select value={status} onChange={e => setStatus(e.target.value)}
           className="bg-slate-800 border border-slate-700 text-slate-300 rounded px-2 py-1.5 text-xs">
@@ -102,7 +110,7 @@ export default function RequestsTab() {
                 setSelected(next)
               }} />
             <span className="text-slate-200 font-medium truncate">{r.title}</span>
-            <span className="text-slate-400">{SUBJECT_LABELS[r.subject]}</span>
+            <span className="text-slate-400">{subjectLabel(r.subject)}</span>
             <span className="text-slate-400">{format(new Date(r.date), 'd MMM', { locale: nl })}</span>
             <span className="text-slate-400">{r.period}e</span>
             <span className="text-slate-300 font-semibold">{r.createdBy?.abbreviation.toUpperCase() ?? '—'}</span>
