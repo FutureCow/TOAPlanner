@@ -263,6 +263,12 @@ npx prisma db seed
 pm2 restart toa-planner
 ```
 
+> **Eerste keer updaten op een bestaande installatie** (database bestond al vóór migraties werden toegevoegd):
+> ```bash
+> npx prisma migrate resolve --applied 20260402000000_initial
+> npx prisma migrate deploy
+> ```
+
 ### Logs bekijken
 
 ```bash
