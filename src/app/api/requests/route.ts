@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
   const body = await req.json()
   const { title, klas, classroom, date, period, periodEnd, subject, recurringGroupId } = body
 
-  if (!title || !classroom || !date || period === undefined || !subject) {
+  if (!title || (Number(period) !== 0 && !classroom) || !date || period === undefined || !subject) {
     return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
   }
 
