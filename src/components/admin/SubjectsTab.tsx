@@ -10,6 +10,16 @@ const PRESET_COLORS = [
   '#ea580c', '#9333ea', '#db2777',
 ]
 
+const COLOR_NAMES: Record<string, string> = {
+  '#2563eb': 'Blauw',
+  '#0891b2': 'Cyaan',
+  '#0d9488': 'Teal',
+  '#16a34a': 'Groen',
+  '#ea580c': 'Oranje',
+  '#9333ea': 'Paars',
+  '#db2777': 'Roze',
+}
+
 interface SubjectCardProps {
   subject: SubjectConfig
   onSaved: () => void
@@ -80,20 +90,22 @@ function SubjectCard({ subject, onSaved, onDeleted }: SubjectCardProps) {
             <button
               key={c}
               onClick={() => setColor(c)}
-              className={`w-5 h-5 rounded-full border-2 transition-all ${color === c ? 'border-white scale-110' : 'border-transparent'}`}
+              className={`w-5 h-5 rounded-full transition-all ${color === c ? 'ring-2 ring-offset-1 ring-slate-500 scale-110' : 'opacity-80 hover:opacity-100'}`}
               style={{ backgroundColor: c }}
-              title={c}
+              title={COLOR_NAMES[c] ?? c}
             />
           ))}
-          <div className="flex items-center gap-1 ml-1">
+          <div className="flex items-center gap-1.5 ml-1">
             <input
               type="color"
               value={color}
               onChange={e => setColor(e.target.value)}
-              className="w-7 h-7 rounded cursor-pointer bg-transparent border-0"
+              className="w-6 h-6 rounded cursor-pointer bg-transparent border-0"
               title="Aangepaste kleur"
             />
-            <span className="text-xs text-slate-500 font-mono">{color}</span>
+            <span className="text-xs text-slate-400">
+              {COLOR_NAMES[color] ?? color}
+            </span>
           </div>
         </div>
       </div>
@@ -219,16 +231,20 @@ export default function SubjectsTab() {
                 <button
                   key={c}
                   onClick={() => setNewColor(c)}
-                  className={`w-5 h-5 rounded-full border-2 transition-all ${newColor === c ? 'border-white scale-110' : 'border-transparent'}`}
+                  className={`w-5 h-5 rounded-full transition-all ${newColor === c ? 'ring-2 ring-offset-1 ring-slate-500 scale-110' : 'opacity-80 hover:opacity-100'}`}
                   style={{ backgroundColor: c }}
+                  title={COLOR_NAMES[c] ?? c}
                 />
               ))}
-              <input
-                type="color"
-                value={newColor}
-                onChange={e => setNewColor(e.target.value)}
-                className="w-7 h-7 rounded cursor-pointer bg-transparent border-0"
-              />
+              <div className="flex items-center gap-1.5">
+                <input
+                  type="color"
+                  value={newColor}
+                  onChange={e => setNewColor(e.target.value)}
+                  className="w-6 h-6 rounded cursor-pointer bg-transparent border-0"
+                />
+                <span className="text-xs text-slate-400">{COLOR_NAMES[newColor] ?? newColor}</span>
+              </div>
             </div>
           </div>
           {addError && <p className="text-red-400 text-xs">{addError}</p>}

@@ -99,8 +99,8 @@ html[data-theme="light"] .bg-slate-700.text-slate-200 {
 
 /* APPROVED_WITH_TOA → groen */
 html[data-theme="light"] .bg-green-950,
-html[data-theme="light"] .bg-green-900 { background-color: #dcfce7 !important; }
-html[data-theme="light"] .bg-green-800 { background-color: #bbf7d0 !important; }
+html[data-theme="light"] .bg-green-900 { background-color: #bbf7d0 !important; }
+html[data-theme="light"] .bg-green-800 { background-color: #86efac !important; }
 html[data-theme="light"] .text-green-100 { color: #14532d !important; }
 html[data-theme="light"] .text-green-300,
 html[data-theme="light"] .text-green-400 { color: #15803d !important; }
@@ -129,8 +129,8 @@ html[data-theme="light"] .bg-amber-900 * { color: #78350f !important; }
 
 /* REJECTED → red */
 html[data-theme="light"] .bg-red-950,
-html[data-theme="light"] .bg-red-900 { background-color: #fee2e2 !important; }
-html[data-theme="light"] .bg-red-800  { background-color: #fecaca !important; }
+html[data-theme="light"] .bg-red-900 { background-color: #fecaca !important; }
+html[data-theme="light"] .bg-red-800  { background-color: #fca5a5 !important; }
 html[data-theme="light"] .text-red-100 { color: #7f1d1d !important; }
 html[data-theme="light"] .text-red-300,
 html[data-theme="light"] .text-red-400 { color: #dc2626 !important; }
