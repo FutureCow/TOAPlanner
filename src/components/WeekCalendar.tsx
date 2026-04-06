@@ -47,7 +47,8 @@ export default function WeekCalendar({ subject, session, subjectConfig, periodsP
   useEffect(() => {
     fetch('/api/settings')
       .then(r => r.ok ? r.json() : {})
-      .then(d => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .then((d: any) => {
         if (d.statusColors) {
           setStatusColors({
             PENDING:              d.statusColors.PENDING              || DEFAULT_STATUS_COLORS.PENDING,
