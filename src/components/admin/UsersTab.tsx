@@ -72,9 +72,9 @@ export default function UsersTab() {
                 <td className="px-3 py-2.5">
                   {u.image
                     // eslint-disable-next-line @next/next/no-img-element
-                    ? <img src={u.image} width={32} height={32} className="w-8 h-8 rounded-full object-cover ring-2 ring-slate-700" alt="" referrerPolicy="no-referrer" />
-                    : <div className="w-8 h-8 rounded-full flex items-center justify-center text-[0.65rem] font-bold text-white ring-2 ring-slate-700 shrink-0"
-                        style={{ backgroundColor: avatarColor(u.name) }}>
+                    ? <img src={u.image} width={32} height={32} className="rounded-full object-cover ring-2 ring-slate-700" style={{ width: 32, height: 32, minWidth: 32 }} alt="" referrerPolicy="no-referrer" />
+                    : <div className="rounded-full flex items-center justify-center text-[0.65rem] font-bold text-white ring-2 ring-slate-700"
+                        style={{ width: 32, height: 32, minWidth: 32, backgroundColor: avatarColor(u.name) }}>
                         {initials(u.name)}
                       </div>
                   }
