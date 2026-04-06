@@ -122,6 +122,20 @@ function SubjectCard({ subject, onSaved, onDeleted }: SubjectCardProps) {
 
 // ── Main SettingsTab ─────────────────────────────────────────────────────────
 
+const DEFAULT_STATUS = {
+  PENDING:              { label: 'Aangevraagd',         color: '#64748b' },
+  APPROVED_WITH_TOA:    { label: 'Goedgekeurd met TOA', color: '#16a34a' },
+  APPROVED_WITHOUT_TOA: { label: 'Zonder TOA',          color: '#d97706' },
+  REJECTED:             { label: 'Afgekeurd',           color: '#dc2626' },
+}
+
+const STATUS_ROWS = [
+  { key: 'PENDING'              as const, title: 'Aanvraag' },
+  { key: 'APPROVED_WITH_TOA'    as const, title: 'Goedgekeurd met TOA' },
+  { key: 'APPROVED_WITHOUT_TOA' as const, title: 'Zonder TOA' },
+  { key: 'REJECTED'             as const, title: 'Afgekeurd' },
+]
+
 export default function SettingsTab() {
   // App settings
   const [registrationOpen, setRegistrationOpen] = useState(true)
@@ -134,8 +148,13 @@ export default function SettingsTab() {
   const [periodsSaving, setPeriodsSaving] = useState(false)
   const [periodsSaved, setPeriodsSaved] = useState(false)
 
+  // Status labels + colors — type is inferred from DEFAULT_STATUS, no generic needed
+  const [statusCfg, setStatusCfg] = useState(DEFAULT_STATUS)
+  const [statusSaving, setStatusSaving] = useState(false)
+  const [statusSaved, setStatusSaved] = useState(false)
+
   // Subjects
-  const [subjects, setSubjects] = useState<SubjectConfig[]>([])
+  const [subjects, setSubjects] = useState([] as SubjectConfig[])
   const [showAdd, setShowAdd] = useState(false)
   const [newName, setNewName] = useState('')
   const [newColor, setNewColor] = useState('#2563eb')
@@ -149,6 +168,14 @@ export default function SettingsTab() {
       setLogoInput(d.schoolLogo ?? '')
       setPeriodsPerDay(d.periodsPerDay ?? 10)
       setSettingsLoading(false)
+      const sl = d.statusLabels || {}
+      const sc = d.statusColors || {}
+      setStatusCfg({
+        PENDING:              { label: sl.PENDING              || DEFAULT_STATUS.PENDING.label,              color: sc.PENDING              || DEFAULT_STATUS.PENDING.color },
+        APPROVED_WITH_TOA:    { label: sl.APPROVED_WITH_TOA    || DEFAULT_STATUS.APPROVED_WITH_TOA.label,    color: sc.APPROVED_WITH_TOA    || DEFAULT_STATUS.APPROVED_WITH_TOA.color },
+        APPROVED_WITHOUT_TOA: { label: sl.APPROVED_WITHOUT_TOA || DEFAULT_STATUS.APPROVED_WITHOUT_TOA.label, color: sc.APPROVED_WITHOUT_TOA || DEFAULT_STATUS.APPROVED_WITHOUT_TOA.color },
+        REJECTED:             { label: sl.REJECTED             || DEFAULT_STATUS.REJECTED.label,             color: sc.REJECTED             || DEFAULT_STATUS.REJECTED.color },
+      })
     })
   }, [])
 
@@ -178,6 +205,29 @@ export default function SettingsTab() {
     })
     setLogo(logoInput.trim()); setLogoSaving(false); setLogoSaved(true)
     setTimeout(() => setLogoSaved(false), 2000)
+  }
+
+  async function saveStatusConfig() {
+    setStatusSaving(true); setStatusSaved(false)
+    const statusLabels = {
+      PENDING: statusCfg.PENDING.label,
+      APPROVED_WITH_TOA: statusCfg.APPROVED_WITH_TOA.label,
+      APPROVED_WITHOUT_TOA: statusCfg.APPROVED_WITHOUT_TOA.label,
+      REJECTED: statusCfg.REJECTED.label,
+    }
+    const statusColors = {
+      PENDING: statusCfg.PENDING.color,
+      APPROVED_WITH_TOA: statusCfg.APPROVED_WITH_TOA.color,
+      APPROVED_WITHOUT_TOA: statusCfg.APPROVED_WITHOUT_TOA.color,
+      REJECTED: statusCfg.REJECTED.color,
+    }
+    await fetch('/api/admin/settings', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ statusLabels, statusColors }),
+    })
+    setStatusSaving(false); setStatusSaved(true)
+    setTimeout(() => setStatusSaved(false), 2000)
   }
 
   async function savePeriods(value: number) {
@@ -290,6 +340,53 @@ export default function SettingsTab() {
                 {periodsSaving ? 'Opslaan…' : periodsSaved ? '✓ Opgeslagen' : 'Opslaan'}
               </button>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Statuslabels en kleuren ── */}
+      <section>
+        <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wide mb-3">Statuslabels en kleuren</h2>
+        <div className="bg-slate-900 border border-slate-700 rounded-lg p-4 space-y-3">
+          <p className="text-xs text-slate-500">Pas de tekst en kleur aan van elke status.</p>
+          {STATUS_ROWS.map(({ key, title }) => (
+            <div key={key} className="flex items-center gap-3">
+              <div className="w-3 h-8 rounded flex-shrink-0" style={{ backgroundColor: statusCfg[key].color }} />
+              <span className="text-xs text-slate-400 w-36 flex-shrink-0">{title}</span>
+              <input
+                value={statusCfg[key].label}
+                onChange={e => {
+                  const val = e.target.value
+                  setStatusCfg(prev => ({ ...prev, [key]: { ...prev[key], label: val } }))
+                }}
+                className="flex-1 bg-slate-800 border border-slate-600 rounded px-3 py-1.5 text-sm text-white focus:outline-none focus:border-blue-500"
+              />
+              <input
+                type="color"
+                value={statusCfg[key].color}
+                onChange={e => {
+                  const val = e.target.value
+                  setStatusCfg(prev => ({ ...prev, [key]: { ...prev[key], color: val } }))
+                }}
+                className="w-8 h-8 rounded cursor-pointer border border-slate-600 flex-shrink-0"
+                title="Kies kleur"
+              />
+            </div>
+          ))}
+          <div className="flex items-center justify-between pt-1">
+            <button
+              onClick={() => setStatusCfg(DEFAULT_STATUS)}
+              className="text-xs text-slate-500 hover:text-slate-300 transition-colors"
+            >
+              Standaard herstellen
+            </button>
+            <button
+              onClick={saveStatusConfig}
+              disabled={statusSaving}
+              className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${statusSaved ? 'bg-green-700 text-white' : 'bg-blue-600 hover:bg-blue-500 disabled:opacity-40 text-white'}`}
+            >
+              {statusSaving ? 'Opslaan…' : statusSaved ? '✓ Opgeslagen' : 'Opslaan'}
+            </button>
           </div>
         </div>
       </section>

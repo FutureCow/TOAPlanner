@@ -23,6 +23,8 @@ export async function PATCH(req: NextRequest) {
   if (body.registrationOpen !== undefined) update.registrationOpen = body.registrationOpen
   if (body.schoolLogo !== undefined) update.schoolLogo = body.schoolLogo || null
   if (body.periodsPerDay !== undefined) update.periodsPerDay = Number(body.periodsPerDay)
+  if (body.statusLabels !== undefined) update.statusLabels = body.statusLabels
+  if (body.statusColors !== undefined) update.statusColors = body.statusColors
 
   const db = getPrisma(slug)
   const settings = await db.appSettings.upsert({

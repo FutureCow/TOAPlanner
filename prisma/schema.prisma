@@ -49,8 +49,10 @@ model SubjectConfig {
 model AppSettings {
   id               Int     @id @default(1)
   registrationOpen Boolean @default(true)
-  schoolLogo       String? // URL or data-URL of school logo
+  schoolLogo       String?
   periodsPerDay    Int     @default(10)
+  statusLabels     Json?   // Record<Status, string>
+  statusColors     Json?   // Record<Status, string>
 }
 
 enum Status {
