@@ -8,6 +8,7 @@ module.exports = {
       instances: 1,
       autorestart: true,
       watch: false,
+      node_args: '--disable-warning=DEP0169',
       env: {
         NODE_ENV: 'production',
         PORT: 3000,
