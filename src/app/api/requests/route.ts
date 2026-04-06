@@ -68,10 +68,12 @@ export async function PATCH(req: NextRequest) {
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await req.json()
-  const { recurringGroupId, title, klas, classroom, period, periodEnd, subject } = body
+  const { recurringGroupId, title, klas, classroom, period, periodEnd, subject, status } = body
   if (!recurringGroupId) return NextResponse.json({ error: 'recurringGroupId required' }, { status: 400 })
 
-  const where = session.user.isTOA || session.user.isAdmin
+  // Status changes allowed for TOA/admin; content edits only for owner/TOA/admin
+  const isTOAOrAdmin = session.user.isTOA || session.user.isAdmin
+  const where = isTOAOrAdmin
     ? { recurringGroupId }
     : { recurringGroupId, createdById: session.user.id }
 
@@ -84,6 +86,7 @@ export async function PATCH(req: NextRequest) {
       ...(period !== undefined ? { period: Number(period) } : {}),
       ...(periodEnd !== undefined ? { periodEnd: periodEnd != null ? Number(periodEnd) : null } : {}),
       ...(subject !== undefined ? { subject } : {}),
+      ...(status !== undefined && isTOAOrAdmin ? { status } : {}),
     },
   })
   return NextResponse.json({ updated: result.count })

@@ -24,17 +24,27 @@ interface Props {
 
 export default function RequestDetailPanel({ request, session, onClose, onEdit, onDeleted, onStatusChanged }: Props) {
   const [deleting, setDeleting] = useState(false)
+  const [applyToSeries, setApplyToSeries] = useState(false)
   const canModify = session.user.isTOA || session.user.isAdmin || request.createdById === session.user.id
   const canChangeStatus = session.user.isTOA || session.user.isAdmin
   const dateLabel = format(new Date(request.date), 'EEEE d MMMM yyyy', { locale: nl })
 
   async function handleStatus(status: Status) {
-    const res = await fetch(`/api/requests/${request.id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status }),
-    })
-    if (res.ok) onStatusChanged()
+    if (applyToSeries && request.recurringGroupId) {
+      const res = await fetch('/api/requests', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ recurringGroupId: request.recurringGroupId, status }),
+      })
+      if (res.ok) onStatusChanged()
+    } else {
+      const res = await fetch(`/api/requests/${request.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status }),
+      })
+      if (res.ok) onStatusChanged()
+    }
   }
 
   async function handleDelete() {
@@ -89,7 +99,15 @@ export default function RequestDetailPanel({ request, session, onClose, onEdit, 
 
         {canChangeStatus && (
           <div className="mb-4">
-            <p className="text-xs text-slate-500 uppercase tracking-wide mb-1.5">Status</p>
+            <div className="flex items-center justify-between mb-1.5">
+              <p className="text-xs text-slate-500 uppercase tracking-wide">Status</p>
+              {request.recurringGroupId && (
+                <label className="flex items-center gap-1 text-xs text-slate-400 cursor-pointer">
+                  <input type="checkbox" checked={applyToSeries} onChange={e => setApplyToSeries(e.target.checked)} />
+                  Hele reeks
+                </label>
+              )}
+            </div>
             <div className="flex flex-wrap gap-1.5">
               {STATUS_OPTIONS.map(opt => (
                 <button

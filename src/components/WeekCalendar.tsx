@@ -23,6 +23,7 @@ export default function WeekCalendar({ subject, session, subjectConfig }: Props)
   const [modal, setModal] = useState<{ date: Date; period: number } | null>(null)
   const [editing, setEditing] = useState<RequestWithUser | null>(null)
   const [selected, setSelected] = useState<RequestWithUser | null>(null)
+  const [subjectColorMap, setSubjectColorMap] = useState<Record<string, string>>({})
 
   const weekDates = getWeekDates(currentDate)
   const today = toDateString(new Date())
@@ -38,6 +39,18 @@ export default function WeekCalendar({ subject, session, subjectConfig }: Props)
   }, [currentDate, subject])
 
   useEffect(() => { load() }, [load])
+
+  useEffect(() => {
+    if (subject !== null) return // only needed in overview
+    fetch('/api/subjects')
+      .then(r => r.ok ? r.json() : [])
+      .then((data: SubjectConfig[]) => {
+        const map: Record<string, string> = {}
+        data.forEach(s => { map[s.id] = s.accentColor })
+        setSubjectColorMap(map)
+      })
+      .catch(() => {})
+  }, [subject])
 
   /** Returns requests that span `period` on `date`, plus whether this is the first period */
   function getCellRequests(date: Date, period: number): { request: RequestWithUser; isFirst: boolean }[] {
@@ -125,7 +138,7 @@ export default function WeekCalendar({ subject, session, subjectConfig }: Props)
                 title={isAbsent ? 'TOA niet aanwezig op deze dag' : undefined}
               >
                 {cells.map(({ request: r }) => (
-                  <RequestBlock key={r.id} request={r} isFirst onClick={setSelected} />
+                  <RequestBlock key={r.id} request={r} isFirst onClick={setSelected} accentColor={subjectColorMap[r.subject]} />
                 ))}
                 <button
                   onClick={() => setModal({ date, period: 0 })}

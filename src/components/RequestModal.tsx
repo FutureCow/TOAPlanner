@@ -112,7 +112,7 @@ export default function RequestModal({ date, period, subject, request, onClose, 
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!title.trim() || !classroom.trim()) {
+    if (!title.trim() || (!isHeleDag && !classroom.trim())) {
       setError('Vul alle verplichte velden in.')
       return
     }
@@ -182,7 +182,7 @@ export default function RequestModal({ date, period, subject, request, onClose, 
                 value={klas}
                 onChange={e => setKlas(e.target.value)}
                 className="w-full bg-slate-800 border border-slate-600 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
-                placeholder="3H"
+                placeholder="3HB"
               />
             </div>
             <div>
@@ -196,16 +196,18 @@ export default function RequestModal({ date, period, subject, request, onClose, 
             </div>
           </div>
 
-          {/* Lokaal */}
-          <div>
-            <label className="block text-xs text-slate-400 mb-1">Gewenst lokaal *</label>
-            <input
-              value={classroom}
-              onChange={e => setClassroom(e.target.value)}
-              className="w-full bg-slate-800 border border-slate-600 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
-              placeholder="bijv. W107"
-            />
-          </div>
+          {/* Lokaal — niet nodig voor hele dag */}
+          {!isHeleDag && (
+            <div>
+              <label className="block text-xs text-slate-400 mb-1">Gewenst lokaal *</label>
+              <input
+                value={classroom}
+                onChange={e => setClassroom(e.target.value)}
+                className="w-full bg-slate-800 border border-slate-600 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                placeholder="bijv. W107"
+              />
+            </div>
+          )}
 
           {/* Datum */}
           <div>

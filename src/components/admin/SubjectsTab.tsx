@@ -68,7 +68,7 @@ function SubjectCard({ subject, onSaved, onDeleted }: SubjectCardProps) {
   }
 
   return (
-    <div className="bg-slate-800 border border-slate-700 rounded-xl p-3 space-y-3">
+    <div className="bg-slate-800 border border-slate-700 rounded-xl p-2.5 space-y-2">
       {/* Color stripe */}
       <div className="h-1 rounded-full -mt-0.5" style={{ backgroundColor: color }} />
 

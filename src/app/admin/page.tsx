@@ -11,7 +11,7 @@ type Tab = 'requests' | 'users' | 'subjects'
 const TAB_LABELS: Record<Tab, string> = {
   requests: '📋 Aanvragen',
   users: '👥 Gebruikers',
-  subjects: '🗂 Vakken',
+  subjects: '⚗️ Vakken',
 }
 
 export default function AdminPage() {
@@ -29,7 +29,7 @@ export default function AdminPage() {
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={`px-4 py-1.5 rounded text-sm font-medium transition-colors ${
+            className={`px-4 py-1.5 rounded text-sm font-medium transition-colors min-w-[8rem] text-center ${
               tab === t ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
             }`}
           >

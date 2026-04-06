@@ -27,15 +27,16 @@ interface Props {
   request: RequestWithUser
   isFirst: boolean
   onClick: (request: RequestWithUser) => void
+  accentColor?: string
 }
 
-export default function RequestBlock({ request, isFirst, onClick }: Props) {
+export default function RequestBlock({ request, isFirst, onClick, accentColor }: Props) {
   if (!isFirst) {
-    // Continuation bar — thin strip showing the block continues
     return (
       <div
         onClick={() => onClick(request)}
         className={`border-l-[3px] rounded-sm px-1 py-0.5 cursor-pointer hover:brightness-125 transition-all mb-1 flex items-center gap-1 ${CONT_STYLES[request.status]}`}
+        style={accentColor ? { borderLeftColor: accentColor } : undefined}
         title={`${request.klas ? request.klas + ' – ' : ''}${request.title} (vervolg)`}
       >
         <div className="w-1 h-1 rounded-full bg-current opacity-50" />
@@ -50,6 +51,7 @@ export default function RequestBlock({ request, isFirst, onClick }: Props) {
     <div
       onClick={() => onClick(request)}
       className={`border-l-[3px] rounded px-1.5 py-1 cursor-pointer hover:brightness-125 transition-all mb-1 ${STATUS_STYLES[request.status]}`}
+      style={accentColor ? { borderLeftColor: accentColor } : undefined}
     >
       <div className="font-semibold text-xs leading-tight line-clamp-2">
         {request.klas && !request.title.startsWith(request.klas) ? (

@@ -1,6 +1,5 @@
 'use client'
 import { useState, useEffect } from 'react'
-import Image from 'next/image'
 import { UserRow, SubjectConfig } from '@/types'
 import { format } from 'date-fns'
 import { nl } from 'date-fns/locale'
@@ -57,7 +56,7 @@ export default function UsersTab() {
                 {/* Avatar */}
                 <td className="px-3 py-2.5">
                   {u.image
-                    ? <Image src={u.image} width={28} height={28} className="w-7 h-7 rounded-full object-cover" alt="" />
+                    ? <img src={u.image} width={28} height={28} className="w-7 h-7 rounded-full object-cover" alt="" referrerPolicy="no-referrer" />
                     : <div className="w-7 h-7 rounded-full bg-slate-700 flex items-center justify-center text-xs font-bold text-slate-400">
                         {u.abbreviation.slice(0, 1).toUpperCase()}
                       </div>

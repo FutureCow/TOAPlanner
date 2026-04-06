@@ -140,9 +140,6 @@ export default function RequestsTab() {
           <option value="">Alle statussen</option>
           {STATUS_VALUES.map(v => <option key={v} value={v}>{STATUS_LABELS[v]}</option>)}
         </select>
-        <input value={search} onChange={e => setSearch(e.target.value)}
-          placeholder="Zoek op naam of docent…"
-          className="flex-1 min-w-[150px] bg-slate-800 border border-slate-700 text-slate-300 rounded px-2 py-1.5 text-xs" />
         <div className="flex items-center gap-1">
           <label className="text-xs text-slate-500 whitespace-nowrap">Week:</label>
           <input
@@ -156,6 +153,9 @@ export default function RequestsTab() {
             <button onClick={() => setWeekFilter('')} className="text-slate-500 hover:text-slate-300 text-xs">✕</button>
           )}
         </div>
+        <input value={search} onChange={e => setSearch(e.target.value)}
+          placeholder="Zoek op naam of docent…"
+          className="flex-1 min-w-[150px] bg-slate-800 border border-slate-700 text-slate-300 rounded px-2 py-1.5 text-xs" />
         <select value={pageSize} onChange={e => setPageSize(Number(e.target.value))}
           className="bg-slate-800 border border-slate-700 text-slate-300 rounded px-2 py-1.5 text-xs">
           <option value={25}>25</option>
