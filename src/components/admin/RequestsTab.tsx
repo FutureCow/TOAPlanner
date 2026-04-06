@@ -149,8 +149,7 @@ export default function RequestsTab() {
               type="date"
               value={weekFilter}
               onChange={e => setWeekFilter(e.target.value)}
-              className="bg-slate-800 border border-slate-700 text-slate-300 rounded pl-7 pr-2 py-1.5 text-xs [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:cursor-pointer"
-              style={{ colorScheme: 'dark' }}
+              className="date-input bg-slate-800 border border-slate-700 text-slate-300 rounded pl-7 pr-2 py-1.5 text-xs [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:cursor-pointer"
               title="Filter op week (kies een dag in de gewenste week)"
             />
           </div>

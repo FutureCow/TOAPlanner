@@ -71,6 +71,10 @@ html[data-theme="light"] textarea[class*="bg-slate"] {
   color: #1d1d1f !important;
   border-color: #d1d1d6 !important;
 }
+
+/* Date input color scheme per theme */
+input[type="date"].date-input { color-scheme: dark; }
+html[data-theme="light"] input[type="date"].date-input { color-scheme: light; }
 html[data-theme="light"] input::placeholder,
 html[data-theme="light"] textarea::placeholder { color: #aeaeb2 !important; }
 
