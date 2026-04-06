@@ -6,16 +6,16 @@ const DAYS = ['Ma', 'Di', 'Wo', 'Do', 'Vr']
 const DAY_NAMES = ['Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag']
 
 const PRESET_COLORS = [
-  '#2563eb', '#0891b2', '#0d9488', '#16a34a',
-  '#ea580c', '#9333ea', '#db2777',
+  '#2563eb', '#16a34a', '#eab308', '#ea580c',
+  '#dc2626', '#9333ea', '#db2777',
 ]
 
 const COLOR_NAMES: Record<string, string> = {
   '#2563eb': 'Blauw',
-  '#0891b2': 'Cyaan',
-  '#0d9488': 'Teal',
   '#16a34a': 'Groen',
+  '#eab308': 'Geel',
   '#ea580c': 'Oranje',
+  '#dc2626': 'Rood',
   '#9333ea': 'Paars',
   '#db2777': 'Roze',
 }
