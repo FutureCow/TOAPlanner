@@ -8,16 +8,17 @@ import RequestModal from './RequestModal'
 import RequestDetailPanel from './RequestDetailPanel'
 
 const DAYS_SHORT = ['Maa', 'Din', 'Woe', 'Don', 'Vri']
-const PERIODS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 const GRID_COLS = '2rem repeat(5, 1fr)'
 
 interface Props {
   subject: string | null
   session: Session
   subjectConfig?: SubjectConfig | null
+  periodsPerDay?: number
 }
 
-export default function WeekCalendar({ subject, session, subjectConfig }: Props) {
+export default function WeekCalendar({ subject, session, subjectConfig, periodsPerDay = 10 }: Props) {
+  const PERIODS = Array.from({ length: periodsPerDay }, (_, i) => i + 1)
   const [currentDate, setCurrentDate] = useState(() => getWeekDates(new Date())[0])
   const [requests, setRequests] = useState<RequestWithUser[]>([])
   const [modal, setModal] = useState<{ date: Date; period: number } | null>(null)

@@ -4,14 +4,14 @@ import { useSession } from 'next-auth/react'
 import { redirect } from 'next/navigation'
 import RequestsTab from '@/components/admin/RequestsTab'
 import UsersTab from '@/components/admin/UsersTab'
-import SubjectsTab from '@/components/admin/SubjectsTab'
+import SettingsTab from '@/components/admin/SettingsTab'
 
-type Tab = 'requests' | 'users' | 'subjects'
+type Tab = 'requests' | 'users' | 'settings'
 
 const TAB_LABELS: Record<Tab, string> = {
   requests: '📋 Aanvragen',
   users: '👥 Gebruikers',
-  subjects: '⚗️ Vakken',
+  settings: '⚙️ Instellingen',
 }
 
 export default function AdminPage() {
@@ -39,7 +39,7 @@ export default function AdminPage() {
       </div>
       {tab === 'requests' && <RequestsTab />}
       {tab === 'users' && <UsersTab />}
-      {tab === 'subjects' && <SubjectsTab />}
+      {tab === 'settings' && <SettingsTab />}
     </div>
   )
 }

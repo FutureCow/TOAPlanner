@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react'
 import { UserRow, SubjectConfig } from '@/types'
 import { format } from 'date-fns'
 import { nl } from 'date-fns/locale'
-import RegistrationToggle from './RegistrationToggle'
 
 export default function UsersTab() {
   const [users, setUsers] = useState<UserRow[]>([])
@@ -130,9 +129,6 @@ export default function UsersTab() {
             ))}
           </tbody>
         </table>
-      </div>
-      <div className="mt-4">
-        <RegistrationToggle />
       </div>
     </div>
   )

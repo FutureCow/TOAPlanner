@@ -7,9 +7,10 @@ export default async function SubjectPage({ params }: { params: { subject: strin
   const session = await getAuth()
   if (!session) redirect('/login')
 
-  const subjectConfig = await prisma.subjectConfig.findUnique({
-    where: { id: params.subject },
-  })
+  const [subjectConfig, appSettings] = await Promise.all([
+    prisma.subjectConfig.findUnique({ where: { id: params.subject } }),
+    prisma.appSettings.findUnique({ where: { id: 1 } }),
+  ])
   if (!subjectConfig) redirect('/natuurkunde')
 
   return (
@@ -17,6 +18,7 @@ export default async function SubjectPage({ params }: { params: { subject: strin
       subject={subjectConfig.id}
       session={session}
       subjectConfig={subjectConfig}
+      periodsPerDay={appSettings?.periodsPerDay ?? 10}
     />
   )
 }
