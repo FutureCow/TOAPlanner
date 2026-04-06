@@ -1,5 +1,4 @@
 import { redirect } from 'next/navigation'
-import { headers } from 'next/headers'
 import { getAuth } from '@/lib/auth'
 import { getSchoolSlug, getPrisma } from '@/lib/school'
 import WeekCalendar from '@/components/WeekCalendar'

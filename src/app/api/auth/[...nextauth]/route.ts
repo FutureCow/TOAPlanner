@@ -1,17 +1,16 @@
 import NextAuth from 'next-auth'
-import { NextRequest } from 'next/server'
 import { getSchoolSlug } from '@/lib/school'
 import { getAuthOptions } from '@/lib/auth'
 
-function makeHandler(req: NextRequest) {
+function makeHandler() {
   const slug = getSchoolSlug()
   return NextAuth(getAuthOptions(slug))
 }
 
-export async function GET(req: NextRequest, ctx: object) {
-  return makeHandler(req)(req, ctx)
+export async function GET(req: Request, ctx: object) {
+  return makeHandler()(req as never, ctx)
 }
 
-export async function POST(req: NextRequest, ctx: object) {
-  return makeHandler(req)(req, ctx)
+export async function POST(req: Request, ctx: object) {
+  return makeHandler()(req as never, ctx)
 }
