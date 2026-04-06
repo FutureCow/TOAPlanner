@@ -1,11 +1,21 @@
 import { redirect } from 'next/navigation'
 import { getAuth } from '@/lib/auth'
+import { getSchoolSlug, getPrisma } from '@/lib/school'
 import WeekCalendar from '@/components/WeekCalendar'
-import prisma from '@/lib/prisma'
 
 export default async function OverviewPage() {
-  const session = await getAuth()
+  const slug = getSchoolSlug()
+  const session = await getAuth(slug)
   if (!session) redirect('/login')
-  const appSettings = await prisma.appSettings.findUnique({ where: { id: 1 } })
-  return <WeekCalendar subject={null} session={session} periodsPerDay={appSettings?.periodsPerDay ?? 10} />
+
+  const db = getPrisma(slug)
+  const appSettings = await db.appSettings.findUnique({ where: { id: 1 } })
+
+  return (
+    <WeekCalendar
+      subject={null}
+      session={session}
+      periodsPerDay={appSettings?.periodsPerDay ?? 10}
+    />
+  )
 }

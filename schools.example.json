@@ -1,0 +1,19 @@
+{
+  "amersfoortseBerg": {
+    "name": "De Amersfoortse Berg",
+    "databaseUrl": "postgresql://toa_user:wachtwoord@localhost:5432/toa_amersfoortse_berg",
+    "allowedDomain": "amersfoortseBerg.nl",
+    "googleClientId": "xxxxxxxx.apps.googleusercontent.com",
+    "googleClientSecret": "GOCSPX-xxxxxxxx"
+  },
+  "andereschool": {
+    "name": "Andere School",
+    "databaseUrl": "postgresql://toa_user:wachtwoord@localhost:5432/toa_andereschool",
+    "allowedDomain": "andereschool.nl",
+    "googleClientId": "yyyyyyyy.apps.googleusercontent.com",
+    "googleClientSecret": "GOCSPX-yyyyyyyy",
+    "azureClientId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+    "azureClientSecret": "azure-secret",
+    "azureTenantId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+  }
+}

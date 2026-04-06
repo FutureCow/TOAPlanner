@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
-import prisma from '@/lib/prisma'
+import { getAuthOptions } from '@/lib/auth'
+import { getSchoolSlug, getPrisma } from '@/lib/school'
 
 const INCLUDE_USER = {
   createdBy: { select: { id: true, name: true, abbreviation: true } },
@@ -12,10 +12,12 @@ function canModify(userId: string, isTOA: boolean, isAdmin: boolean, request: { 
 }
 
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
-  const session = await getServerSession(authOptions)
+  const slug = getSchoolSlug()
+  const session = await getServerSession(getAuthOptions(slug))
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const existing = await prisma.request.findUnique({ where: { id: params.id } })
+  const db = getPrisma(slug)
+  const existing = await db.request.findUnique({ where: { id: params.id } })
   if (!existing) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
   const { isTOA, isAdmin, id: userId } = session.user
@@ -40,7 +42,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   if (subject !== undefined) updateData.subject = subject
   if (status !== undefined && (isTOA || isAdmin)) updateData.status = status
 
-  const updated = await prisma.request.update({
+  const updated = await db.request.update({
     where: { id: params.id },
     data: updateData,
     include: INCLUDE_USER,
@@ -50,10 +52,12 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 }
 
 export async function DELETE(_req: NextRequest, { params }: { params: { id: string } }) {
-  const session = await getServerSession(authOptions)
+  const slug = getSchoolSlug()
+  const session = await getServerSession(getAuthOptions(slug))
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const existing = await prisma.request.findUnique({ where: { id: params.id } })
+  const db = getPrisma(slug)
+  const existing = await db.request.findUnique({ where: { id: params.id } })
   if (!existing) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
   const { isTOA, isAdmin, id: userId } = session.user
@@ -61,6 +65,6 @@ export async function DELETE(_req: NextRequest, { params }: { params: { id: stri
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
-  await prisma.request.delete({ where: { id: params.id } })
+  await db.request.delete({ where: { id: params.id } })
   return new NextResponse(null, { status: 204 })
 }

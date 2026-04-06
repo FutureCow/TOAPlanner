@@ -1,14 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
-import prisma from '@/lib/prisma'
+import { getAuthOptions } from '@/lib/auth'
+import { getSchoolSlug, getPrisma } from '@/lib/school'
 
 const INCLUDE_USER = {
   createdBy: { select: { id: true, name: true, abbreviation: true } },
 }
 
 export async function GET(req: NextRequest) {
-  const session = await getServerSession(authOptions)
+  const slug = getSchoolSlug()
+  const session = await getServerSession(getAuthOptions(slug))
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const { searchParams } = new URL(req.url)
@@ -21,7 +22,8 @@ export async function GET(req: NextRequest) {
   const end = new Date(start)
   end.setDate(end.getDate() + 5)
 
-  const requests = await prisma.request.findMany({
+  const db = getPrisma(slug)
+  const requests = await db.request.findMany({
     where: {
       date: { gte: start, lt: end },
       ...(subject ? { subject } : {}),
@@ -34,7 +36,8 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const session = await getServerSession(authOptions)
+  const slug = getSchoolSlug()
+  const session = await getServerSession(getAuthOptions(slug))
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await req.json()
@@ -44,11 +47,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
   }
 
-  const request = await prisma.request.create({
+  const db = getPrisma(slug)
+  const request = await db.request.create({
     data: {
       title,
       klas: klas ?? '',
-      classroom,
+      classroom: classroom ?? '',
       date: new Date(date + 'T00:00:00.000Z'),
       period: Number(period),
       periodEnd: periodEnd != null && Number(periodEnd) !== Number(period) ? Number(periodEnd) : null,
@@ -62,22 +66,22 @@ export async function POST(req: NextRequest) {
   return NextResponse.json(request, { status: 201 })
 }
 
-// Update an entire recurring series by recurringGroupId (title/klas/classroom/period/subject)
 export async function PATCH(req: NextRequest) {
-  const session = await getServerSession(authOptions)
+  const slug = getSchoolSlug()
+  const session = await getServerSession(getAuthOptions(slug))
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await req.json()
   const { recurringGroupId, title, klas, classroom, period, periodEnd, subject, status } = body
   if (!recurringGroupId) return NextResponse.json({ error: 'recurringGroupId required' }, { status: 400 })
 
-  // Status changes allowed for TOA/admin; content edits only for owner/TOA/admin
   const isTOAOrAdmin = session.user.isTOA || session.user.isAdmin
   const where = isTOAOrAdmin
     ? { recurringGroupId }
     : { recurringGroupId, createdById: session.user.id }
 
-  const result = await prisma.request.updateMany({
+  const db = getPrisma(slug)
+  const result = await db.request.updateMany({
     where,
     data: {
       ...(title !== undefined ? { title } : {}),
@@ -92,9 +96,9 @@ export async function PATCH(req: NextRequest) {
   return NextResponse.json({ updated: result.count })
 }
 
-// Delete an entire recurring series by recurringGroupId
 export async function DELETE(req: NextRequest) {
-  const session = await getServerSession(authOptions)
+  const slug = getSchoolSlug()
+  const session = await getServerSession(getAuthOptions(slug))
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const { recurringGroupId } = await req.json()
@@ -104,6 +108,7 @@ export async function DELETE(req: NextRequest) {
     ? { recurringGroupId }
     : { recurringGroupId, createdById: session.user.id }
 
-  const result = await prisma.request.deleteMany({ where })
+  const db = getPrisma(slug)
+  const result = await db.request.deleteMany({ where })
   return NextResponse.json({ deleted: result.count })
 }

@@ -1,17 +1,20 @@
 import { redirect } from 'next/navigation'
+import { headers } from 'next/headers'
 import { getAuth } from '@/lib/auth'
+import { getSchoolSlug, getPrisma } from '@/lib/school'
 import WeekCalendar from '@/components/WeekCalendar'
-import prisma from '@/lib/prisma'
 
 export default async function SubjectPage({ params }: { params: { subject: string } }) {
-  const session = await getAuth()
+  const slug = getSchoolSlug()
+  const session = await getAuth(slug)
   if (!session) redirect('/login')
 
+  const db = getPrisma(slug)
   const [subjectConfig, appSettings] = await Promise.all([
-    prisma.subjectConfig.findUnique({ where: { id: params.subject } }),
-    prisma.appSettings.findUnique({ where: { id: 1 } }),
+    db.subjectConfig.findUnique({ where: { id: params.subject } }),
+    db.appSettings.findUnique({ where: { id: 1 } }),
   ])
-  if (!subjectConfig) redirect('/natuurkunde')
+  if (!subjectConfig) redirect('/overzicht')
 
   return (
     <WeekCalendar

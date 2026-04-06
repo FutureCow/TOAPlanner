@@ -29,6 +29,9 @@ yarn-error.log*
 .env
 .env*.local
 
+# school configs (bevatten database-credentials en OAuth secrets)
+schools.json
+
 # vercel
 .vercel
 

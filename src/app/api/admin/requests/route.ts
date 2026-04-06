@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
-import prisma from '@/lib/prisma'
+import { getAuthOptions } from '@/lib/auth'
+import { getSchoolSlug, getPrisma } from '@/lib/school'
 import { Status } from '@prisma/client'
 
 const INCLUDE_USER = { createdBy: { select: { id: true, name: true, abbreviation: true } } }
 
 export async function GET(req: NextRequest) {
-  const session = await getServerSession(authOptions)
+  const slug = getSchoolSlug()
+  const session = await getServerSession(getAuthOptions(slug))
   if (!session?.user.isAdmin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 
   const { searchParams } = new URL(req.url)
@@ -20,7 +21,6 @@ export async function GET(req: NextRequest) {
   let dateFilter: { gte?: Date; lt?: Date } | undefined
   if (weekStart) {
     const start = new Date(weekStart + 'T00:00:00.000Z')
-    // Find Monday of the given week
     const dow = start.getUTCDay()
     const monday = new Date(start)
     monday.setUTCDate(start.getUTCDate() - (dow === 0 ? 6 : dow - 1))
@@ -29,7 +29,8 @@ export async function GET(req: NextRequest) {
     dateFilter = { gte: monday, lt: saturday }
   }
 
-  const requests = await prisma.request.findMany({
+  const db = getPrisma(slug)
+  const requests = await db.request.findMany({
     where: {
       ...(subject ? { subject } : {}),
       ...(status ? { status } : {}),
@@ -50,7 +51,8 @@ export async function GET(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-  const session = await getServerSession(authOptions)
+  const slug = getSchoolSlug()
+  const session = await getServerSession(getAuthOptions(slug))
   if (!session?.user.isAdmin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 
   const { ids } = await req.json()
@@ -58,6 +60,7 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({ error: 'ids required' }, { status: 400 })
   }
 
-  const result = await prisma.request.deleteMany({ where: { id: { in: ids } } })
+  const db = getPrisma(slug)
+  const result = await db.request.deleteMany({ where: { id: { in: ids } } })
   return NextResponse.json({ deleted: result.count })
 }
