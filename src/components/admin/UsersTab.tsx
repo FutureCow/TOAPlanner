@@ -56,6 +56,7 @@ export default function UsersTab() {
                 {/* Avatar */}
                 <td className="px-3 py-2.5">
                   {u.image
+                    // eslint-disable-next-line @next/next/no-img-element
                     ? <img src={u.image} width={28} height={28} className="w-7 h-7 rounded-full object-cover" alt="" referrerPolicy="no-referrer" />
                     : <div className="w-7 h-7 rounded-full bg-slate-700 flex items-center justify-center text-xs font-bold text-slate-400">
                         {u.abbreviation.slice(0, 1).toUpperCase()}
