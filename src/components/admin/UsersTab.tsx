@@ -37,7 +37,6 @@ export default function UsersTab() {
 
   return (
     <div>
-      <RegistrationToggle />
       <div className="overflow-x-auto">
         <table className="w-full text-xs border border-slate-700 rounded-lg overflow-hidden">
           <thead>
@@ -131,6 +130,9 @@ export default function UsersTab() {
             ))}
           </tbody>
         </table>
+      </div>
+      <div className="mt-4">
+        <RegistrationToggle />
       </div>
     </div>
   )

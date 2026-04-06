@@ -58,9 +58,9 @@ function SubjectCard({ subject, onSaved, onDeleted }: SubjectCardProps) {
   }
 
   return (
-    <div className="bg-slate-800 border border-slate-700 rounded-xl p-4 space-y-4">
+    <div className="bg-slate-800 border border-slate-700 rounded-xl p-3 space-y-3">
       {/* Color stripe */}
-      <div className="h-1.5 rounded-full -mt-1" style={{ backgroundColor: color }} />
+      <div className="h-1 rounded-full -mt-0.5" style={{ backgroundColor: color }} />
 
       {/* Name */}
       <div>
@@ -74,7 +74,7 @@ function SubjectCard({ subject, onSaved, onDeleted }: SubjectCardProps) {
 
       {/* Accent color */}
       <div>
-        <label className="block text-xs text-slate-400 mb-2">Accentkleur</label>
+        <label className="block text-xs text-slate-400 mb-1.5">Accentkleur</label>
         <div className="flex items-center gap-2 flex-wrap">
           {PRESET_COLORS.map(c => (
             <button
@@ -100,7 +100,7 @@ function SubjectCard({ subject, onSaved, onDeleted }: SubjectCardProps) {
 
       {/* TOA absence days */}
       <div>
-        <label className="block text-xs text-slate-400 mb-2">TOA afwezig op</label>
+        <label className="block text-xs text-slate-400 mb-1.5">TOA afwezig op</label>
         <div className="flex gap-2">
           {DAYS.map((day, i) => (
             <button
@@ -213,7 +213,7 @@ export default function SubjectsTab() {
             />
           </div>
           <div>
-            <label className="block text-xs text-slate-400 mb-2">Accentkleur</label>
+            <label className="block text-xs text-slate-400 mb-1.5">Accentkleur</label>
             <div className="flex items-center gap-2 flex-wrap">
               {PRESET_COLORS.map(c => (
                 <button

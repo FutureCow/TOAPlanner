@@ -52,13 +52,13 @@ function StatusCell({ request, onUpdated }: { request: RequestWithUser; onUpdate
         {STATUS_LABELS[request.status]} ▾
       </button>
       {open && (
-        <div className="absolute right-0 top-6 z-20 bg-slate-800 border border-slate-600 rounded shadow-xl min-w-[130px]">
+        <div className="absolute right-0 top-6 z-30 bg-slate-900 border border-slate-600 rounded shadow-xl min-w-[130px]">
           {STATUS_VALUES.map(s => (
             <button
               key={s}
               onClick={() => changeStatus(s)}
-              className={`w-full text-left px-3 py-1.5 text-xs hover:bg-slate-700 transition-colors ${
-                s === request.status ? 'font-bold text-white' : 'text-slate-300'
+              className={`w-full text-left px-3 py-1.5 text-xs hover:bg-slate-800 transition-colors text-slate-200 ${
+                s === request.status ? 'font-bold' : 'opacity-60'
               }`}
             >
               {STATUS_LABELS[s]}
@@ -171,9 +171,9 @@ export default function RequestsTab() {
         )}
       </div>
 
-      <div className="border border-slate-700 rounded-lg overflow-hidden text-xs">
+      <div className="border border-slate-700 rounded-lg text-xs">
         {/* Header */}
-        <div className="grid bg-slate-900 border-b-2 border-slate-600 px-3 py-2 gap-2 font-semibold text-slate-500 uppercase tracking-wide text-[0.65rem]"
+        <div className="grid bg-slate-900 border-b-2 border-slate-600 rounded-t-lg px-3 py-2 gap-2 font-semibold text-slate-500 uppercase tracking-wide text-[0.65rem]"
           style={{ gridTemplateColumns: '1.5rem 1fr 1fr 1.2fr 1fr 0.8fr 1.2fr 1.4fr 1.5rem' }}>
           <input type="checkbox" onChange={e => toggleAll(e.target.checked)}
             checked={selected.size === requests.length && requests.length > 0} />
