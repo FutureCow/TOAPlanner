@@ -17,7 +17,7 @@ echo "==> Pulling latest changes..."
 git pull
 
 echo "==> Installing dependencies..."
-npm ci --omit=dev
+npm ci
 
 echo "==> Running database migrations..."
 npx prisma migrate deploy
