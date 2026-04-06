@@ -5,9 +5,10 @@ import { SubjectConfig } from '@/types'
 const DAYS = ['Ma', 'Di', 'Wo', 'Do', 'Vr']
 const DAY_NAMES = ['Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag']
 
+// Accent colors for subjects — saturated but readable on dark and light backgrounds
 const PRESET_COLORS = [
   '#2563eb', '#16a34a', '#eab308', '#ea580c',
-  '#dc2626', '#9333ea', '#db2777',
+  '#dc2626', '#9333ea', '#db2777', '#0891b2',
 ]
 
 const COLOR_NAMES: Record<string, string> = {
@@ -18,7 +19,23 @@ const COLOR_NAMES: Record<string, string> = {
   '#dc2626': 'Rood',
   '#9333ea': 'Paars',
   '#db2777': 'Roze',
+  '#0891b2': 'Cyaan',
 }
+
+// Status color palette — medium-saturation, works in dark and light theme
+const STATUS_PRESET_COLORS = [
+  '#64748b', // slate (standaard: aanvraag)
+  '#3b82f6', // blauw
+  '#06b6d4', // cyaan
+  '#0d9488', // teal
+  '#16a34a', // groen (standaard: met TOA)
+  '#65a30d', // lime
+  '#d97706', // amber (standaard: zonder TOA)
+  '#ea580c', // oranje
+  '#dc2626', // rood (standaard: afgekeurd)
+  '#9333ea', // paars
+  '#db2777', // roze
+]
 
 // ── Subject card ────────────────────────────────────────────────────────────
 
@@ -77,11 +94,6 @@ function SubjectCard({ subject, onSaved, onDeleted }: SubjectCardProps) {
               className={`w-5 h-5 rounded-full transition-all ${color === c ? 'ring-2 ring-offset-1 ring-slate-500 scale-110' : 'opacity-80 hover:opacity-100'}`}
               style={{ backgroundColor: c }} title={COLOR_NAMES[c] ?? c} />
           ))}
-          <div className="flex items-center gap-1.5 ml-1">
-            <input type="color" value={color} onChange={e => setColor(e.target.value)}
-              className="w-6 h-6 rounded cursor-pointer bg-transparent border-0" title="Aangepaste kleur" />
-            <span className="text-xs text-slate-400">{COLOR_NAMES[color] ?? color}</span>
-          </div>
         </div>
       </div>
       <div>
@@ -350,27 +362,30 @@ export default function SettingsTab() {
         <div className="bg-slate-900 border border-slate-700 rounded-lg p-4 space-y-3">
           <p className="text-xs text-slate-500">Pas de tekst en kleur aan van elke status.</p>
           {STATUS_ROWS.map(({ key, title }) => (
-            <div key={key} className="flex items-center gap-3">
-              <div className="w-3 h-8 rounded flex-shrink-0" style={{ backgroundColor: statusCfg[key].color }} />
-              <span className="text-xs text-slate-400 w-36 flex-shrink-0">{title}</span>
-              <input
-                value={statusCfg[key].label}
-                onChange={e => {
-                  const val = e.target.value
-                  setStatusCfg(prev => ({ ...prev, [key]: { ...prev[key], label: val } }))
-                }}
-                className="flex-1 bg-slate-800 border border-slate-600 rounded px-3 py-1.5 text-sm text-white focus:outline-none focus:border-blue-500"
-              />
-              <input
-                type="color"
-                value={statusCfg[key].color}
-                onChange={e => {
-                  const val = e.target.value
-                  setStatusCfg(prev => ({ ...prev, [key]: { ...prev[key], color: val } }))
-                }}
-                className="w-8 h-8 rounded cursor-pointer border border-slate-600 flex-shrink-0"
-                title="Kies kleur"
-              />
+            <div key={key} className="space-y-1.5">
+              <div className="flex items-center gap-3">
+                <div className="w-3 h-6 rounded flex-shrink-0" style={{ backgroundColor: statusCfg[key].color }} />
+                <span className="text-xs text-slate-400 w-36 flex-shrink-0">{title}</span>
+                <input
+                  value={statusCfg[key].label}
+                  onChange={e => {
+                    const val = e.target.value
+                    setStatusCfg(prev => ({ ...prev, [key]: { ...prev[key], label: val } }))
+                  }}
+                  className="flex-1 bg-slate-800 border border-slate-600 rounded px-3 py-1.5 text-sm text-white focus:outline-none focus:border-blue-500"
+                />
+              </div>
+              <div className="flex items-center gap-1.5 pl-6 flex-wrap">
+                {STATUS_PRESET_COLORS.map(c => (
+                  <button
+                    key={c}
+                    onClick={() => setStatusCfg(prev => ({ ...prev, [key]: { ...prev[key], color: c } }))}
+                    className={`w-4 h-4 rounded-full transition-all flex-shrink-0 ${statusCfg[key].color === c ? 'ring-2 ring-offset-1 ring-slate-400 scale-110' : 'opacity-70 hover:opacity-100'}`}
+                    style={{ backgroundColor: c }}
+                    title={c}
+                  />
+                ))}
+              </div>
             </div>
           ))}
           <div className="flex items-center justify-between pt-1">
@@ -417,11 +432,6 @@ export default function SettingsTab() {
                     className={`w-5 h-5 rounded-full transition-all ${newColor === c ? 'ring-2 ring-offset-1 ring-slate-500 scale-110' : 'opacity-80 hover:opacity-100'}`}
                     style={{ backgroundColor: c }} title={COLOR_NAMES[c] ?? c} />
                 ))}
-                <div className="flex items-center gap-1.5">
-                  <input type="color" value={newColor} onChange={e => setNewColor(e.target.value)}
-                    className="w-6 h-6 rounded cursor-pointer bg-transparent border-0" />
-                  <span className="text-xs text-slate-400">{COLOR_NAMES[newColor] ?? newColor}</span>
-                </div>
               </div>
             </div>
             {addError && <p className="text-red-400 text-xs">{addError}</p>}
