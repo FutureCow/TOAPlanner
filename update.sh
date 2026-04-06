@@ -1,6 +1,12 @@
 #!/bin/bash
 set -e
 
+# Laad omgevingsvariabelen uit .env (Prisma 7 leest .env niet meer automatisch)
+set -a
+# shellcheck source=.env
+source "$(dirname "$0")/.env"
+set +a
+
 echo "==> Pulling latest changes..."
 git pull
 

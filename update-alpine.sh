@@ -7,6 +7,12 @@ export PATH="$(npm config get prefix)/bin:$PATH"
 APP_DIR="/opt/toa-planner"
 cd "$APP_DIR"
 
+# Laad omgevingsvariabelen uit .env (Prisma 7 leest .env niet meer automatisch)
+set -a
+# shellcheck source=.env
+source "$APP_DIR/.env"
+set +a
+
 echo "==> Pulling latest changes..."
 git pull
 
