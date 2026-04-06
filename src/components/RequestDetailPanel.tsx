@@ -2,16 +2,12 @@
 import { useState } from 'react'
 import type { Session } from 'next-auth'
 import { RequestWithUser } from '@/types'
-import { Status } from '@prisma/client'
+import { DEFAULT_STATUS_COLORS, DEFAULT_STATUS_LABELS } from './RequestBlock'
 import { format } from 'date-fns'
 import { nl } from 'date-fns/locale'
 
-const STATUS_OPTIONS: { value: Status; label: string; style: string }[] = [
-  { value: 'PENDING',              label: 'Aangevraagd',    style: 'bg-slate-700 text-slate-300 hover:bg-slate-600' },
-  { value: 'APPROVED_WITH_TOA',    label: '✓ Met TOA',      style: 'bg-green-900 text-green-300 hover:bg-green-800 border border-green-600' },
-  { value: 'APPROVED_WITHOUT_TOA', label: '◑ Zonder TOA',   style: 'bg-amber-900 text-amber-300 hover:bg-amber-800 border border-amber-600' },
-  { value: 'REJECTED',             label: '✗ Afgekeurd',    style: 'bg-red-900 text-red-300 hover:bg-red-800 border border-red-600' },
-]
+const STATUS_KEYS = ['PENDING', 'APPROVED_WITH_TOA', 'APPROVED_WITHOUT_TOA', 'REJECTED'] as const
+type StatusKey = typeof STATUS_KEYS[number]
 
 interface Props {
   request: RequestWithUser
@@ -20,16 +16,20 @@ interface Props {
   onEdit: () => void
   onDeleted: () => void
   onStatusChanged: () => void
+  statusColors?: typeof DEFAULT_STATUS_COLORS
+  statusLabels?: typeof DEFAULT_STATUS_LABELS
 }
 
-export default function RequestDetailPanel({ request, session, onClose, onEdit, onDeleted, onStatusChanged }: Props) {
+export default function RequestDetailPanel({ request, session, onClose, onEdit, onDeleted, onStatusChanged, statusColors, statusLabels }: Props) {
   const [deleting, setDeleting] = useState(false)
   const [applyToSeries, setApplyToSeries] = useState(false)
   const canModify = session.user.isTOA || session.user.isAdmin || request.createdById === session.user.id
   const canChangeStatus = session.user.isTOA || session.user.isAdmin
   const dateLabel = format(new Date(request.date), 'EEEE d MMMM yyyy', { locale: nl })
+  const colors = statusColors ?? DEFAULT_STATUS_COLORS
+  const labels = statusLabels ?? DEFAULT_STATUS_LABELS
 
-  async function handleStatus(status: Status) {
+  async function handleStatus(status: StatusKey) {
     if (applyToSeries && request.recurringGroupId) {
       const res = await fetch('/api/requests', {
         method: 'PATCH',
@@ -109,13 +109,14 @@ export default function RequestDetailPanel({ request, session, onClose, onEdit, 
               )}
             </div>
             <div className="flex flex-wrap gap-1.5">
-              {STATUS_OPTIONS.map(opt => (
+              {STATUS_KEYS.map(s => (
                 <button
-                  key={opt.value}
-                  onClick={() => handleStatus(opt.value)}
-                  className={`px-2 py-1 rounded text-xs font-medium transition-colors ${opt.style} ${request.status === opt.value ? 'ring-2 ring-white/30' : ''}`}
+                  key={s}
+                  onClick={() => handleStatus(s)}
+                  className={`px-2 py-1 rounded text-xs font-medium transition-colors text-slate-100 ${request.status === s ? 'ring-2 ring-white/30' : 'opacity-60 hover:opacity-90'}`}
+                  style={{ backgroundColor: colors[s] + '55', border: `1px solid ${colors[s]}99` }}
                 >
-                  {opt.label}
+                  {labels[s]}
                 </button>
               ))}
             </div>

@@ -1,26 +1,18 @@
 import { RequestWithUser } from '@/types'
-import { Status } from '@prisma/client'
 
-const STATUS_STYLES: Record<Status, string> = {
-  PENDING:              'bg-slate-700 border-slate-400 text-slate-200',
-  APPROVED_WITH_TOA:    'bg-green-950 border-green-500 text-green-100',
-  APPROVED_WITHOUT_TOA: 'bg-amber-950 border-amber-500 text-amber-100',
-  REJECTED:             'bg-red-950 border-red-500 text-red-100',
+// Default colors per status (hex). Components receive these via statusColors prop.
+export const DEFAULT_STATUS_COLORS = {
+  PENDING:              '#64748b',
+  APPROVED_WITH_TOA:    '#16a34a',
+  APPROVED_WITHOUT_TOA: '#d97706',
+  REJECTED:             '#dc2626',
 }
 
-const ABBR_STYLES: Record<Status, string> = {
-  PENDING:              'text-slate-400',
-  APPROVED_WITH_TOA:    'text-green-400',
-  APPROVED_WITHOUT_TOA: 'text-amber-400',
-  REJECTED:             'text-red-400',
-}
-
-// Thin continuation bar colors for multi-period blocks
-const CONT_STYLES: Record<Status, string> = {
-  PENDING:              'bg-slate-600 border-slate-400',
-  APPROVED_WITH_TOA:    'bg-green-900 border-green-500',
-  APPROVED_WITHOUT_TOA: 'bg-amber-900 border-amber-500',
-  REJECTED:             'bg-red-900 border-red-500',
+export const DEFAULT_STATUS_LABELS = {
+  PENDING:              'Aangevraagd',
+  APPROVED_WITH_TOA:    'Goedgekeurd met TOA',
+  APPROVED_WITHOUT_TOA: 'Zonder TOA',
+  REJECTED:             'Afgekeurd',
 }
 
 interface Props {
@@ -28,19 +20,24 @@ interface Props {
   isFirst: boolean
   onClick: (request: RequestWithUser) => void
   accentColor?: string
+  statusColors?: typeof DEFAULT_STATUS_COLORS
 }
 
-export default function RequestBlock({ request, isFirst, onClick, accentColor }: Props) {
+export default function RequestBlock({ request, isFirst, onClick, accentColor, statusColors }: Props) {
+  const colors = statusColors ?? DEFAULT_STATUS_COLORS
+  const color = colors[request.status]
+  const borderColor = accentColor ?? color
+
   if (!isFirst) {
     return (
       <div
         onClick={() => onClick(request)}
-        className={`border-l-[3px] rounded-sm px-1 py-0.5 cursor-pointer hover:brightness-125 transition-all mb-1 flex items-center gap-1 ${CONT_STYLES[request.status]}`}
-        style={accentColor ? { borderLeftColor: accentColor } : undefined}
+        className="border-l-[3px] rounded-sm px-1 py-0.5 cursor-pointer hover:brightness-125 transition-all mb-1 flex items-center gap-1"
+        style={{ backgroundColor: color + '25', borderLeftColor: borderColor }}
         title={`${request.klas ? request.klas + ' – ' : ''}${request.title} (vervolg)`}
       >
         <div className="w-1 h-1 rounded-full bg-current opacity-50" />
-        <span className="text-[0.6rem] opacity-60 truncate">
+        <span className="text-[0.6rem] opacity-60 truncate text-slate-200">
           {request.klas ? `${request.klas} – ` : ''}{request.title}
         </span>
       </div>
@@ -50,15 +47,15 @@ export default function RequestBlock({ request, isFirst, onClick, accentColor }:
   return (
     <div
       onClick={() => onClick(request)}
-      className={`border-l-[3px] rounded px-1.5 py-1 cursor-pointer hover:brightness-125 transition-all mb-1 ${STATUS_STYLES[request.status]}`}
-      style={accentColor ? { borderLeftColor: accentColor } : undefined}
+      className="border-l-[3px] rounded px-1.5 py-1 cursor-pointer hover:brightness-125 transition-all mb-1"
+      style={{ backgroundColor: color + '25', borderLeftColor: borderColor }}
     >
-      <div className="font-semibold text-xs leading-tight line-clamp-2">
+      <div className="font-semibold text-xs leading-tight line-clamp-2 text-slate-100">
         {request.klas && !request.title.startsWith(request.klas) ? (
           <><span className="opacity-70">{request.klas}</span> – {request.title}</>
         ) : request.title}
       </div>
-      <div className={`text-[0.65rem] mt-0.5 flex items-center gap-1 ${ABBR_STYLES[request.status]}`}>
+      <div className="text-[0.65rem] mt-0.5 flex items-center gap-1" style={{ color }}>
         {request.periodEnd != null && (
           <span className="opacity-60 mr-0.5">
             {request.period}–{request.periodEnd}u

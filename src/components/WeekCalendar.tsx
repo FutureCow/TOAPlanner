@@ -3,12 +3,13 @@ import React, { useState, useEffect, useCallback } from 'react'
 import type { Session } from 'next-auth'
 import { RequestWithUser, SubjectConfig } from '@/types'
 import { getWeekDates, getWeekLabel, prevWeek, nextWeek, toDateString } from '@/lib/week'
-import RequestBlock from './RequestBlock'
+import RequestBlock, { DEFAULT_STATUS_COLORS, DEFAULT_STATUS_LABELS } from './RequestBlock'
 import RequestModal from './RequestModal'
 import RequestDetailPanel from './RequestDetailPanel'
 
 const DAYS_SHORT = ['Maa', 'Din', 'Woe', 'Don', 'Vri']
 const GRID_COLS = '2rem repeat(5, 1fr)'
+const STATUS_KEYS = ['PENDING', 'APPROVED_WITH_TOA', 'APPROVED_WITHOUT_TOA', 'REJECTED'] as const
 
 interface Props {
   subject: string | null
@@ -20,11 +21,13 @@ interface Props {
 export default function WeekCalendar({ subject, session, subjectConfig, periodsPerDay = 10 }: Props) {
   const PERIODS = Array.from({ length: periodsPerDay }, (_, i) => i + 1)
   const [currentDate, setCurrentDate] = useState(() => getWeekDates(new Date())[0])
-  const [requests, setRequests] = useState<RequestWithUser[]>([])
-  const [modal, setModal] = useState<{ date: Date; period: number } | null>(null)
-  const [editing, setEditing] = useState<RequestWithUser | null>(null)
-  const [selected, setSelected] = useState<RequestWithUser | null>(null)
-  const [subjectColorMap, setSubjectColorMap] = useState<Record<string, string>>({})
+  const [requests, setRequests] = useState([] as RequestWithUser[])
+  const [modal, setModal] = useState(null as { date: Date; period: number } | null)
+  const [editing, setEditing] = useState(null as RequestWithUser | null)
+  const [selected, setSelected] = useState(null as RequestWithUser | null)
+  const [subjectColorMap, setSubjectColorMap] = useState({} as Record<string, string>)
+  const [statusColors, setStatusColors] = useState(DEFAULT_STATUS_COLORS)
+  const [statusLabels, setStatusLabels] = useState(DEFAULT_STATUS_LABELS)
 
   const weekDates = getWeekDates(currentDate)
   const today = toDateString(new Date())
@@ -42,6 +45,30 @@ export default function WeekCalendar({ subject, session, subjectConfig, periodsP
   useEffect(() => { load() }, [load])
 
   useEffect(() => {
+    fetch('/api/settings')
+      .then(r => r.ok ? r.json() : {})
+      .then(d => {
+        if (d.statusColors) {
+          setStatusColors({
+            PENDING:              d.statusColors.PENDING              || DEFAULT_STATUS_COLORS.PENDING,
+            APPROVED_WITH_TOA:    d.statusColors.APPROVED_WITH_TOA    || DEFAULT_STATUS_COLORS.APPROVED_WITH_TOA,
+            APPROVED_WITHOUT_TOA: d.statusColors.APPROVED_WITHOUT_TOA || DEFAULT_STATUS_COLORS.APPROVED_WITHOUT_TOA,
+            REJECTED:             d.statusColors.REJECTED             || DEFAULT_STATUS_COLORS.REJECTED,
+          })
+        }
+        if (d.statusLabels) {
+          setStatusLabels({
+            PENDING:              d.statusLabels.PENDING              || DEFAULT_STATUS_LABELS.PENDING,
+            APPROVED_WITH_TOA:    d.statusLabels.APPROVED_WITH_TOA    || DEFAULT_STATUS_LABELS.APPROVED_WITH_TOA,
+            APPROVED_WITHOUT_TOA: d.statusLabels.APPROVED_WITHOUT_TOA || DEFAULT_STATUS_LABELS.APPROVED_WITHOUT_TOA,
+            REJECTED:             d.statusLabels.REJECTED             || DEFAULT_STATUS_LABELS.REJECTED,
+          })
+        }
+      })
+      .catch(() => {})
+  }, [])
+
+  useEffect(() => {
     if (subject !== null) return // only needed in overview
     fetch('/api/subjects')
       .then(r => r.ok ? r.json() : [])
@@ -53,7 +80,6 @@ export default function WeekCalendar({ subject, session, subjectConfig, periodsP
       .catch(() => {})
   }, [subject])
 
-  /** Returns requests that span `period` on `date`, plus whether this is the first period */
   function getCellRequests(date: Date, period: number): { request: RequestWithUser; isFirst: boolean }[] {
     const ds = toDateString(date)
     return requests
@@ -139,7 +165,7 @@ export default function WeekCalendar({ subject, session, subjectConfig, periodsP
                 title={isAbsent ? 'TOA niet aanwezig op deze dag' : undefined}
               >
                 {cells.map(({ request: r }) => (
-                  <RequestBlock key={r.id} request={r} isFirst onClick={setSelected} accentColor={subjectColorMap[r.subject]} />
+                  <RequestBlock key={r.id} request={r} isFirst onClick={setSelected} accentColor={subjectColorMap[r.subject]} statusColors={statusColors} />
                 ))}
                 <button
                   onClick={() => setModal({ date, period: 0 })}
@@ -181,19 +207,16 @@ export default function WeekCalendar({ subject, session, subjectConfig, periodsP
                     />
                   )}
                   {cells.map(({ request: r, isFirst }) => (
-                    <RequestBlock key={r.id} request={r} isFirst={isFirst} onClick={setSelected} />
+                    <RequestBlock key={r.id} request={r} isFirst={isFirst} onClick={setSelected} accentColor={subjectColorMap[r.subject]} statusColors={statusColors} />
                   ))}
-                  {/* Add button only shown when no continuations fill this cell */}
-                  {!cells.some(c => !c.isFirst) && (
-                    <button
-                      onClick={() => setModal({ date, period })}
-                      className="absolute bottom-1 right-1 w-5 h-5 text-white rounded text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
-                      style={{ backgroundColor: accentColor }}
-                      title="Aanvraag toevoegen"
-                    >
-                      +
-                    </button>
-                  )}
+                  <button
+                    onClick={() => setModal({ date, period })}
+                    className="absolute bottom-1 right-1 w-5 h-5 text-white rounded text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                    style={{ backgroundColor: accentColor }}
+                    title="Aanvraag toevoegen"
+                  >
+                    +
+                  </button>
                 </div>
               )
             })}
@@ -204,15 +227,10 @@ export default function WeekCalendar({ subject, session, subjectConfig, periodsP
 
       {/* Legend */}
       <div className="flex gap-4 mt-2 flex-wrap items-center">
-        {[
-          { color: 'bg-slate-400', label: 'Aangevraagd' },
-          { color: 'bg-green-500', label: 'Met TOA' },
-          { color: 'bg-amber-500', label: 'Zonder TOA' },
-          { color: 'bg-red-500', label: 'Afgekeurd' },
-        ].map(({ color, label }) => (
-          <div key={label} className="flex items-center gap-1 text-xs text-slate-500">
-            <div className={`w-2 h-2 rounded-sm ${color}`} />
-            {label}
+        {STATUS_KEYS.map(s => (
+          <div key={s} className="flex items-center gap-1 text-xs text-slate-500">
+            <div className="w-2 h-2 rounded-sm" style={{ backgroundColor: statusColors[s] }} />
+            {statusLabels[s]}
           </div>
         ))}
         {absenceDays.length > 0 && (
@@ -247,6 +265,8 @@ export default function WeekCalendar({ subject, session, subjectConfig, periodsP
         <RequestDetailPanel
           request={selected}
           session={session}
+          statusColors={statusColors}
+          statusLabels={statusLabels}
           onClose={() => setSelected(null)}
           onEdit={() => { setEditing(selected); setSelected(null) }}
           onDeleted={() => { setSelected(null); load() }}

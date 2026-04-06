@@ -6,5 +6,9 @@ export async function GET() {
   const slug = getSchoolSlug()
   const db = getPrisma(slug)
   const settings = await db.appSettings.findUnique({ where: { id: 1 } })
-  return NextResponse.json({ schoolLogo: settings?.schoolLogo ?? null })
+  return NextResponse.json({
+    schoolLogo: settings?.schoolLogo ?? null,
+    statusLabels: settings?.statusLabels ?? null,
+    statusColors: settings?.statusColors ?? null,
+  })
 }
