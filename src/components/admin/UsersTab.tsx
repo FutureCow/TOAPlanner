@@ -4,6 +4,22 @@ import { UserRow, SubjectConfig } from '@/types'
 import { format } from 'date-fns'
 import { nl } from 'date-fns/locale'
 
+const AVATAR_COLORS = [
+  '#2563eb', '#16a34a', '#9333ea', '#ea580c', '#db2777', '#0891b2', '#65a30d',
+]
+
+function initials(name: string) {
+  const parts = name.trim().split(/\s+/)
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase()
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+}
+
+function avatarColor(name: string) {
+  let hash = 0
+  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash)
+  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length]
+}
+
 export default function UsersTab() {
   const [users, setUsers] = useState<UserRow[]>([])
   const [subjects, setSubjects] = useState<SubjectConfig[]>([])
@@ -56,9 +72,10 @@ export default function UsersTab() {
                 <td className="px-3 py-2.5">
                   {u.image
                     // eslint-disable-next-line @next/next/no-img-element
-                    ? <img src={u.image} width={28} height={28} className="w-7 h-7 rounded-full object-cover" alt="" referrerPolicy="no-referrer" />
-                    : <div className="w-7 h-7 rounded-full bg-slate-700 flex items-center justify-center text-xs font-bold text-slate-400">
-                        {u.abbreviation.slice(0, 1).toUpperCase()}
+                    ? <img src={u.image} width={32} height={32} className="w-8 h-8 rounded-full object-cover ring-2 ring-slate-700" alt="" referrerPolicy="no-referrer" />
+                    : <div className="w-8 h-8 rounded-full flex items-center justify-center text-[0.65rem] font-bold text-white ring-2 ring-slate-700 shrink-0"
+                        style={{ backgroundColor: avatarColor(u.name) }}>
+                        {initials(u.name)}
                       </div>
                   }
                 </td>
