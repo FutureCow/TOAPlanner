@@ -188,6 +188,25 @@ html[data-theme="light"] .border-amber-700 { border-color: #f59e0b !important; }
 html[data-theme="light"] .bg-amber-500 { background-color: #f59e0b !important; }
 html[data-theme="light"] .bg-slate-400 { background-color: #8e8e93 !important; }
 
+/* ── Colorblind-friendly contrast fix ───────────────────────────────────────
+   When a status bg class and text class are on the SAME element (e.g. RequestsTab
+   status pills), the bg-*-900 * child selector above doesn't apply. These combined
+   selectors (higher specificity) ensure readable text on colored pill backgrounds.  */
+html[data-theme="light"] .bg-green-900.text-green-300,
+html[data-theme="light"] .bg-green-900.text-green-400,
+html[data-theme="light"] .bg-green-950.text-green-300,
+html[data-theme="light"] .bg-green-950.text-green-400 { color: #14532d !important; }
+
+html[data-theme="light"] .bg-amber-900.text-amber-300,
+html[data-theme="light"] .bg-amber-900.text-amber-400,
+html[data-theme="light"] .bg-amber-950.text-amber-300,
+html[data-theme="light"] .bg-amber-950.text-amber-400 { color: #78350f !important; }
+
+html[data-theme="light"] .bg-red-900.text-red-300,
+html[data-theme="light"] .bg-red-900.text-red-400,
+html[data-theme="light"] .bg-red-950.text-red-300,
+html[data-theme="light"] .bg-red-950.text-red-400   { color: #7f1d1d !important; }
+
 /* Blue button text stays white */
 html[data-theme="light"] .bg-blue-600,
 html[data-theme="light"] .bg-blue-500 { color: #ffffff !important; }
