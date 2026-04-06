@@ -141,14 +141,19 @@ export default function RequestsTab() {
           {STATUS_VALUES.map(v => <option key={v} value={v}>{STATUS_LABELS[v]}</option>)}
         </select>
         <div className="flex items-center gap-1">
-          <label className="text-xs text-slate-500 whitespace-nowrap">Week:</label>
-          <input
-            type="date"
-            value={weekFilter}
-            onChange={e => setWeekFilter(e.target.value)}
-            className="bg-slate-800 border border-slate-700 text-slate-300 rounded px-2 py-1.5 text-xs"
-            title="Filter op week (kies een dag in de gewenste week)"
-          />
+          <div className="relative flex items-center">
+            <svg className="absolute left-2 text-slate-400 pointer-events-none" width="13" height="13" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
+            </svg>
+            <input
+              type="date"
+              value={weekFilter}
+              onChange={e => setWeekFilter(e.target.value)}
+              className="bg-slate-800 border border-slate-700 text-slate-300 rounded pl-7 pr-2 py-1.5 text-xs [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+              style={{ colorScheme: 'dark' }}
+              title="Filter op week (kies een dag in de gewenste week)"
+            />
+          </div>
           {weekFilter && (
             <button onClick={() => setWeekFilter('')} className="text-slate-500 hover:text-slate-300 text-xs">✕</button>
           )}
