@@ -17,30 +17,34 @@ html {
 /* ═══════════════════════════════════════════════════════════════════════════
    DARK THEME — neutraal grijs palet (geïnspireerd op GitHub Dimmed / VS Code)
    Tailwind slate is blauw-zwart (#020617). Wij vervangen het met warm-neutraal:
-     slate-950 → #1c1c1c  hoofdachtergrond
-     slate-900 → #252525  cards, nav, modals
-     slate-800 → #303030  inputs, nested surfaces
-     slate-700 → #3d3d3d  hover-states, subtiele borders
-     slate-600 → #4f4f4f  borders
+     slate-950 → #242424  hoofdachtergrond
+     slate-900 → #2e2e2e  cards, nav, modals
+     slate-800 → #3a3a3a  inputs, nested surfaces
+     slate-700 → #484848  hover-states, subtiele borders
+     slate-600 → #5c5c5c  borders
    ═══════════════════════════════════════════════════════════════════════════ */
 
-html:not([data-theme="light"]) body                       { background-color: #1c1c1c; }
-html:not([data-theme="light"]) .bg-slate-950              { background-color: #1c1c1c !important; }
-html:not([data-theme="light"]) .bg-slate-900              { background-color: #252525 !important; }
-html:not([data-theme="light"]) .bg-slate-800              { background-color: #303030 !important; }
-html:not([data-theme="light"]) .bg-slate-700              { background-color: #3d3d3d !important; }
-html:not([data-theme="light"]) .bg-slate-600              { background-color: #4f4f4f !important; }
-html:not([data-theme="light"]) .bg-slate-900\/50          { background-color: rgba(37,37,37,0.5) !important; }
-html:not([data-theme="light"]) .bg-slate-900\/40          { background-color: rgba(37,37,37,0.4) !important; }
-html:not([data-theme="light"]) .border-slate-800          { border-color: #303030 !important; }
-html:not([data-theme="light"]) .border-slate-800\/50      { border-color: rgba(48,48,48,0.6) !important; }
-html:not([data-theme="light"]) .border-slate-700          { border-color: #3d3d3d !important; }
-html:not([data-theme="light"]) .border-slate-600          { border-color: #4f4f4f !important; }
-html:not([data-theme="light"]) nav.bg-slate-900           { background-color: #252525 !important; border-color: #303030 !important; }
-html:not([data-theme="light"]) .hover\:bg-slate-800:hover { background-color: #303030 !important; }
-html:not([data-theme="light"]) .hover\:bg-slate-700:hover { background-color: #3d3d3d !important; }
-html:not([data-theme="light"]) .hover\:bg-slate-600:hover { background-color: #4f4f4f !important; }
-html:not([data-theme="light"]) .min-h-screen.bg-slate-950 { background-color: #1c1c1c !important; }
+html:not([data-theme="light"]) body                       { background-color: #242424; }
+html:not([data-theme="light"]) .bg-slate-950              { background-color: #242424 !important; }
+html:not([data-theme="light"]) .bg-slate-900              { background-color: #2e2e2e !important; }
+html:not([data-theme="light"]) .bg-slate-800              { background-color: #3a3a3a !important; }
+html:not([data-theme="light"]) .bg-slate-700              { background-color: #484848 !important; }
+html:not([data-theme="light"]) .bg-slate-600              { background-color: #5c5c5c !important; }
+html:not([data-theme="light"]) .bg-slate-900\/50          { background-color: rgba(46,46,46,0.5) !important; }
+html:not([data-theme="light"]) .bg-slate-900\/40          { background-color: rgba(46,46,46,0.4) !important; }
+html:not([data-theme="light"]) .border-slate-800          { border-color: #3a3a3a !important; }
+html:not([data-theme="light"]) .border-slate-800\/50      { border-color: rgba(58,58,58,0.6) !important; }
+html:not([data-theme="light"]) .border-slate-700          { border-color: #484848 !important; }
+html:not([data-theme="light"]) .border-slate-600          { border-color: #5c5c5c !important; }
+html:not([data-theme="light"]) nav.bg-slate-900           { background-color: #2e2e2e !important; border-color: #3a3a3a !important; }
+html:not([data-theme="light"]) .hover\:bg-slate-800:hover { background-color: #3a3a3a !important; }
+html:not([data-theme="light"]) .hover\:bg-slate-700:hover { background-color: #484848 !important; }
+html:not([data-theme="light"]) .hover\:bg-slate-600:hover { background-color: #5c5c5c !important; }
+html:not([data-theme="light"]) .min-h-screen.bg-slate-950 { background-color: #242424 !important; }
+
+/* Tekstkleuren in donker thema — Tailwind's standaard slate-500/600 is te donker op #242424 */
+html:not([data-theme="light"]) .text-slate-600            { color: #909090 !important; }
+html:not([data-theme="light"]) .text-slate-500            { color: #a8a8a8 !important; }
 
 /* ═══════════════════════════════════════════════════════════════════════════
    STATUS PALETTE — geen globale overrides meer nodig
