@@ -178,7 +178,7 @@ export default function RequestsTab() {
       <div className="border border-slate-700 rounded-lg text-xs">
         {/* Header */}
         <div className="grid bg-slate-900 border-b-2 border-slate-600 rounded-t-lg px-3 py-2 gap-2 font-semibold text-slate-500 uppercase tracking-wide text-[0.65rem]"
-          style={{ gridTemplateColumns: '1.5rem 1fr 1fr 1.2fr 1fr 0.8fr 1.2fr 1.4fr 1.5rem' }}>
+          style={{ gridTemplateColumns: '1.5rem 0.5fr 1.5fr 1.2fr 1fr 0.8fr 1.2fr 1.4fr 1.5rem' }}>
           <input type="checkbox" onChange={e => toggleAll(e.target.checked)}
             checked={selected.size === requests.length && requests.length > 0} />
           <span>Klas</span>
@@ -198,7 +198,7 @@ export default function RequestsTab() {
         {requests.map(r => (
           <div key={r.id}
             className="grid px-3 py-2 gap-2 border-b border-slate-800 items-center hover:bg-slate-900/50 last:border-b-0"
-            style={{ gridTemplateColumns: '1.5rem 1fr 1fr 1.2fr 1fr 0.8fr 1.2fr 1.4fr 1.5rem' }}>
+            style={{ gridTemplateColumns: '1.5rem 0.5fr 1.5fr 1.2fr 1fr 0.8fr 1.2fr 1.4fr 1.5rem' }}>
             <input type="checkbox" checked={selected.has(r.id)}
               onChange={e => {
                 const next = new Set(selected)

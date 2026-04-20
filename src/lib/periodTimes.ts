@@ -19,3 +19,15 @@ export function getPeriodStartTime(
   const mm = total % 60
   return `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`
 }
+
+export function getBreakStartTime(
+  afterPeriod: number,
+  startTime: string,
+  duration: number,
+  breaks: Break[]
+): string {
+  const periodStart = getPeriodStartTime(afterPeriod, startTime, duration, breaks)
+  const [h, m] = periodStart.split(':').map(Number)
+  const total = h * 60 + m + duration
+  return `${String(Math.floor(total / 60) % 24).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`
+}

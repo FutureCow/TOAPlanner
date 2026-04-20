@@ -6,7 +6,7 @@ import { getWeekDates, getWeekLabel, prevWeek, nextWeek, toDateString } from '@/
 import RequestBlock, { DEFAULT_STATUS_COLORS, DEFAULT_STATUS_LABELS } from './RequestBlock'
 import RequestModal from './RequestModal'
 import RequestDetailPanel from './RequestDetailPanel'
-import { getPeriodStartTime, type Break } from '@/lib/periodTimes'
+import { getPeriodStartTime, getBreakStartTime, type Break } from '@/lib/periodTimes'
 
 const DAYS_SHORT = ['Maa', 'Din', 'Woe', 'Don', 'Vri']
 const GRID_COLS = '2.5rem repeat(5, 1fr)'
@@ -210,15 +210,17 @@ export default function WeekCalendar({ subject, session, subjectConfig, periodsP
                     className="grid border-b border-slate-700"
                     style={{ gridTemplateColumns: GRID_COLS }}
                   >
-                    <div className="flex items-center justify-center border-r border-slate-600 bg-slate-900/40 text-[0.55rem] text-slate-600 font-bold" style={{ minHeight: '1.5rem' }}>
-                      P
+                    <div className="flex items-center justify-center border-r border-slate-600 bg-slate-900/40 text-[0.5rem] text-slate-600 font-normal leading-tight text-center" style={{ minHeight: '1.5rem' }}>
+                      {periodStartTime
+                        ? getBreakStartTime(breakBefore.afterPeriod, periodStartTime, periodDuration, calBreaks)
+                        : 'P'}
                     </div>
                     <div
                       className="col-span-5 flex items-center px-2"
                       style={{ minHeight: '1.5rem' }}
                     >
                       <span className="text-[0.6rem] text-slate-600 italic">
-                        {breakBefore.label ? `${breakBefore.label} — ` : 'Pauze — '}{breakBefore.duration} min
+                        {breakBefore.label || 'Pauze'}
                       </span>
                     </div>
                   </div>
