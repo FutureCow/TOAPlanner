@@ -259,7 +259,7 @@ export default function WeekCalendar({ subject, session, subjectConfig, periodsP
                             }}
                           />
                         )}
-                        <div className={`flex ${sideBySide && cells.length > 1 ? 'flex-row gap-0.5' : 'flex-col'}`}>
+                        <div className={`flex overflow-hidden ${sideBySide && cells.length > 1 ? 'flex-row gap-0.5' : 'flex-col'}`}>
                           {cells.map(({ request: r, isFirst }) => (
                             <div key={r.id} className={sideBySide && cells.length > 1 ? 'flex-1 min-w-0' : undefined}>
                               <RequestBlock
