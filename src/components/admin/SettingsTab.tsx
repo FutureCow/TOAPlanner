@@ -22,19 +22,24 @@ const COLOR_NAMES: Record<string, string> = {
   '#0891b2': 'Cyaan',
 }
 
-// Status color palette — medium-saturation, works in dark and light theme
-const STATUS_PRESET_COLORS = [
-  '#64748b', // slate (standaard: aanvraag)
-  '#3b82f6', // blauw
-  '#06b6d4', // cyaan
-  '#0d9488', // teal
-  '#16a34a', // groen (standaard: met TOA)
-  '#65a30d', // lime
-  '#d97706', // amber (standaard: zonder TOA)
-  '#ea580c', // oranje
-  '#dc2626', // rood (standaard: afgekeurd)
-  '#9333ea', // paars
-  '#db2777', // roze
+// ── Statuskleur-presets ──────────────────────────────────────────────────────
+// Eerste vier zijn het Wong colorblind-safe palet (aanbevolen).
+// De rest zijn alternatieve opties voor wie eigen kleuren wil.
+const STATUS_PRESET_COLORS: { hex: string; label: string; wong?: boolean }[] = [
+  { hex: '#56B4E9', label: 'Hemelsblauw (kleurenblindveilig)',  wong: true },
+  { hex: '#009E73', label: 'Blauwgroen (kleurenblindveilig)',   wong: true },
+  { hex: '#E69F00', label: 'Oranje (kleurenblindveilig)',       wong: true },
+  { hex: '#D55E00', label: 'Vermiljoen (kleurenblindveilig)',   wong: true },
+  // ── overige opties ──
+  { hex: '#64748b', label: 'Leisteen grijs'  },
+  { hex: '#3b82f6', label: 'Blauw'           },
+  { hex: '#06b6d4', label: 'Cyaan'           },
+  { hex: '#16a34a', label: 'Groen'           },
+  { hex: '#65a30d', label: 'Lime'            },
+  { hex: '#d97706', label: 'Amber'           },
+  { hex: '#dc2626', label: 'Rood'            },
+  { hex: '#9333ea', label: 'Paars'           },
+  { hex: '#db2777', label: 'Roze'            },
 ]
 
 // ── Subject card ────────────────────────────────────────────────────────────
@@ -134,11 +139,12 @@ function SubjectCard({ subject, onSaved, onDeleted }: SubjectCardProps) {
 
 // ── Main SettingsTab ─────────────────────────────────────────────────────────
 
+// Wong colorblind-safe palette als standaard
 const DEFAULT_STATUS = {
-  PENDING:              { label: 'Aangevraagd',         color: '#64748b' },
-  APPROVED_WITH_TOA:    { label: 'Goedgekeurd met TOA', color: '#16a34a' },
-  APPROVED_WITHOUT_TOA: { label: 'Zonder TOA',          color: '#d97706' },
-  REJECTED:             { label: 'Afgekeurd',           color: '#dc2626' },
+  PENDING:              { label: 'Aangevraagd',         color: '#56B4E9' },
+  APPROVED_WITH_TOA:    { label: 'Goedgekeurd met TOA', color: '#009E73' },
+  APPROVED_WITHOUT_TOA: { label: 'Zonder TOA',          color: '#E69F00' },
+  REJECTED:             { label: 'Afgekeurd',           color: '#D55E00' },
 }
 
 const STATUS_ROWS = [
@@ -160,7 +166,7 @@ export default function SettingsTab() {
   const [periodsSaving, setPeriodsSaving] = useState(false)
   const [periodsSaved, setPeriodsSaved] = useState(false)
 
-  // Status labels + colors — type is inferred from DEFAULT_STATUS, no generic needed
+  // Status labels + colors
   const [statusCfg, setStatusCfg] = useState(DEFAULT_STATUS)
   const [statusSaving, setStatusSaving] = useState(false)
   const [statusSaved, setStatusSaved] = useState(false)
@@ -359,11 +365,17 @@ export default function SettingsTab() {
       {/* ── Statuslabels en kleuren ── */}
       <section>
         <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wide mb-3">Statuslabels en kleuren</h2>
-        <div className="bg-slate-900 border border-slate-700 rounded-lg p-4 space-y-3">
-          <p className="text-xs text-slate-500">Pas de tekst en kleur aan van elke status.</p>
+        <div className="bg-slate-900 border border-slate-700 rounded-lg p-4 space-y-4">
+          <p className="text-xs text-slate-500">
+            Pas de tekst en kleur aan van elke status.{' '}
+            <span className="text-slate-400">
+              De eerste vier kleuren (gemarkeerd met ✦) zijn kleurenblindveilig.
+            </span>
+          </p>
           {STATUS_ROWS.map(({ key, title }) => (
-            <div key={key} className="space-y-1.5">
+            <div key={key} className="space-y-2">
               <div className="flex items-center gap-3">
+                {/* Kleurblok preview */}
                 <div className="w-3 h-6 rounded flex-shrink-0" style={{ backgroundColor: statusCfg[key].color }} />
                 <span className="text-xs text-slate-400 w-36 flex-shrink-0">{title}</span>
                 <input
@@ -375,20 +387,42 @@ export default function SettingsTab() {
                   className="flex-1 bg-slate-800 border border-slate-600 rounded px-3 py-1.5 text-sm text-white focus:outline-none focus:border-blue-500"
                 />
               </div>
+              {/* Kleur swatches — Wong-kleuren eerst, daarna scheidingslijn, dan overige */}
               <div className="flex items-center gap-1.5 pl-6 flex-wrap">
-                {STATUS_PRESET_COLORS.map(c => (
-                  <button
-                    key={c}
-                    onClick={() => setStatusCfg(prev => ({ ...prev, [key]: { ...prev[key], color: c } }))}
-                    className={`w-4 h-4 rounded-full transition-all flex-shrink-0 ${statusCfg[key].color === c ? 'ring-2 ring-offset-1 ring-slate-400 scale-110' : 'opacity-70 hover:opacity-100'}`}
-                    style={{ backgroundColor: c }}
-                    title={c}
-                  />
-                ))}
+                {STATUS_PRESET_COLORS.map((c, idx) => {
+                  const isWong = c.wong
+                  const prevWong = STATUS_PRESET_COLORS[idx - 1]?.wong
+                  return (
+                    <span key={c.hex} className="inline-flex items-center">
+                      {/* Scheidingslijn na de Wong-kleuren */}
+                      {!isWong && prevWong && (
+                        <span className="inline-block w-px h-4 bg-slate-600 mx-1.5" />
+                      )}
+                      <button
+                        onClick={() => setStatusCfg(prev => ({ ...prev, [key]: { ...prev[key], color: c.hex } }))}
+                        className={`relative flex-shrink-0 transition-all ${
+                          statusCfg[key].color === c.hex
+                            ? 'ring-2 ring-offset-1 ring-slate-400 scale-110'
+                            : 'opacity-75 hover:opacity-100'
+                        } ${isWong ? 'w-5 h-5 rounded-full' : 'w-4 h-4 rounded-full'}`}
+                        style={{ backgroundColor: c.hex }}
+                        title={c.label}
+                      >
+                        {/* Wong-markering */}
+                        {isWong && (
+                          <span className="absolute -top-1 -right-1 text-[7px] text-white font-bold leading-none select-none pointer-events-none"
+                            style={{ textShadow: '0 0 2px rgba(0,0,0,0.8)' }}>
+                            ✦
+                          </span>
+                        )}
+                      </button>
+                    </span>
+                  )
+                })}
               </div>
             </div>
           ))}
-          <div className="flex items-center justify-between pt-1">
+          <div className="flex items-center justify-between pt-1 border-t border-slate-800">
             <button
               onClick={() => setStatusCfg(DEFAULT_STATUS)}
               className="text-xs text-slate-500 hover:text-slate-300 transition-colors"
@@ -398,7 +432,9 @@ export default function SettingsTab() {
             <button
               onClick={saveStatusConfig}
               disabled={statusSaving}
-              className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${statusSaved ? 'bg-green-700 text-white' : 'bg-blue-600 hover:bg-blue-500 disabled:opacity-40 text-white'}`}
+              className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${
+                statusSaved ? 'bg-green-700 text-white' : 'bg-blue-600 hover:bg-blue-500 disabled:opacity-40 text-white'
+              }`}
             >
               {statusSaving ? 'Opslaan…' : statusSaved ? '✓ Opgeslagen' : 'Opslaan'}
             </button>
