@@ -127,7 +127,7 @@ export default function WeekCalendar({ subject, session, subjectConfig, periodsP
       }
 
       if (nowMin >= slots[slots.length - 1].endMin) {
-        setLineY(containerHeight)
+        setLineY(null)
         return
       }
 
