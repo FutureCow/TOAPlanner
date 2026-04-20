@@ -8,7 +8,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   const session = await getServerSession(getAuthOptions(slug))
   if (!session?.user.isAdmin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 
-  const { name, accentColor, absenceDays } = await req.json()
+  const { name, accentColor, absenceDays, overlapLayout } = await req.json()
   const db = getPrisma(slug)
   const subject = await db.subjectConfig.update({
     where: { id: params.id },
@@ -16,6 +16,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
       ...(name !== undefined ? { name } : {}),
       ...(accentColor !== undefined ? { accentColor } : {}),
       ...(absenceDays !== undefined ? { absenceDays } : {}),
+      ...(overlapLayout !== undefined ? { overlapLayout } : {}),
     },
   })
   return NextResponse.json(subject)
