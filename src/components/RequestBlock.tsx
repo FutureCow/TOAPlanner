@@ -23,10 +23,9 @@ interface Props {
   onClick: (request: RequestWithUser) => void
   accentColor?: string   // vak-accentkleur (linker streep); valt terug op statuskleur
   statusColors?: typeof DEFAULT_STATUS_COLORS
-  compact?: boolean
 }
 
-export default function RequestBlock({ request, isFirst, onClick, accentColor, statusColors, compact }: Props) {
+export default function RequestBlock({ request, isFirst, onClick, accentColor, statusColors }: Props) {
   const colors = statusColors ?? DEFAULT_STATUS_COLORS
   const statusColor = colors[request.status]
   // De linker streep toont de vak-accentkleur zodat je per blok direct ziet
@@ -65,30 +64,28 @@ export default function RequestBlock({ request, isFirst, onClick, accentColor, s
       }}
     >
       {/* Titel */}
-      <div className={`font-semibold text-xs leading-tight text-slate-100 ${compact ? 'truncate' : 'line-clamp-2'}`}>
+      <div className="font-semibold text-xs leading-tight line-clamp-2 text-slate-100">
         {request.klas && !request.title.startsWith(request.klas) ? (
           <><span className="opacity-60">{request.klas}</span>{' – '}{request.title}</>
         ) : request.title}
       </div>
 
       {/* Meta: uren · lokaal · afkorting */}
-      {!compact && (
-        <div
-          className="text-[0.65rem] mt-0.5 flex items-center gap-1 truncate"
-          style={{ color: statusColor }}
-        >
-          {request.periodEnd != null && (
-            <span className="opacity-70 mr-0.5 flex-shrink-0">
-              {request.period}–{request.periodEnd}u
-            </span>
-          )}
-          <span className="truncate">
-            {request.classroom}
-            {' · '}
-            <strong>{request.createdBy?.abbreviation.toUpperCase() ?? '—'}</strong>
+      <div
+        className="text-[0.65rem] mt-0.5 flex items-center gap-1 truncate"
+        style={{ color: statusColor }}
+      >
+        {request.periodEnd != null && (
+          <span className="opacity-70 mr-0.5 flex-shrink-0">
+            {request.period}–{request.periodEnd}u
           </span>
-        </div>
-      )}
+        )}
+        <span className="truncate">
+          {request.classroom}
+          {' · '}
+          <strong>{request.createdBy?.abbreviation.toUpperCase() ?? '—'}</strong>
+        </span>
+      </div>
     </div>
   )
 }
