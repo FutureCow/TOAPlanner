@@ -27,7 +27,7 @@ export async function PATCH(req: NextRequest) {
   if (body.statusColors !== undefined) update.statusColors = body.statusColors
   if (body.periodStartTime !== undefined) update.periodStartTime = String(body.periodStartTime)
   if (body.periodDuration  !== undefined) update.periodDuration  = Number(body.periodDuration)
-  if (body.breaks          !== undefined) update.breaks          = body.breaks
+  if (Array.isArray(body.breaks)) update.breaks = body.breaks
 
   const db = getPrisma(slug)
   const settings = await db.appSettings.upsert({

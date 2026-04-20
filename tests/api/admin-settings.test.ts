@@ -36,7 +36,6 @@ it('PATCH slaat periodStartTime en periodDuration op', async () => {
     method: 'PATCH',
     body: JSON.stringify({ periodStartTime: '08:30', periodDuration: 50 }),
   }))
-  const body = await res.json()
   expect(res.status).toBe(200)
   expect(prisma.appSettings.upsert).toHaveBeenCalledWith(
     expect.objectContaining({

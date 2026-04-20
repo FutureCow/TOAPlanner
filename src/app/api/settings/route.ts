@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getSchoolSlug, getPrisma } from '@/lib/school'
 
-// Publicly accessible — only exposes non-sensitive fields (schoolLogo)
+// Publicly accessible — only exposes non-sensitive fields
 export async function GET() {
   const slug = getSchoolSlug()
   const db = getPrisma(slug)
