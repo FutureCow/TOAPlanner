@@ -56,7 +56,7 @@ model AppSettings {
   statusColors     Json?   // Record<Status, string>
   periodStartTime  String  @default("08:30")
   periodDuration   Int     @default(50)
-  breaks           Json?
+  breaks           Json?   // Array of { afterPeriod: number, duration: number, label?: string }
 }
 
 enum Status {

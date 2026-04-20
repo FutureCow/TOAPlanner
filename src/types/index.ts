@@ -2,12 +2,15 @@ import { Status } from '@prisma/client'
 
 export type { Status }
 
+export type OverlapLayout = 'stacked' | 'side-by-side'
+
 export interface SubjectConfig {
   id: string
   name: string
   accentColor: string
   absenceDays: number[]
   sortOrder: number
+  overlapLayout: string
 }
 
 export interface RequestWithUser {
