@@ -6,6 +6,7 @@ import { getWeekDates, getWeekLabel, prevWeek, nextWeek, toDateString } from '@/
 import RequestBlock, { DEFAULT_STATUS_COLORS, DEFAULT_STATUS_LABELS } from './RequestBlock'
 import RequestModal from './RequestModal'
 import RequestDetailPanel from './RequestDetailPanel'
+import { getPeriodStartTime, type Break } from '@/lib/periodTimes'
 
 const DAYS_SHORT = ['Maa', 'Din', 'Woe', 'Don', 'Vri']
 const GRID_COLS = '2.5rem repeat(5, 1fr)'
@@ -28,6 +29,9 @@ export default function WeekCalendar({ subject, session, subjectConfig, periodsP
   const [subjectColorMap, setSubjectColorMap] = useState({} as Record<string, string>)
   const [statusColors, setStatusColors] = useState(DEFAULT_STATUS_COLORS)
   const [statusLabels, setStatusLabels] = useState(DEFAULT_STATUS_LABELS)
+  const [periodStartTime, setPeriodStartTime] = useState('')
+  const [periodDuration, setPeriodDuration]   = useState(50)
+  const [calBreaks, setCalBreaks]             = useState<Break[]>([])
 
   const weekDates = getWeekDates(currentDate)
   const today = toDateString(new Date())
@@ -65,6 +69,9 @@ export default function WeekCalendar({ subject, session, subjectConfig, periodsP
             REJECTED:             d.statusLabels.REJECTED             || DEFAULT_STATUS_LABELS.REJECTED,
           })
         }
+        if (d.periodStartTime) setPeriodStartTime(d.periodStartTime)
+        if (d.periodDuration)  setPeriodDuration(d.periodDuration)
+        if (Array.isArray(d.breaks)) setCalBreaks(d.breaks)
       })
       .catch(() => {})
   }, [])
@@ -146,8 +153,11 @@ export default function WeekCalendar({ subject, session, subjectConfig, periodsP
                   )}
                   <span className="text-slate-400">{DAYS_SHORT[i]}</span>{' '}
                   <span
-                    className={`inline-flex items-center justify-center w-[22px] h-[22px] rounded-full font-bold text-xs ${isToday ? '' : 'text-slate-200'}`}
-                    style={isToday ? { backgroundColor: accentColor, color: '#fff' } : undefined}
+                    className="inline-flex items-center justify-center w-[22px] h-[22px] rounded-full font-bold text-xs"
+                    style={isToday
+                      ? { backgroundColor: accentColor, color: '#fff' }
+                      : { color: 'var(--color-slate-200, #d1d1d6)' }
+                    }
                   >
                     {d.getDate()}
                   </span>
@@ -194,59 +204,91 @@ export default function WeekCalendar({ subject, session, subjectConfig, periodsP
           </div>
 
           {/* Period rows */}
-          {PERIODS.map(period => (
-            <div
-              key={period}
-              className="grid border-b border-slate-600 last:border-b-0"
-              style={{ gridTemplateColumns: GRID_COLS }}
-            >
-              {/* Period number */}
-              <div className="flex items-center justify-center border-r border-slate-600 bg-slate-900/60 text-slate-400 font-bold text-[0.7rem] min-h-[3.5rem]">
-                {period}
-              </div>
-
-              {weekDates.map((date, di) => {
-                const cells = getCellRequests(date, period)
-                const isAbsent = absenceDays.includes(di)
-                return (
+          {PERIODS.map(period => {
+            const breakBefore = calBreaks.find(b => b.afterPeriod === period - 1)
+            return (
+              <React.Fragment key={period}>
+                {breakBefore && (
                   <div
-                    key={di}
-                    className={`relative p-1 min-h-[3.5rem] border-r border-slate-700 last:border-r-0 group ${
-                      period % 2 === 0 ? 'bg-slate-900/20' : ''
-                    } ${isAbsent ? 'bg-slate-900/40' : ''}`}
-                    title={isAbsent ? 'TOA niet aanwezig op deze dag' : undefined}
+                    className="grid border-b border-slate-700"
+                    style={{ gridTemplateColumns: GRID_COLS }}
                   >
-                    {isAbsent && cells.length === 0 && (
-                      <div
-                        className="absolute inset-0 pointer-events-none"
-                        style={{
-                          backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 6px, rgba(255,255,255,0.025) 6px, rgba(255,255,255,0.025) 7px)',
-                        }}
-                      />
-                    )}
-                    {cells.map(({ request: r, isFirst }) => (
-                      <RequestBlock
-                        key={r.id}
-                        request={r}
-                        isFirst={isFirst}
-                        onClick={setSelected}
-                        accentColor={subjectColorMap[r.subject]}
-                        statusColors={statusColors}
-                      />
-                    ))}
-                    <button
-                      onClick={() => setModal({ date, period })}
-                      className="absolute bottom-1 right-1 w-5 h-5 text-white rounded text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
-                      style={{ backgroundColor: accentColor }}
-                      title="Aanvraag toevoegen"
+                    <div className="flex items-center justify-center border-r border-slate-600 bg-slate-900/40 text-[0.55rem] text-slate-600 font-bold" style={{ minHeight: '1.5rem' }}>
+                      P
+                    </div>
+                    <div
+                      className="col-span-5 flex items-center px-2"
+                      style={{ minHeight: '1.5rem' }}
                     >
-                      +
-                    </button>
+                      <span className="text-[0.6rem] text-slate-600 italic">
+                        {breakBefore.label ? `${breakBefore.label} — ` : 'Pauze — '}{breakBefore.duration} min
+                      </span>
+                    </div>
                   </div>
-                )
-              })}
-            </div>
-          ))}
+                )}
+                <div
+                  className="grid border-b border-slate-600 last:border-b-0"
+                  style={{ gridTemplateColumns: GRID_COLS }}
+                >
+                  {/* Period number */}
+                  <div className="flex flex-col items-center justify-center border-r border-slate-600 bg-slate-900/60 font-bold text-[0.7rem] min-h-[3.5rem]">
+                    <span className="text-slate-400">{period}</span>
+                    {periodStartTime && (
+                      <span className="text-[0.55rem] text-slate-600 font-normal leading-tight">
+                        {getPeriodStartTime(period, periodStartTime, periodDuration, calBreaks)}
+                      </span>
+                    )}
+                  </div>
+
+                  {weekDates.map((date, di) => {
+                    const cells = getCellRequests(date, period)
+                    const isAbsent = absenceDays.includes(di)
+                    const sideBySide = subjectConfig?.overlapLayout === 'side-by-side'
+                    return (
+                      <div
+                        key={di}
+                        className={`relative p-1 min-h-[3.5rem] border-r border-slate-700 last:border-r-0 group ${
+                          period % 2 === 0 ? 'bg-slate-900/20' : ''
+                        } ${isAbsent ? 'bg-slate-900/40' : ''}`}
+                        title={isAbsent ? 'TOA niet aanwezig op deze dag' : undefined}
+                      >
+                        {isAbsent && cells.length === 0 && (
+                          <div
+                            className="absolute inset-0 pointer-events-none"
+                            style={{
+                              backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 6px, rgba(255,255,255,0.025) 6px, rgba(255,255,255,0.025) 7px)',
+                            }}
+                          />
+                        )}
+                        <div className={`flex ${sideBySide && cells.length > 1 ? 'flex-row gap-0.5' : 'flex-col'}`}>
+                          {cells.map(({ request: r, isFirst }) => (
+                            <div key={r.id} className={sideBySide && cells.length > 1 ? 'flex-1 min-w-0' : undefined}>
+                              <RequestBlock
+                                request={r}
+                                isFirst={isFirst}
+                                onClick={setSelected}
+                                accentColor={subjectColorMap[r.subject]}
+                                statusColors={statusColors}
+                                compact={sideBySide && cells.length > 1}
+                              />
+                            </div>
+                          ))}
+                        </div>
+                        <button
+                          onClick={() => setModal({ date, period })}
+                          className="absolute bottom-1 right-1 w-5 h-5 text-white rounded text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                          style={{ backgroundColor: accentColor }}
+                          title="Aanvraag toevoegen"
+                        >
+                          +
+                        </button>
+                      </div>
+                    )
+                  })}
+                </div>
+              </React.Fragment>
+            )
+          })}
         </div>
       </div>
 
