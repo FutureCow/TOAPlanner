@@ -63,14 +63,17 @@ html:not([data-theme="light"]) .bg-slate-800              { background-color: #3
 html:not([data-theme="light"]) .bg-slate-700              { background-color: #484848 !important; }
 html:not([data-theme="light"]) .bg-slate-600              { background-color: #5c5c5c !important; }
 html:not([data-theme="light"]) .bg-slate-900\/50          { background-color: rgba(46,46,46,0.5) !important; }
-html:not([data-theme="light"]) .bg-slate-900\/60          { background-color: rgba(46,46,46,0.6) !important; }
+/* tijdkolom — duidelijk donkerder dan de datacellen */
+html:not([data-theme="light"]) .bg-slate-900\/60          { background-color: #222228 !important; }
 html:not([data-theme="light"]) .bg-slate-900\/40          { background-color: rgba(46,46,46,0.4) !important; }
 html:not([data-theme="light"]) .bg-slate-900\/20          { background-color: rgba(46,46,46,0.2) !important; }
 html:not([data-theme="light"]) .bg-slate-900\/30          { background-color: rgba(46,46,46,0.3) !important; }
 html:not([data-theme="light"]) .border-slate-800          { border-color: #3a3a3a !important; }
 html:not([data-theme="light"]) .border-slate-800\/50      { border-color: rgba(58,58,58,0.6) !important; }
-html:not([data-theme="light"]) .border-slate-700          { border-color: #484848 !important; }
-html:not([data-theme="light"]) .border-slate-600          { border-color: #505050 !important; }
+/* dagkolom-scheidingen — subtiel maar zichtbaar */
+html:not([data-theme="light"]) .border-slate-700          { border-color: #585858 !important; }
+/* uurlijnen en buitenrand — duidelijk zichtbaar */
+html:not([data-theme="light"]) .border-slate-600          { border-color: #6a6a6a !important; }
 html:not([data-theme="light"]) nav.bg-slate-900           { background-color: #2e2e2e !important; border-color: #3a3a3a !important; }
 html:not([data-theme="light"]) .hover\:bg-slate-800:hover { background-color: #3a3a3a !important; }
 html:not([data-theme="light"]) .hover\:bg-slate-700:hover { background-color: #484848 !important; }
@@ -80,7 +83,10 @@ html:not([data-theme="light"]) .min-h-screen.bg-slate-950 { background-color: #2
 /* Tekstkleuren in donker thema */
 html:not([data-theme="light"]) .text-slate-600            { color: #909090 !important; }
 html:not([data-theme="light"]) .text-slate-500            { color: #a8a8a8 !important; }
-html:not([data-theme="light"]) .text-slate-400            { color: #b8b8b8 !important; }
+/* uur-nummers en datums — duidelijk leesbaar */
+html:not([data-theme="light"]) .text-slate-400            { color: #c8c8c8 !important; }
+html:not([data-theme="light"]) .text-slate-300            { color: #dedede !important; }
+html:not([data-theme="light"]) .text-slate-200            { color: #e8e8ed !important; }
 
 /* ═══════════════════════════════════════════════════════════════════════════
    LIGHT THEME
@@ -98,10 +104,11 @@ html[data-theme="light"] .bg-slate-800  { background-color: #f2f2f7 !important; 
 html[data-theme="light"] .bg-slate-700  { background-color: #e5e5ea !important; }
 html[data-theme="light"] .bg-slate-600  { background-color: #d1d1d6 !important; }
 html[data-theme="light"] .bg-slate-900\/50  { background-color: rgba(255,255,255,0.7) !important; }
-html[data-theme="light"] .bg-slate-900\/60  { background-color: rgba(245,245,250,0.85) !important; }
-html[data-theme="light"] .bg-slate-900\/40  { background-color: rgba(240,240,245,0.6) !important; }
-html[data-theme="light"] .bg-slate-900\/20  { background-color: rgba(240,240,245,0.3) !important; }
-html[data-theme="light"] .bg-slate-900\/30  { background-color: rgba(240,240,245,0.5) !important; }
+/* tijdkolom — duidelijk zichtbaar als aparte kolom */
+html[data-theme="light"] .bg-slate-900\/60  { background-color: #e4e4ec !important; }
+html[data-theme="light"] .bg-slate-900\/40  { background-color: rgba(230,230,238,0.5) !important; }
+html[data-theme="light"] .bg-slate-900\/20  { background-color: rgba(230,230,238,0.25) !important; }
+html[data-theme="light"] .bg-slate-900\/30  { background-color: rgba(230,230,238,0.4) !important; }
 
 /* Slate text */
 html[data-theme="light"] h1.text-white,
@@ -114,15 +121,18 @@ html[data-theme="light"] .text-slate-50  { color: #1d1d1f !important; }
 html[data-theme="light"] .text-slate-100 { color: #1d1d1f !important; }
 html[data-theme="light"] .text-slate-200 { color: #1d1d1f !important; }
 html[data-theme="light"] .text-slate-300 { color: #3a3a3c !important; }
-html[data-theme="light"] .text-slate-400 { color: #636366 !important; }
-html[data-theme="light"] .text-slate-500 { color: #8e8e93 !important; }
-html[data-theme="light"] .text-slate-600 { color: #aeaeb2 !important; }
+/* uur-nummers en andere secundaire tekst — duidelijk zichtbaar */
+html[data-theme="light"] .text-slate-400 { color: #48484a !important; }
+html[data-theme="light"] .text-slate-500 { color: #6e6e73 !important; }
+html[data-theme="light"] .text-slate-600 { color: #8e8e93 !important; }
 
-/* Slate borders */
-html[data-theme="light"] .border-slate-800     { border-color: #e5e5ea !important; }
-html[data-theme="light"] .border-slate-800\/50 { border-color: rgba(229,229,234,0.7) !important; }
-html[data-theme="light"] .border-slate-700     { border-color: #d1d1d6 !important; }
-html[data-theme="light"] .border-slate-600     { border-color: #c7c7cc !important; }
+/* Slate borders — duidelijker voor uurlijnen en kolom-scheidingen */
+html[data-theme="light"] .border-slate-800     { border-color: #d1d1d6 !important; }
+html[data-theme="light"] .border-slate-800\/50 { border-color: rgba(209,209,214,0.7) !important; }
+/* dagkolom-scheidingen — subtiel maar zichtbaar */
+html[data-theme="light"] .border-slate-700     { border-color: #c0c0c8 !important; }
+/* uurlijnen en buitenrand — duidelijk zichtbaar */
+html[data-theme="light"] .border-slate-600     { border-color: #a0a0aa !important; }
 html[data-theme="light"] .border-slate-400     { border-color: #aeaeb2 !important; }
 
 /* Inputs / selects */
