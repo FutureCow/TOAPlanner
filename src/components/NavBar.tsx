@@ -25,12 +25,15 @@ export default function NavBar() {
   const [theme, setTheme] = useState<'dark' | 'light'>('dark')
   const [fontSize, setFontSize] = useState<FontSize>('middel')
   const [schoolLogo, setSchoolLogo] = useState<string | null>(null)
+  const [showTimeLine, setShowTimeLine] = useState(false)
 
   useEffect(() => {
     const savedTheme = (localStorage.getItem('theme') ?? 'dark') as 'dark' | 'light'
     const savedFont = (localStorage.getItem('fontsize') ?? 'middel') as FontSize
+    const savedTimeLine = localStorage.getItem('show-timeline') === 'true'
     setTheme(savedTheme)
     setFontSize(savedFont)
+    setShowTimeLine(savedTimeLine)
   }, [])
 
   useEffect(() => {
@@ -54,6 +57,13 @@ export default function NavBar() {
   function changeFont(size: FontSize) {
     setFontSize(size)
     applyFont(size)
+  }
+
+  function toggleTimeLine() {
+    const next = !showTimeLine
+    setShowTimeLine(next)
+    localStorage.setItem('show-timeline', String(next))
+    window.dispatchEvent(new CustomEvent('timeline-changed', { detail: next }))
   }
 
   if (!session) return null
@@ -129,6 +139,17 @@ export default function NavBar() {
           className="w-7 h-7 flex items-center justify-center rounded bg-slate-800 text-slate-400 hover:text-white transition-colors text-sm"
         >
           {theme === 'dark' ? '☀' : '☾'}
+        </button>
+
+        {/* Timeline toggle */}
+        <button
+          onClick={toggleTimeLine}
+          title={showTimeLine ? 'Tijdlijn verbergen' : 'Tijdlijn tonen'}
+          className={`w-7 h-7 flex items-center justify-center rounded bg-slate-800 transition-colors text-sm ${
+            showTimeLine ? 'text-white' : 'text-slate-500 hover:text-white'
+          }`}
+        >
+          ◔
         </button>
 
         {/* User / logout */}
