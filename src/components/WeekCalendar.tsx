@@ -6,7 +6,7 @@ import { getWeekDates, getWeekLabel, prevWeek, nextWeek, toDateString } from '@/
 import RequestBlock, { DEFAULT_STATUS_COLORS, DEFAULT_STATUS_LABELS } from './RequestBlock'
 import RequestModal from './RequestModal'
 import RequestDetailPanel from './RequestDetailPanel'
-import { getPeriodStartTime, getBreakStartTime, buildTimeSlots, timeToMinutes, type Break } from '@/lib/periodTimes'
+import { getPeriodStartTime, getBreakStartTime, buildTimeSlots, type Break } from '@/lib/periodTimes'
 
 const DAYS_SHORT = ['Maa', 'Din', 'Woe', 'Don', 'Vri']
 const GRID_COLS = '2.5rem repeat(5, 1fr)'
@@ -109,7 +109,7 @@ export default function WeekCalendar({ subject, session, subjectConfig, periodsP
       if (!periodGridRef.current || !periodStartTime) return
 
       const now = new Date()
-      const nowMin = now.getHours() * 60 + now.getMinutes()
+      const nowMin = now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60
 
       const periods = Array.from({ length: periodsPerDay }, (_, i) => i + 1)
       const slots = buildTimeSlots(periods, periodStartTime, periodDuration, calBreaks)
