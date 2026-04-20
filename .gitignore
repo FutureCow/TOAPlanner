@@ -40,3 +40,6 @@ schools.json
 next-env.d.ts
 
 /src/generated/prisma
+
+# git worktrees
+.worktrees/

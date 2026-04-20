@@ -39,11 +39,12 @@ model Request {
 }
 
 model SubjectConfig {
-  id          String  @id
-  name        String
-  accentColor String  @default("#2563eb")
-  absenceDays Int[]   @default([])
-  sortOrder   Int     @default(0)
+  id           String  @id
+  name         String
+  accentColor  String  @default("#2563eb")
+  absenceDays  Int[]   @default([])
+  sortOrder    Int     @default(0)
+  overlapLayout String @default("stacked")
 }
 
 model AppSettings {
@@ -53,6 +54,9 @@ model AppSettings {
   periodsPerDay    Int     @default(10)
   statusLabels     Json?   // Record<Status, string>
   statusColors     Json?   // Record<Status, string>
+  periodStartTime  String  @default("08:30")
+  periodDuration   Int     @default(50)
+  breaks           Json?   // Array of { afterPeriod: number, duration: number, label?: string }
 }
 
 enum Status {
