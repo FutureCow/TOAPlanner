@@ -146,7 +146,7 @@ export default function NavBar() {
           onClick={toggleTimeLine}
           title={showTimeLine ? 'Tijdlijn verbergen' : 'Tijdlijn tonen'}
           className={`w-7 h-7 flex items-center justify-center rounded bg-slate-800 transition-colors text-sm ${
-            showTimeLine ? 'text-white' : 'text-slate-500 hover:text-white'
+            showTimeLine ? 'text-white' : 'text-slate-400 hover:text-white'
           }`}
         >
           ◔
