@@ -26,3 +26,37 @@ it('PATCH updates registrationOpen', async () => {
   const res = await PATCH(new NextRequest('http://x', { method: 'PATCH', body: JSON.stringify({ registrationOpen: false }) }))
   expect(res.status).toBe(200)
 })
+
+it('PATCH slaat periodStartTime en periodDuration op', async () => {
+  ;(nextAuth.getServerSession as jest.Mock).mockResolvedValue(admin)
+  ;(prisma.appSettings.upsert as jest.Mock).mockResolvedValue({
+    id: 1, periodStartTime: '08:30', periodDuration: 50,
+  })
+  const res = await PATCH(new NextRequest('http://x', {
+    method: 'PATCH',
+    body: JSON.stringify({ periodStartTime: '08:30', periodDuration: 50 }),
+  }))
+  const body = await res.json()
+  expect(res.status).toBe(200)
+  expect(prisma.appSettings.upsert).toHaveBeenCalledWith(
+    expect.objectContaining({
+      update: expect.objectContaining({ periodStartTime: '08:30', periodDuration: 50 }),
+    })
+  )
+})
+
+it('PATCH slaat breaks op als JSON array', async () => {
+  ;(nextAuth.getServerSession as jest.Mock).mockResolvedValue(admin)
+  ;(prisma.appSettings.upsert as jest.Mock).mockResolvedValue({ id: 1 })
+  const breaks = [{ afterPeriod: 3, duration: 15, label: 'Kleine pauze' }]
+  const res = await PATCH(new NextRequest('http://x', {
+    method: 'PATCH',
+    body: JSON.stringify({ breaks }),
+  }))
+  expect(res.status).toBe(200)
+  expect(prisma.appSettings.upsert).toHaveBeenCalledWith(
+    expect.objectContaining({
+      update: expect.objectContaining({ breaks }),
+    })
+  )
+})
