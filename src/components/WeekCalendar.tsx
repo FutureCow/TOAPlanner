@@ -127,7 +127,7 @@ export default function WeekCalendar({ subject, session, subjectConfig, periodsP
       </div>
 
       {/* Calendar grid */}
-      <div className="border border-slate-600 rounded-xl overflow-x-auto text-xs">
+      <div className="border border-slate-600 rounded-xl overflow-x-auto text-xs bg-slate-900">
         <div className="min-w-[560px]">
 
           {/* Day headers */}
@@ -153,11 +153,8 @@ export default function WeekCalendar({ subject, session, subjectConfig, periodsP
                   )}
                   <span className="text-slate-400">{DAYS_SHORT[i]}</span>{' '}
                   <span
-                    className="inline-flex items-center justify-center w-[22px] h-[22px] rounded-full font-bold text-xs"
-                    style={isToday
-                      ? { backgroundColor: accentColor, color: '#fff' }
-                      : { color: 'var(--color-slate-200, #d1d1d6)' }
-                    }
+                    className={`inline-flex items-center justify-center w-[22px] h-[22px] rounded-full font-bold text-xs ${isToday ? '' : 'text-slate-200'}`}
+                    style={isToday ? { backgroundColor: accentColor, color: '#fff' } : undefined}
                   >
                     {d.getDate()}
                   </span>
