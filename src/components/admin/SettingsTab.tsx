@@ -1,7 +1,6 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
 import { SubjectConfig } from '@/types'
-import { getPeriodStartTime } from '@/lib/periodTimes'
 
 const DAYS = ['Ma', 'Di', 'Wo', 'Do', 'Vr']
 const DAY_NAMES = ['Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag']
@@ -55,9 +54,6 @@ function SubjectCard({ subject, onSaved, onDeleted }: SubjectCardProps) {
   const [name, setName] = useState(subject.name)
   const [color, setColor] = useState(subject.accentColor)
   const [absence, setAbsence] = useState<number[]>(subject.absenceDays)
-  const [overlapLayout, setOverlapLayout] = useState<'stacked' | 'side-by-side'>(
-    (subject.overlapLayout as 'stacked' | 'side-by-side') ?? 'stacked'
-  )
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
@@ -74,7 +70,7 @@ function SubjectCard({ subject, onSaved, onDeleted }: SubjectCardProps) {
     const res = await fetch(`/api/admin/subjects/${subject.id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: name.trim(), accentColor: color, absenceDays: absence, overlapLayout }),
+      body: JSON.stringify({ name: name.trim(), accentColor: color, absenceDays: absence }),
     })
     setSaving(false)
     if (res.ok) { setSuccess(true); setTimeout(() => setSuccess(false), 2000); onSaved() }
@@ -125,24 +121,6 @@ function SubjectCard({ subject, onSaved, onDeleted }: SubjectCardProps) {
           </p>
         )}
       </div>
-      <div>
-        <label className="block text-xs text-slate-400 mb-1.5">Lay-out bij meerdere aanvragen</label>
-        <div className="flex gap-2">
-          {(['stacked', 'side-by-side'] as const).map(val => (
-            <button
-              key={val}
-              onClick={() => setOverlapLayout(val)}
-              className={`px-2.5 py-1 rounded text-xs font-medium transition-colors border ${
-                overlapLayout === val
-                  ? 'bg-blue-600 border-blue-500 text-white'
-                  : 'bg-slate-800 border-slate-600 text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              {val === 'stacked' ? 'Onder elkaar' : 'Naast elkaar'}
-            </button>
-          ))}
-        </div>
-      </div>
       {error && <p className="text-red-400 text-xs">{error}</p>}
       <div className="flex items-center justify-between pt-1">
         <button onClick={handleDelete} className="text-xs text-red-500/60 hover:text-red-400 transition-colors">
@@ -187,15 +165,6 @@ export default function SettingsTab() {
   const [logoSaved, setLogoSaved] = useState(false)
   const [periodsSaving, setPeriodsSaving] = useState(false)
   const [periodsSaved, setPeriodsSaved] = useState(false)
-  const [periodStartTime, setPeriodStartTime] = useState('08:30')
-  const [periodDuration, setPeriodDuration]   = useState(50)
-  const [breaks, setBreaks]                   = useState<{ afterPeriod: number; duration: number; label: string }[]>([])
-  const [timingSaving, setTimingSaving]       = useState(false)
-  const [timingSaved, setTimingSaved]         = useState(false)
-  const [newBreakAfter, setNewBreakAfter]     = useState(1)
-  const [newBreakDuration, setNewBreakDuration] = useState(15)
-  const [newBreakLabel, setNewBreakLabel]     = useState('')
-  const [showBreakForm, setShowBreakForm]     = useState(false)
 
   // Status labels + colors
   const [statusCfg, setStatusCfg] = useState(DEFAULT_STATUS)
@@ -216,9 +185,6 @@ export default function SettingsTab() {
       setLogo(d.schoolLogo ?? '')
       setLogoInput(d.schoolLogo ?? '')
       setPeriodsPerDay(d.periodsPerDay ?? 10)
-      setPeriodStartTime(d.periodStartTime ?? '08:30')
-      setPeriodDuration(d.periodDuration ?? 50)
-      setBreaks(Array.isArray(d.breaks) ? d.breaks : [])
       setSettingsLoading(false)
       const sl = d.statusLabels || {}
       const sc = d.statusColors || {}
@@ -291,28 +257,6 @@ export default function SettingsTab() {
     })
     setPeriodsSaving(false); setPeriodsSaved(true)
     setTimeout(() => setPeriodsSaved(false), 2000)
-  }
-
-  async function saveTiming() {
-    setTimingSaving(true); setTimingSaved(false)
-    await fetch('/api/admin/settings', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ periodStartTime, periodDuration, breaks }),
-    })
-    setTimingSaving(false); setTimingSaved(true)
-    setTimeout(() => setTimingSaved(false), 2000)
-  }
-
-  function addBreak() {
-    setBreaks(prev => [...prev, { afterPeriod: newBreakAfter, duration: newBreakDuration, label: newBreakLabel }]
-      .sort((a, b) => a.afterPeriod - b.afterPeriod))
-    setShowBreakForm(false)
-    setNewBreakLabel('')
-  }
-
-  function removeBreak(idx: number) {
-    setBreaks(prev => prev.filter((_, i) => i !== idx))
   }
 
   async function handleAdd() {
@@ -413,138 +357,6 @@ export default function SettingsTab() {
               >
                 {periodsSaving ? 'Opslaan…' : periodsSaved ? '✓ Opgeslagen' : 'Opslaan'}
               </button>
-            </div>
-          </div>
-
-          {/* Uurindeling */}
-          <div className="bg-slate-900 border border-slate-700 rounded-lg p-4 space-y-4">
-            <div>
-              <p className="font-semibold text-slate-200 text-sm mb-1">Uurindeling</p>
-              <p className="text-xs text-slate-500 mb-3">
-                Starttijd van het eerste uur en duur per uur. Pauzes worden automatisch meegenomen in de tijdberekening.
-              </p>
-              <div className="flex gap-3 items-end flex-wrap">
-                <div>
-                  <label className="block text-xs text-slate-400 mb-1">Starttijd eerste uur</label>
-                  <input
-                    type="time"
-                    value={periodStartTime}
-                    onChange={e => setPeriodStartTime(e.target.value)}
-                    className="bg-slate-800 border border-slate-600 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs text-slate-400 mb-1">Duur per uur (min)</label>
-                  <input
-                    type="number"
-                    min={10}
-                    max={120}
-                    value={periodDuration}
-                    onChange={e => setPeriodDuration(Number(e.target.value))}
-                    className="w-20 bg-slate-800 border border-slate-600 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
-                  />
-                </div>
-                <button
-                  onClick={saveTiming}
-                  disabled={timingSaving}
-                  className={`px-3 py-2 rounded text-xs font-medium transition-colors ${
-                    timingSaved ? 'bg-green-700 text-white' : 'bg-blue-600 hover:bg-blue-500 disabled:opacity-40 text-white'
-                  }`}
-                >
-                  {timingSaving ? 'Opslaan…' : timingSaved ? '✓ Opgeslagen' : 'Opslaan'}
-                </button>
-              </div>
-            </div>
-
-            {/* Live preview */}
-            <div>
-              <p className="text-xs text-slate-500 mb-1.5">Berekende tijden:</p>
-              <div className="flex gap-2 flex-wrap">
-                {Array.from({ length: periodsPerDay }, (_, i) => i + 1).map(p => (
-                  <span key={p} className="text-xs text-slate-400 bg-slate-800 rounded px-2 py-0.5">
-                    <span className="font-semibold text-slate-300">{p}</span>
-                    {' → '}
-                    {getPeriodStartTime(p, periodStartTime, periodDuration, breaks)}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Pauzes */}
-            <div>
-              <p className="text-xs text-slate-400 font-semibold mb-2">Pauzes</p>
-              {breaks.length === 0 && (
-                <p className="text-xs text-slate-600 mb-2">Geen pauzes ingesteld.</p>
-              )}
-              <div className="space-y-1 mb-2">
-                {breaks.map((b, idx) => (
-                  <div key={idx} className="flex items-center gap-2 text-xs text-slate-300 bg-slate-800 rounded px-2 py-1.5">
-                    <span>Na uur {b.afterPeriod} — {b.duration} min</span>
-                    {b.label && <span className="text-slate-500">({b.label})</span>}
-                    <button
-                      onClick={() => removeBreak(idx)}
-                      className="ml-auto text-slate-500 hover:text-red-400 transition-colors"
-                    >
-                      ✕
-                    </button>
-                  </div>
-                ))}
-              </div>
-              {showBreakForm ? (
-                <div className="flex gap-2 items-end flex-wrap bg-slate-800 rounded p-2">
-                  <div>
-                    <label className="block text-xs text-slate-400 mb-1">Na uur</label>
-                    <select
-                      value={newBreakAfter}
-                      onChange={e => setNewBreakAfter(Number(e.target.value))}
-                      className="bg-slate-700 border border-slate-600 rounded px-2 py-1 text-xs text-white focus:outline-none"
-                    >
-                      {Array.from({ length: periodsPerDay - 1 }, (_, i) => i + 1).map(n => (
-                        <option key={n} value={n}>{n}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-xs text-slate-400 mb-1">Duur (min)</label>
-                    <input
-                      type="number"
-                      min={1}
-                      max={120}
-                      value={newBreakDuration}
-                      onChange={e => setNewBreakDuration(Number(e.target.value))}
-                      className="w-16 bg-slate-700 border border-slate-600 rounded px-2 py-1 text-xs text-white focus:outline-none"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs text-slate-400 mb-1">Label (optioneel)</label>
-                    <input
-                      value={newBreakLabel}
-                      onChange={e => setNewBreakLabel(e.target.value)}
-                      placeholder="Kleine pauze"
-                      className="bg-slate-700 border border-slate-600 rounded px-2 py-1 text-xs text-white focus:outline-none w-32"
-                    />
-                  </div>
-                  <button
-                    onClick={addBreak}
-                    className="px-3 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded text-xs font-medium"
-                  >
-                    Toevoegen
-                  </button>
-                  <button
-                    onClick={() => setShowBreakForm(false)}
-                    className="px-3 py-1 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded text-xs"
-                  >
-                    Annuleren
-                  </button>
-                </div>
-              ) : (
-                <button
-                  onClick={() => setShowBreakForm(true)}
-                  className="text-xs text-blue-400 hover:text-blue-300 transition-colors"
-                >
-                  + Pauze toevoegen
-                </button>
-              )}
             </div>
           </div>
         </div>
