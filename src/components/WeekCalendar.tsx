@@ -1,12 +1,12 @@
 'use client'
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 import type { Session } from 'next-auth'
 import { RequestWithUser, SubjectConfig } from '@/types'
 import { getWeekDates, getWeekLabel, prevWeek, nextWeek, toDateString } from '@/lib/week'
 import RequestBlock, { DEFAULT_STATUS_COLORS, DEFAULT_STATUS_LABELS } from './RequestBlock'
 import RequestModal from './RequestModal'
 import RequestDetailPanel from './RequestDetailPanel'
-import { getPeriodStartTime, getBreakStartTime, type Break } from '@/lib/periodTimes'
+import { getPeriodStartTime, getBreakStartTime, buildTimeSlots, timeToMinutes, type Break } from '@/lib/periodTimes'
 
 const DAYS_SHORT = ['Maa', 'Din', 'Woe', 'Don', 'Vri']
 const GRID_COLS = '2.5rem repeat(5, 1fr)'
@@ -32,6 +32,9 @@ export default function WeekCalendar({ subject, session, subjectConfig, periodsP
   const [periodStartTime, setPeriodStartTime] = useState('')
   const [periodDuration, setPeriodDuration]   = useState(50)
   const [calBreaks, setCalBreaks]             = useState<Break[]>([])
+  const [showTimeLine, setShowTimeLine] = useState(() => localStorage.getItem('show-timeline') === 'true')
+  const [lineY, setLineY] = useState<number | null>(null)
+  const periodGridRef = useRef<HTMLDivElement>(null)
 
   const weekDates = getWeekDates(currentDate)
   const today = toDateString(new Date())
@@ -87,6 +90,67 @@ export default function WeekCalendar({ subject, session, subjectConfig, periodsP
       })
       .catch(() => {})
   }, [subject])
+
+  useEffect(() => {
+    function onTimelineChanged(e: Event) {
+      setShowTimeLine((e as CustomEvent<boolean>).detail)
+    }
+    window.addEventListener('timeline-changed', onTimelineChanged)
+    return () => window.removeEventListener('timeline-changed', onTimelineChanged)
+  }, [])
+
+  useEffect(() => {
+    if (!showTimeLine || !periodStartTime) {
+      setLineY(null)
+      return
+    }
+
+    function calculateLineY() {
+      if (!periodGridRef.current || !periodStartTime) return
+
+      const now = new Date()
+      const nowMin = now.getHours() * 60 + now.getMinutes()
+
+      const periods = Array.from({ length: periodsPerDay }, (_, i) => i + 1)
+      const slots = buildTimeSlots(periods, periodStartTime, periodDuration, calBreaks)
+
+      const containerHeight = periodGridRef.current.scrollHeight
+
+      if (slots.length === 0) {
+        setLineY(null)
+        return
+      }
+
+      if (nowMin <= slots[0].startMin) {
+        setLineY(0)
+        return
+      }
+
+      if (nowMin >= slots[slots.length - 1].endMin) {
+        setLineY(containerHeight)
+        return
+      }
+
+      const slot = slots.find(s => nowMin >= s.startMin && nowMin < s.endMin)
+      if (!slot) {
+        setLineY(null)
+        return
+      }
+
+      const el = periodGridRef.current.querySelector<HTMLElement>(`[data-row="${slot.key}"]`)
+      if (!el) {
+        setLineY(null)
+        return
+      }
+
+      const fraction = (nowMin - slot.startMin) / (slot.endMin - slot.startMin)
+      setLineY(el.offsetTop + fraction * el.offsetHeight)
+    }
+
+    calculateLineY()
+    const interval = setInterval(calculateLineY, 30_000)
+    return () => clearInterval(interval)
+  }, [showTimeLine, periodStartTime, periodDuration, calBreaks, periodsPerDay])
 
   function getCellRequests(date: Date, period: number): { request: RequestWithUser; isFirst: boolean }[] {
     const ds = toDateString(date)
@@ -201,12 +265,14 @@ export default function WeekCalendar({ subject, session, subjectConfig, periodsP
           </div>
 
           {/* Period rows */}
+          <div ref={periodGridRef} className="relative">
           {PERIODS.map(period => {
             const breakBefore = calBreaks.find(b => b.afterPeriod === period - 1)
             return (
               <React.Fragment key={period}>
                 {breakBefore && (
                   <div
+                    data-row={`break-${breakBefore.afterPeriod}`}
                     className="grid border-b border-slate-700"
                     style={{ gridTemplateColumns: GRID_COLS }}
                   >
@@ -226,6 +292,7 @@ export default function WeekCalendar({ subject, session, subjectConfig, periodsP
                   </div>
                 )}
                 <div
+                  data-row={`period-${period}`}
                   className="grid border-b border-slate-600 last:border-b-0"
                   style={{ gridTemplateColumns: GRID_COLS }}
                 >
@@ -287,6 +354,16 @@ export default function WeekCalendar({ subject, session, subjectConfig, periodsP
               </React.Fragment>
             )
           })}
+          {showTimeLine && lineY !== null && (
+            <div
+              className="absolute pointer-events-none z-20"
+              style={{ top: lineY, left: '2.5rem', right: 0 }}
+            >
+              <div className="h-0.5 bg-red-500 w-full" />
+              <div className="absolute -left-1.5 -top-[3px] w-2.5 h-2.5 rounded-full bg-red-500" />
+            </div>
+          )}
+          </div>
         </div>
       </div>
 
