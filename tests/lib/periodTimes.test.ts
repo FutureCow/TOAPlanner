@@ -28,7 +28,8 @@ describe('getPeriodStartTime', () => {
     expect(getPeriodStartTime(7, '08:30', 50, breaks)).toBe('14:15')
   })
 
-  it('werkt correct over de klokovergang (uur >12)', () => {
+  it('berekent tijden na het middaguur correct', () => {
     expect(getPeriodStartTime(5, '08:30', 50, [])).toBe('11:50')
+    expect(getPeriodStartTime(20, '08:30', 50, [])).toBe('00:20')
   })
 })
