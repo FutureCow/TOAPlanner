@@ -55,6 +55,9 @@ function SubjectCard({ subject, onSaved, onDeleted }: SubjectCardProps) {
   const [name, setName] = useState(subject.name)
   const [color, setColor] = useState(subject.accentColor)
   const [absence, setAbsence] = useState<number[]>(subject.absenceDays)
+  const [overlapLayout, setOverlapLayout] = useState<'stacked' | 'side-by-side'>(
+    (subject.overlapLayout as 'stacked' | 'side-by-side') ?? 'stacked'
+  )
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
@@ -71,7 +74,7 @@ function SubjectCard({ subject, onSaved, onDeleted }: SubjectCardProps) {
     const res = await fetch(`/api/admin/subjects/${subject.id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: name.trim(), accentColor: color, absenceDays: absence }),
+      body: JSON.stringify({ name: name.trim(), accentColor: color, absenceDays: absence, overlapLayout }),
     })
     setSaving(false)
     if (res.ok) { setSuccess(true); setTimeout(() => setSuccess(false), 2000); onSaved() }
@@ -121,6 +124,24 @@ function SubjectCard({ subject, onSaved, onDeleted }: SubjectCardProps) {
             TOA niet aanwezig op: {absence.sort().map(d => DAY_NAMES[d]).join(', ')}
           </p>
         )}
+      </div>
+      <div>
+        <label className="block text-xs text-slate-400 mb-1.5">Lay-out bij meerdere aanvragen</label>
+        <div className="flex gap-2">
+          {(['stacked', 'side-by-side'] as const).map(val => (
+            <button
+              key={val}
+              onClick={() => setOverlapLayout(val)}
+              className={`px-2.5 py-1 rounded text-xs font-medium transition-colors border ${
+                overlapLayout === val
+                  ? 'bg-blue-600 border-blue-500 text-white'
+                  : 'bg-slate-800 border-slate-600 text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              {val === 'stacked' ? 'Onder elkaar' : 'Naast elkaar'}
+            </button>
+          ))}
+        </div>
       </div>
       {error && <p className="text-red-400 text-xs">{error}</p>}
       <div className="flex items-center justify-between pt-1">
