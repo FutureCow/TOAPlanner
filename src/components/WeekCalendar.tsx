@@ -268,7 +268,6 @@ export default function WeekCalendar({ subject, session, subjectConfig, periodsP
                                 onClick={setSelected}
                                 accentColor={subjectColorMap[r.subject]}
                                 statusColors={statusColors}
-                                compact={sideBySide && cells.length > 1}
                               />
                             </div>
                           ))}
