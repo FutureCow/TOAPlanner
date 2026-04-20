@@ -38,15 +38,15 @@ export default function RequestBlock({ request, isFirst, onClick, accentColor, s
     return (
       <div
         onClick={() => onClick(request)}
-        className="border-l-[3px] rounded-sm px-1.5 py-0.5 cursor-pointer hover:brightness-125 transition-all mb-1 flex items-center gap-1.5"
+        className="border-l-[3px] rounded-sm px-1 py-0.5 cursor-pointer hover:brightness-125 transition-all mb-1 flex items-center gap-1"
         style={{
-          backgroundColor: statusColor + '28',
+          backgroundColor: statusColor + '18',
           borderLeftColor: borderColor,
         }}
         title={`${request.klas ? request.klas + ' – ' : ''}${request.title} (vervolg)`}
       >
         <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: statusColor, opacity: 0.6 }} />
-        <span className="text-[0.65rem] truncate text-slate-300 opacity-75">
+        <span className="text-[0.65rem] truncate text-slate-300 opacity-75 min-w-0">
           {request.klas ? `${request.klas} – ` : ''}{request.title}
         </span>
       </div>
