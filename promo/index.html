@@ -11,34 +11,36 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    /* ── DARK THEME (default) — zelfde palet als de app ─── */
+    /* ── DARK THEME ──────────────────────────────────────────────────── */
     :root, [data-theme="dark"] {
-      --bg:        #1c1c1c;
-      --bg2:       #252525;
-      --bg3:       #303030;
-      --border:    #3d3d3d;
+      --bg:        #0f1117;
+      --bg2:       #181b23;
+      --bg3:       #222633;
+      --border:    #2d3347;
       --text:      #f1f5f9;
-      --muted:     #94a3b8;
+      --muted:     #8b95b0;
       --accent:    #3b82f6;
       --accent2:   #6366f1;
-      --shadow:    rgba(0,0,0,.5);
-      --nav-bg:    rgba(28,28,28,0.88);
-      --hero-glow: rgba(59,130,246,.18);
+      --shadow:    rgba(0,0,0,.6);
+      --nav-bg:    rgba(15,17,23,0.90);
+      --hero-glow: rgba(59,130,246,.20);
+      --card-hover:#2d3347;
     }
 
-    /* ── LIGHT THEME ─────────────────────────────────────── */
+    /* ── LIGHT THEME ─────────────────────────────────────────────────── */
     [data-theme="light"] {
-      --bg:        #f2f2f7;
+      --bg:        #f4f6fb;
       --bg2:       #ffffff;
-      --bg3:       #e5e5ea;
-      --border:    #d1d1d6;
-      --text:      #1d1d1f;
-      --muted:     #636366;
+      --bg3:       #eaecf4;
+      --border:    #d0d5e8;
+      --text:      #0f1117;
+      --muted:     #5c6480;
       --accent:    #2563eb;
       --accent2:   #4f46e5;
-      --shadow:    rgba(0,0,0,.12);
-      --nav-bg:    rgba(242,242,247,0.88);
-      --hero-glow: rgba(37,99,235,.10);
+      --shadow:    rgba(0,0,0,.10);
+      --nav-bg:    rgba(244,246,251,0.92);
+      --hero-glow: rgba(37,99,235,.12);
+      --card-hover:#e8ecf8;
     }
 
     html { scroll-behavior: smooth; }
@@ -51,16 +53,16 @@
       transition: background .25s, color .25s;
     }
 
-    /* ── NAV ─────────────────────────────────────────────────────────── */
+    /* ── NAV ──────────────────────────────────────────────────────────── */
     nav {
       position: sticky; top: 0; z-index: 50;
       display: flex; align-items: center; justify-content: space-between;
       padding: 1rem 2rem;
       background: var(--nav-bg);
-      backdrop-filter: blur(12px);
+      backdrop-filter: blur(14px);
       border-bottom: 1px solid var(--border);
     }
-    .nav-logo { font-weight: 700; font-size: 1.1rem; letter-spacing: -.02em; }
+    .nav-logo { font-weight: 800; font-size: 1.1rem; letter-spacing: -.03em; }
     .nav-logo span { color: var(--accent); }
     nav a { color: var(--muted); text-decoration: none; font-size: .9rem; transition: color .2s; }
     nav a:hover { color: var(--text); }
@@ -82,22 +84,19 @@
       transition: filter .2s, transform .15s;
       cursor: pointer; border: none;
     }
-    .btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+    .btn:hover { filter: brightness(1.08); transform: translateY(-1px); }
     .btn-primary { background: var(--accent); color: #fff; }
-    .btn-outline {
-      background: transparent; color: var(--text);
-      border: 1px solid var(--border);
-    }
-    .btn-outline:hover { background: var(--bg2); }
+    .btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border); }
+    .btn-outline:hover { background: var(--bg3); }
 
-    /* ── HERO ────────────────────────────────────────────────────────── */
+    /* ── HERO ─────────────────────────────────────────────────────────── */
     .hero {
       position: relative; overflow: hidden;
       padding: 7rem 2rem 5rem; text-align: center;
     }
     .hero-glow {
-      position: absolute; top: -100px; left: 50%; transform: translateX(-50%);
-      width: 800px; height: 500px; border-radius: 50%;
+      position: absolute; top: -120px; left: 50%; transform: translateX(-50%);
+      width: 900px; height: 560px; border-radius: 50%;
       background: radial-gradient(ellipse, var(--hero-glow) 0%, transparent 70%);
       pointer-events: none;
     }
@@ -122,12 +121,12 @@
     .hero p { font-size: 1.15rem; color: var(--muted); max-width: 560px; margin: 0 auto 2.5rem; }
     .hero-cta { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
 
-    /* ── MOCK CALENDAR ───────────────────────────────────────────────── */
+    /* ── MOCK CALENDAR ────────────────────────────────────────────────── */
     .mock-wrap {
-      max-width: 860px; margin: 4rem auto 0;
+      max-width: 880px; margin: 4rem auto 0;
       background: var(--bg2); border: 1px solid var(--border);
-      border-radius: 1rem; overflow: hidden;
-      box-shadow: 0 25px 60px var(--shadow);
+      border-radius: 1.25rem; overflow: hidden;
+      box-shadow: 0 30px 70px var(--shadow);
       position: relative;
     }
     .mock-bar {
@@ -136,80 +135,135 @@
       border-bottom: 1px solid var(--border);
     }
     .mock-dot { width: 10px; height: 10px; border-radius: 50%; }
-    .mock-url {
-      flex: 1; background: var(--bg2); border-radius: .3rem;
-      padding: .2rem .8rem; font-size: .75rem; color: var(--muted);
-      margin: 0 .5rem;
+    .mock-url { flex: 1; background: var(--bg2); border-radius: .3rem; padding: .2rem .8rem; font-size: .75rem; color: var(--muted); margin: 0 .5rem; }
+
+    .mock-nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: .6rem 1rem .4rem; border-bottom: 1px solid var(--border);
+      background: var(--bg);
     }
-    .mock-calendar { padding: 1rem; }
+    .mock-nav-left { display: flex; align-items: center; gap: .5rem; }
+    .mock-week-label { font-size: .72rem; font-weight: 700; color: var(--text); }
+    .mock-exception-badge {
+      font-size: .6rem; font-weight: 600;
+      background: rgba(217,119,6,.20); border: 1px solid rgba(217,119,6,.4);
+      color: #fcd34d; border-radius: 99px; padding: .1rem .5rem;
+    }
+    [data-theme="light"] .mock-exception-badge { color: #92400e; }
+    .mock-nav-btns { display: flex; gap: .3rem; }
+    .mock-nav-btn {
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: .3rem; padding: .15rem .45rem; font-size: .65rem;
+      color: var(--muted); cursor: default;
+    }
+    .mock-timeline-btn {
+      display: flex; align-items: center; gap: .3rem;
+      background: rgba(59,130,246,.12); border: 1px solid rgba(59,130,246,.3);
+      border-radius: .3rem; padding: .15rem .5rem; font-size: .6rem;
+      color: #93c5fd;
+    }
+    [data-theme="light"] .mock-timeline-btn { color: #1d4ed8; }
+
+    .mock-calendar { padding: .6rem .8rem .8rem; }
     .mock-header-row {
-      display: grid; grid-template-columns: 1.8rem repeat(5,1fr);
-      gap: 2px; margin-bottom: 4px;
+      display: grid; grid-template-columns: 2.6rem repeat(5,1fr);
+      gap: 2px; margin-bottom: 3px;
     }
     .mock-day {
-      text-align: center; font-size: .7rem; font-weight: 600;
-      color: var(--muted); padding: .4rem;
+      text-align: center; font-size: .68rem; font-weight: 600;
+      color: var(--muted); padding: .35rem .3rem;
     }
+    .mock-day.today { background: rgba(59,130,246,.10); border-radius: .3rem; }
+    [data-theme="dark"] .mock-day.today { color: #93c5fd; }
+    [data-theme="light"] .mock-day.today { color: #1d4ed8; }
+
     .mock-row {
-      display: grid; grid-template-columns: 1.8rem repeat(5,1fr);
+      display: grid; grid-template-columns: 2.6rem repeat(5,1fr);
       gap: 2px; margin-bottom: 2px;
     }
-    .mock-period-num {
-      font-size: .65rem; color: var(--muted);
-      display: flex; align-items: center; justify-content: center;
+    .mock-break-row {
+      display: grid; grid-template-columns: 2.6rem repeat(5,1fr);
+      gap: 2px; margin-bottom: 2px;
     }
+    .mock-break-label {
+      grid-column: 1 / -1; font-size: .58rem; color: var(--muted);
+      padding: .2rem .4rem; opacity: .7; font-style: italic;
+      display: flex; align-items: center; gap: .4rem;
+    }
+    .mock-break-time { color: var(--muted); opacity: .6; }
+    .mock-period-num {
+      font-size: .62rem; color: var(--muted);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 1px; line-height: 1;
+    }
+    .mock-period-num .pnum { font-weight: 700; color: var(--text); font-size: .68rem; }
+    .mock-period-num .ptime { font-size: .55rem; color: var(--muted); opacity: .7; }
     .mock-cell {
-      background: rgba(128,128,128,.04); border-radius: .3rem;
+      background: rgba(128,128,128,.03); border-radius: .3rem;
       min-height: 2.8rem; padding: .25rem; position: relative;
     }
-    /* hover-cell: laat + knop zien */
     .mock-cell.hover-cell { cursor: pointer; }
     .mock-cell.hover-cell:hover { background: rgba(59,130,246,.06); }
     .mock-add-btn {
       position: absolute; bottom: 4px; right: 4px;
-      width: 18px; height: 18px;
+      width: 16px; height: 16px;
       background: #3b82f6; color: #fff;
-      border-radius: 4px; font-size: .7rem; font-weight: 700;
+      border-radius: 3px; font-size: .65rem; font-weight: 700;
       display: flex; align-items: center; justify-content: center;
       opacity: 0; transition: opacity .15s;
     }
     .mock-cell.hover-cell:hover .mock-add-btn { opacity: 1; }
 
+    /* Wong colorblind-safe status colors */
     .mock-block {
       border-left: 3px solid; border-radius: .25rem;
-      padding: .2rem .4rem; font-size: .6rem; line-height: 1.3; font-weight: 500;
+      padding: .2rem .4rem; font-size: .58rem; line-height: 1.35; font-weight: 500;
     }
-    .block-green  { border-color: #22c55e; background: rgba(34,197,94,.15); color: #86efac; }
-    .block-amber  { border-color: #f59e0b; background: rgba(245,158,11,.15); color: #fcd34d; }
-    .block-slate  { border-color: #64748b; background: rgba(100,116,139,.15); color: #cbd5e1; }
-    .block-red    { border-color: #ef4444; background: rgba(239,68,68,.15); color: #fca5a5; }
-    .block-blue   { border-color: #3b82f6; background: rgba(59,130,246,.15); color: #93c5fd; }
-    [data-theme="light"] .block-green  { color: #14532d; background: rgba(34,197,94,.20); }
-    [data-theme="light"] .block-amber  { color: #78350f; background: rgba(245,158,11,.20); }
-    [data-theme="light"] .block-slate  { color: #334155; background: rgba(100,116,139,.20); }
-    [data-theme="light"] .block-red    { color: #7f1d1d; background: rgba(239,68,68,.20); }
-    [data-theme="light"] .block-blue   { color: #1e3a8a; background: rgba(59,130,246,.20); }
+    .block-pending  { border-color: #56B4E9; background: rgba(86,180,233,.14); color: #93d3f5; }
+    .block-approved { border-color: #009E73; background: rgba(0,158,115,.14); color: #5dd4b3; }
+    .block-notoa    { border-color: #E69F00; background: rgba(230,159,0,.14);  color: #f5cc6e; }
+    .block-rejected { border-color: #D55E00; background: rgba(213,94,0,.14);   color: #f09060; }
+    .block-blue     { border-color: #3b82f6; background: rgba(59,130,246,.14); color: #93c5fd; }
+    [data-theme="light"] .block-pending  { color: #0369a1; background: rgba(86,180,233,.18); }
+    [data-theme="light"] .block-approved { color: #065f46; background: rgba(0,158,115,.18); }
+    [data-theme="light"] .block-notoa    { color: #78350f; background: rgba(230,159,0,.18); }
+    [data-theme="light"] .block-rejected { color: #7c2d12; background: rgba(213,94,0,.18); }
+    [data-theme="light"] .block-blue     { color: #1e3a8a; background: rgba(59,130,246,.18); }
+
+    .mock-block-cont {
+      border-left: 3px solid #009E73; border-radius: .25rem;
+      padding: .1rem .3rem; font-size: .52rem; color: var(--muted);
+      background: rgba(0,158,115,.08); opacity: .75;
+    }
+
+    /* ── TIMELINE INDICATOR ─────────────────────────────────────────── */
+    .mock-grid-area { position: relative; }
+    .mock-timeline-line {
+      position: absolute; left: 2.6rem; right: 0;
+      height: 2px; background: #ef4444; pointer-events: none; z-index: 5;
+      top: calc(2.8rem + 2px + 1.4rem);
+    }
+    .mock-timeline-line::before {
+      content: ''; position: absolute; left: -5px; top: -4px;
+      width: 10px; height: 10px; border-radius: 50%; background: #ef4444;
+    }
 
     /* ── MOCK MODAL ──────────────────────────────────────────────────── */
     .mock-modal-overlay {
-      display: none;
-      position: absolute; inset: 0;
+      display: none; position: absolute; inset: 0;
       background: rgba(0,0,0,.55);
       align-items: center; justify-content: center;
-      border-radius: 1rem; z-index: 10;
+      border-radius: 1.25rem; z-index: 10;
     }
     .mock-modal-overlay.visible { display: flex; }
     .mock-modal {
       background: var(--bg2); border: 1px solid var(--border);
       border-radius: .875rem; padding: 1.25rem;
-      width: 280px; box-shadow: 0 20px 40px rgba(0,0,0,.4);
+      width: 290px; box-shadow: 0 20px 40px rgba(0,0,0,.4);
     }
     .mock-modal h4 { font-size: .85rem; font-weight: 700; margin-bottom: .875rem; }
     .mock-field { margin-bottom: .6rem; }
-    .mock-field label {
-      display: block; font-size: .65rem; color: var(--muted);
-      margin-bottom: .2rem; font-weight: 500;
-    }
+    .mock-field label { display: block; font-size: .65rem; color: var(--muted); margin-bottom: .2rem; font-weight: 500; }
     .mock-input {
       width: 100%; background: var(--bg3); border: 1px solid var(--border);
       border-radius: .35rem; padding: .35rem .6rem;
@@ -217,27 +271,27 @@
     }
     .mock-input-row { display: grid; grid-template-columns: 1fr 1fr; gap: .4rem; }
     .mock-modal-btns { display: flex; gap: .5rem; margin-top: .875rem; }
-    .mock-btn {
-      flex: 1; padding: .4rem; border-radius: .35rem;
-      font-size: .7rem; font-weight: 600; cursor: pointer; border: none;
-    }
+    .mock-btn { flex: 1; padding: .4rem; border-radius: .35rem; font-size: .7rem; font-weight: 600; cursor: pointer; border: none; }
     .mock-btn-cancel { background: var(--bg3); color: var(--text); }
     .mock-btn-save   { background: var(--accent); color: #fff; }
+    .mock-recurring-row { display: flex; align-items: center; gap: .4rem; margin-bottom: .6rem; }
+    .mock-checkbox { width: 12px; height: 12px; background: var(--accent); border-radius: 2px; flex-shrink: 0; }
+    .mock-recurring-label { font-size: .65rem; color: var(--muted); }
 
     /* ── SECTION ─────────────────────────────────────────────────────── */
     section { padding: 5rem 2rem; }
-    .section-inner { max-width: 1100px; margin: 0 auto; }
+    .section-inner { max-width: 1120px; margin: 0 auto; }
     .section-label {
-      text-align: center; font-size: .8rem; font-weight: 600;
+      text-align: center; font-size: .78rem; font-weight: 700;
       letter-spacing: .1em; text-transform: uppercase;
       color: var(--accent); margin-bottom: .75rem;
     }
     .section-title {
       text-align: center; font-size: clamp(1.6rem, 3vw, 2.4rem);
-      font-weight: 800; letter-spacing: -.02em; margin-bottom: 1rem;
+      font-weight: 800; letter-spacing: -.025em; margin-bottom: 1rem;
     }
     .section-sub {
-      text-align: center; color: var(--muted); max-width: 540px;
+      text-align: center; color: var(--muted); max-width: 560px;
       margin: 0 auto 3.5rem; font-size: 1rem;
     }
 
@@ -249,17 +303,25 @@
     }
     .feature-card {
       background: var(--bg2); border: 1px solid var(--border);
-      border-radius: .875rem; padding: 1.75rem;
-      transition: border-color .2s, transform .2s;
+      border-radius: 1rem; padding: 1.75rem;
+      transition: border-color .2s, background .2s, transform .2s;
     }
-    .feature-card:hover { border-color: rgba(59,130,246,.4); transform: translateY(-2px); }
+    .feature-card:hover { border-color: rgba(59,130,246,.4); background: var(--card-hover); transform: translateY(-2px); }
     .feature-icon {
-      width: 44px; height: 44px; border-radius: .6rem;
+      width: 44px; height: 44px; border-radius: .7rem;
       display: flex; align-items: center; justify-content: center;
       font-size: 1.3rem; margin-bottom: 1rem;
     }
     .feature-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: .5rem; }
-    .feature-card p  { color: var(--muted); font-size: .875rem; line-height: 1.6; }
+    .feature-card p  { color: var(--muted); font-size: .875rem; line-height: 1.65; }
+    .feature-new {
+      display: inline-block; margin-left: .4rem;
+      background: rgba(59,130,246,.15); border: 1px solid rgba(59,130,246,.35);
+      color: #93c5fd; font-size: .6rem; font-weight: 700;
+      padding: .05rem .4rem; border-radius: 99px; vertical-align: middle;
+      letter-spacing: .04em; text-transform: uppercase;
+    }
+    [data-theme="light"] .feature-new { color: #1d4ed8; }
 
     /* ── HOW IT WORKS ────────────────────────────────────────────────── */
     .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 2rem; }
@@ -268,21 +330,14 @@
       width: 48px; height: 48px; border-radius: 50%;
       background: linear-gradient(135deg, var(--accent), var(--accent2));
       display: flex; align-items: center; justify-content: center;
-      font-weight: 800; font-size: 1.1rem; margin: 0 auto 1rem;
-      color: #fff;
+      font-weight: 800; font-size: 1.1rem; margin: 0 auto 1rem; color: #fff;
     }
     .step h3 { font-size: .95rem; font-weight: 700; margin-bottom: .4rem; }
     .step p  { color: var(--muted); font-size: .85rem; }
 
     /* ── KLEUREN SECTIE ──────────────────────────────────────────────── */
-    .colors-grid {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
-    }
-    .color-card {
-      background: var(--bg2); border: 1px solid var(--border);
-      border-radius: .875rem; overflow: hidden;
-    }
+    .colors-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+    .color-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 1rem; overflow: hidden; }
     .color-card-bar { height: 6px; }
     .color-card-body { padding: .875rem; }
     .color-card-body h4 { font-size: .875rem; font-weight: 700; margin-bottom: .5rem; }
@@ -292,30 +347,62 @@
       margin-bottom: .3rem;
     }
 
-    /* ── LOGIN SECTION ───────────────────────────────────────────────── */
-    .login-section { background: var(--bg2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-    .login-cards {
-      display: flex; gap: 1.25rem; justify-content: center;
-      flex-wrap: wrap; margin-top: 2.5rem;
+    /* ── UURINDELING DEMO ────────────────────────────────────────────── */
+    .schedule-demo {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem; margin-top: 2rem;
     }
-    .login-card {
-      background: var(--bg); border: 1px solid var(--border);
-      border-radius: .875rem; padding: 1.75rem 2rem;
-      display: flex; align-items: center; gap: 1rem; min-width: 240px;
+    .schedule-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 1rem; padding: 1.25rem;
     }
-    .login-card-icon { font-size: 2rem; }
-    .login-card h4 { font-weight: 700; font-size: .95rem; margin-bottom: .2rem; }
-    .login-card p  { color: var(--muted); font-size: .8rem; }
+    .schedule-card h4 { font-size: .875rem; font-weight: 700; margin-bottom: .75rem; display: flex; align-items: center; gap: .5rem; }
+    .schedule-card-badge {
+      font-size: .6rem; font-weight: 600;
+      background: rgba(217,119,6,.15); border: 1px solid rgba(217,119,6,.3);
+      color: #f59e0b; border-radius: 99px; padding: .1rem .5rem;
+    }
+    [data-theme="light"] .schedule-card-badge { color: #92400e; }
+    .schedule-row {
+      display: flex; align-items: center; gap: .5rem;
+      font-size: .75rem; padding: .3rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .schedule-row:last-child { border-bottom: none; }
+    .schedule-num { font-weight: 700; color: var(--text); width: 1.2rem; text-align: center; }
+    .schedule-time { color: var(--muted); width: 3.2rem; }
+    .schedule-bar { flex: 1; height: 4px; border-radius: 2px; background: var(--border); }
+    .schedule-bar-fill { height: 100%; border-radius: 2px; background: var(--accent); }
+    .schedule-break { color: var(--muted); font-style: italic; opacity: .7; }
+    .schedule-exc { color: #f59e0b; font-weight: 600; }
 
     /* ── STATUS PILLS ────────────────────────────────────────────────── */
     .status-row { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; margin-top: 2.5rem; }
     .status-pill {
-      display: flex; align-items: center; gap: .6rem;
+      display: flex; align-items: center; gap: .75rem;
       background: var(--bg2); border: 1px solid var(--border);
-      border-left-width: 4px; border-radius: .5rem;
-      padding: .75rem 1.25rem; font-size: .875rem; font-weight: 500;
+      border-left-width: 4px; border-radius: .6rem;
+      padding: .875rem 1.25rem; font-size: .875rem; font-weight: 500;
+      min-width: 220px;
     }
-    .pill-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .pill-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .pill-info { display: flex; flex-direction: column; gap: .15rem; }
+    .pill-name { font-weight: 700; font-size: .85rem; }
+    .pill-desc { color: var(--muted); font-size: .75rem; }
+
+    /* ── LOGIN SECTION ───────────────────────────────────────────────── */
+    .login-section { background: var(--bg2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .login-cards { display: flex; gap: 1.25rem; justify-content: center; flex-wrap: wrap; margin-top: 2.5rem; }
+    .login-card {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 1rem; padding: 1.75rem 2rem;
+      display: flex; align-items: center; gap: 1rem; min-width: 240px;
+      transition: border-color .2s, transform .2s;
+    }
+    .login-card:hover { border-color: rgba(59,130,246,.4); transform: translateY(-2px); }
+    .login-card-icon { font-size: 2rem; }
+    .login-card h4 { font-weight: 700; font-size: .95rem; margin-bottom: .2rem; }
+    .login-card p  { color: var(--muted); font-size: .8rem; }
 
     /* ── CONTACT ─────────────────────────────────────────────────────── */
     .contact-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start; }
@@ -325,6 +412,9 @@
     .contact-detail { display: flex; align-items: center; gap: .6rem; color: var(--muted); font-size: .875rem; margin-bottom: .5rem; }
     .contact-detail a { color: var(--accent); text-decoration: none; }
     .contact-detail a:hover { text-decoration: underline; }
+    .contact-checklist { margin-top: 2rem; padding: 1.25rem; background: var(--bg2); border: 1px solid var(--border); border-radius: .875rem; }
+    .contact-checklist p { font-size: .85rem; margin-bottom: .75rem; font-weight: 700; }
+    .contact-checklist ul { color: var(--muted); font-size: .85rem; list-style: none; display: flex; flex-direction: column; gap: .4rem; }
 
     form { display: flex; flex-direction: column; gap: 1rem; }
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
@@ -340,19 +430,20 @@
     textarea { resize: vertical; min-height: 120px; }
     .form-note { font-size: .75rem; color: var(--muted); }
     .form-success {
-      display: none; background: rgba(34,197,94,.1); border: 1px solid rgba(34,197,94,.3);
-      color: #86efac; border-radius: .5rem; padding: .75rem 1rem; font-size: .875rem;
+      display: none; background: rgba(0,158,115,.1); border: 1px solid rgba(0,158,115,.3);
+      color: #5dd4b3; border-radius: .5rem; padding: .75rem 1rem; font-size: .875rem;
     }
 
     /* ── FOOTER ──────────────────────────────────────────────────────── */
-    footer { border-top: 1px solid var(--border); padding: 2rem; text-align: center; color: var(--muted); font-size: .8rem; }
+    footer { border-top: 1px solid var(--border); padding: 2.5rem 2rem; text-align: center; color: var(--muted); font-size: .8rem; }
+    footer strong { color: var(--text); }
 
     /* ── RESPONSIVE ──────────────────────────────────────────────────── */
     @media (max-width: 640px) {
       nav { padding: .75rem 1rem; }
       .nav-links { display: none; }
       section { padding: 3.5rem 1.25rem; }
-      .mock-wrap { margin: 2rem 1rem 0; }
+      .mock-wrap { margin: 2rem .5rem 0; }
     }
   </style>
 </head>
@@ -364,6 +455,7 @@
   <div class="nav-links">
     <a href="#functies">Functies</a>
     <a href="#hoe-werkt-het">Hoe werkt het</a>
+    <a href="#uurindeling">Uurindeling</a>
     <a href="#inloggen">Inloggen</a>
     <a href="#contact">Contact</a>
   </div>
@@ -384,7 +476,7 @@
     <a href="#functies" class="btn btn-outline">Bekijk de functies</a>
   </div>
 
-  <!-- Mock calendar met + knop en modal -->
+  <!-- Mock calendar -->
   <div class="mock-wrap" id="mock-wrap">
     <div class="mock-bar">
       <div class="mock-dot" style="background:#ef4444"></div>
@@ -392,55 +484,85 @@
       <div class="mock-dot" style="background:#22c55e"></div>
       <div class="mock-url">toaplanner.nl / natuurkunde</div>
     </div>
+    <!-- Simulated NavBar with timeline toggle -->
+    <div class="mock-nav">
+      <div class="mock-nav-left">
+        <span class="mock-week-label">21 APRIL – 25 APRIL, 2026</span>
+        <span class="mock-exception-badge">Tentamenweek</span>
+      </div>
+      <div style="display:flex;gap:.4rem;align-items:center">
+        <span class="mock-timeline-btn">⏱ Nu: 10:05</span>
+        <div class="mock-nav-btns">
+          <div class="mock-nav-btn">Vandaag</div>
+          <div class="mock-nav-btn">‹</div>
+          <div class="mock-nav-btn">›</div>
+        </div>
+      </div>
+    </div>
     <div class="mock-calendar">
       <div class="mock-header-row">
         <div></div>
-        <div class="mock-day">Maa 7</div>
-        <div class="mock-day" style="background:rgba(59,130,246,.1);border-radius:.3rem;color:#93c5fd">Din 8</div>
-        <div class="mock-day">Woe 9</div>
-        <div class="mock-day">Don 10</div>
-        <div class="mock-day">Vri 11</div>
+        <div class="mock-day">Maa 21</div>
+        <div class="mock-day today">Din 22</div>
+        <div class="mock-day">Woe 23</div>
+        <div class="mock-day">Don 24</div>
+        <div class="mock-day">Vri 25</div>
       </div>
-      <!-- Row 1 -->
-      <div class="mock-row">
-        <div class="mock-period-num">1</div>
-        <div class="mock-cell"></div>
-        <div class="mock-cell">
-          <div class="mock-block block-green">3HB — H4 Proef 3<br><span style="opacity:.7">W107 · JD</span></div>
+      <div class="mock-grid-area">
+        <!-- Row 1 -->
+        <div class="mock-row">
+          <div class="mock-period-num"><span class="pnum">1</span><span class="ptime">08:30</span></div>
+          <div class="mock-cell"></div>
+          <div class="mock-cell">
+            <div class="mock-block block-approved">3HB — H4 Proef 3<br><span style="opacity:.7">W107 · JD</span></div>
+          </div>
+          <div class="mock-cell"></div>
+          <div class="mock-cell">
+            <div class="mock-block block-notoa">5VA — Meting<br><span style="opacity:.7">W102 · MK</span></div>
+          </div>
+          <div class="mock-cell hover-cell" onclick="showModal()">
+            <div class="mock-add-btn">+</div>
+          </div>
         </div>
-        <div class="mock-cell"></div>
-        <div class="mock-cell">
-          <div class="mock-block block-slate">5VA — Meting<br><span style="opacity:.7">W102 · MK</span></div>
+        <!-- Row 2 — multi-period block -->
+        <div class="mock-row">
+          <div class="mock-period-num"><span class="pnum">2</span><span class="ptime">09:25</span></div>
+          <div class="mock-cell">
+            <div class="mock-block block-pending">4HA — Lampjes<br><span style="opacity:.7">W108 · FH</span></div>
+          </div>
+          <div class="mock-cell">
+            <div class="mock-block-cont">↳ 3HB vervolg</div>
+          </div>
+          <div class="mock-cell"></div>
+          <div class="mock-cell"></div>
+          <div class="mock-cell">
+            <div class="mock-block block-rejected">2HB — Krachten<br><span style="opacity:.7">W101 · PV</span></div>
+          </div>
         </div>
-        <div class="mock-cell hover-cell" onclick="showModal()">
-          <div class="mock-add-btn">+</div>
+        <!-- Break row -->
+        <div class="mock-break-row">
+          <div class="mock-break-label">
+            <span class="mock-break-time">10:15</span>
+            <span>— Pauze (15 min) —</span>
+          </div>
         </div>
-      </div>
-      <!-- Row 2 -->
-      <div class="mock-row">
-        <div class="mock-period-num">2</div>
-        <div class="mock-cell">
-          <div class="mock-block block-amber">4HA — Lampjes<br><span style="opacity:.7">W108 · FH</span></div>
+        <!-- Row 3 with timeline indicator -->
+        <div class="mock-row" style="position:relative">
+          <div class="mock-period-num"><span class="pnum">3</span><span class="ptime">10:30</span></div>
+          <div class="mock-cell"></div>
+          <div class="mock-cell"></div>
+          <div class="mock-cell">
+            <div class="mock-block block-blue">6VB — Golven<br><span style="opacity:.7">W105 · AV</span></div>
+          </div>
+          <div class="mock-cell"></div>
+          <div class="mock-cell hover-cell" onclick="showModal()">
+            <div class="mock-add-btn">+</div>
+          </div>
+          <!-- Current time indicator -->
+          <div style="position:absolute;left:2.6rem;right:0;top:35%;height:2px;background:#ef4444;pointer-events:none;z-index:5">
+            <div style="position:absolute;left:-5px;top:-4px;width:10px;height:10px;border-radius:50%;background:#ef4444"></div>
+          </div>
         </div>
-        <div class="mock-cell">
-          <div class="mock-block block-green" style="opacity:.5;font-size:.55rem;padding:.1rem .3rem">↳ vervolg</div>
-        </div>
-        <div class="mock-cell"></div>
-        <div class="mock-cell"></div>
-        <div class="mock-cell">
-          <div class="mock-block block-red">2HB — Krachten<br><span style="opacity:.7">W101 · PV</span></div>
-        </div>
-      </div>
-      <!-- Row 3 -->
-      <div class="mock-row">
-        <div class="mock-period-num">3</div>
-        <div class="mock-cell"></div>
-        <div class="mock-cell"></div>
-        <div class="mock-cell">
-          <div class="mock-block block-blue">6VB — Golven<br><span style="opacity:.7">W105 · AV</span></div>
-        </div>
-        <div class="mock-cell"></div>
-        <div class="mock-cell"></div>
       </div>
     </div>
 
@@ -465,16 +587,20 @@
         <div class="mock-input-row mock-field">
           <div>
             <label>Datum *</label>
-            <div class="mock-input">11 apr 2025</div>
+            <div class="mock-input">25 apr 2026</div>
           </div>
           <div>
             <label>Uur *</label>
-            <div class="mock-input">1e uur</div>
+            <div class="mock-input">1e – 2e uur</div>
           </div>
         </div>
         <div class="mock-field">
           <label>Vak *</label>
           <div class="mock-input">Natuurkunde</div>
+        </div>
+        <div class="mock-recurring-row">
+          <div class="mock-checkbox"></div>
+          <span class="mock-recurring-label">Wekelijks herhalen</span>
         </div>
         <div class="mock-modal-btns">
           <button class="mock-btn mock-btn-cancel" onclick="hideModal()">Annuleren</button>
@@ -490,23 +616,23 @@
   <div class="section-inner">
     <div class="section-label">Functies</div>
     <h2 class="section-title">Alles wat je nodig hebt</h2>
-    <p class="section-sub">Van aanvraag tot goedkeuring — TOA Planner begeleidt het hele proces.</p>
+    <p class="section-sub">Van aanvraag tot goedkeuring — TOA Planner begeleidt het hele proces en past zich aan jouw school aan.</p>
 
     <div class="features-grid">
       <div class="feature-card">
         <div class="feature-icon" style="background:rgba(59,130,246,.15)">📅</div>
         <h3>Weekkalender per vak</h3>
-        <p>Elke vakgroep heeft een eigen kleurgecodeerde kalender. Docenten zien direct welke periodes al bezet zijn.</p>
+        <p>Elke vakgroep heeft een eigen kleurgecodeerde kalender. Docenten zien direct welke periodes al bezet zijn en kunnen aanvragen toevoegen.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon" style="background:rgba(34,197,94,.15)">✅</div>
+        <div class="feature-icon" style="background:rgba(0,158,115,.15)">✅</div>
         <h3>Statusbeheer voor de TOA</h3>
-        <p>Van aangevraagd naar goedgekeurd met of zonder TOA, of afgekeurd — overzichtelijk in één overzicht.</p>
+        <p>Van aangevraagd naar goedgekeurd met of zonder TOA, of afgekeurd — overzichtelijk in één weergave met kleurenblindveilige kleuren.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon" style="background:rgba(245,158,11,.15)">🔁</div>
+        <div class="feature-icon" style="background:rgba(99,102,241,.15)">🔁</div>
         <h3>Wekelijks herhalende aanvragen</h3>
-        <p>Practica die elk week terugkomen maak je in één klik aan voor het hele schooljaar.</p>
+        <p>Practica die elke week terugkomen maak je in één klik aan voor het hele schooljaar. Individuele weken zijn daarna nog aanpasbaar.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon" style="background:rgba(139,92,246,.15)">🗂</div>
@@ -514,14 +640,29 @@
         <p>Bekijk alle vakken tegelijk in één kalender. Ideaal voor de TOA om de hele week in beeld te hebben.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon" style="background:rgba(239,68,68,.15)">⚠️</div>
+        <div class="feature-icon" style="background:rgba(230,159,0,.15)">⚠️</div>
         <h3>TOA-afwezigheid markeren</h3>
-        <p>Markeer per vak op welke dagen de TOA niet aanwezig is. Docenten zien dit direct in de kalender.</p>
+        <p>Markeer per vak op welke dagen de TOA niet aanwezig is. Docenten zien dit direct in de kalender met een visuele markering.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon" style="background:rgba(20,184,166,.15)">⏱</div>
-        <h3>Meerdere lesuren</h3>
-        <p>Aanvragen kunnen meerdere aaneengesloten uren beslaan. Zichtbaar als doorlopend blok in de kalender.</p>
+        <div class="feature-icon" style="background:rgba(20,184,166,.15)">⏳</div>
+        <h3>Meerdere aaneengesloten uren</h3>
+        <p>Aanvragen kunnen meerdere uren beslaan. Ze worden als één doorlopend blok in de kalender weergegeven, met een vervolgindicator.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(239,68,68,.15)">⏱</div>
+        <h3>Huidige-tijdindicator<span class="feature-new">Nieuw</span></h3>
+        <p>Een rode lijn toont de huidige tijd live in de kalender. De indicator verdwijnt automatisch buiten schooltijden en is uitschakelbaar.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(217,119,6,.15)">🗓</div>
+        <h3>Afwijkende uurindeling<span class="feature-new">Nieuw</span></h3>
+        <p>Stel per weeknummer een afwijkende uurindeling in, bijvoorbeeld voor tentamenweken of open dagen. De kalender schakelt automatisch over.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(59,130,246,.15)">⚙️</div>
+        <h3>Instelbare uurindeling</h3>
+        <p>Bepaal zelf de starttijd, duur per uur en pauzes. De kalender berekent alle tijden automatisch en toont ze per uur.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon" style="background:rgba(59,130,246,.15)">👥</div>
@@ -529,14 +670,14 @@
         <p>Beheerders stellen rollen in (Docent, TOA, Admin) en bepalen wie toegang heeft tot de applicatie.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon" style="background:rgba(249,115,22,.15)">⚙️</div>
-        <h3>Aanpasbare instellingen</h3>
-        <p>Schoollogo, aantal lesuren per dag, statuskleuren en -labels — volledig in te stellen per school.</p>
+        <div class="feature-icon" style="background:rgba(249,115,22,.15)">🎨</div>
+        <h3>Aanpasbare statussen en kleuren</h3>
+        <p>Schoollogo, statuskleuren en -labels zijn volledig in te stellen. Het Wong kleurenblindveilige palet is standaard ingesteld.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon" style="background:rgba(100,116,139,.15)">🌗</div>
         <h3>Licht en donker thema</h3>
-        <p>Elke gebruiker kiest zijn eigen voorkeur. Fijne leesbaarheid in elk licht, ook op een beamer.</p>
+        <p>Elke gebruiker kiest zijn eigen voorkeur. Fijne leesbaarheid in elk licht — ook op een beamer of bij fel daglicht.</p>
       </div>
     </div>
   </div>
@@ -547,7 +688,7 @@
   <div class="section-inner">
     <div class="section-label">Hoe werkt het</div>
     <h2 class="section-title">In vier stappen op weg</h2>
-    <p class="section-sub">TOA Planner is snel ingericht en direct bruikbaar voor je school.</p>
+    <p class="section-sub">TOA Planner is snel ingericht en direct bruikbaar voor jouw school.</p>
 
     <div class="steps">
       <div class="step">
@@ -558,7 +699,7 @@
       <div class="step">
         <div class="step-num">2</div>
         <h3>Aanvraag indienen</h3>
-        <p>Kies de datum, het uur, het lokaal en de klas. Voeg de aanvraag toe aan de kalender van jouw vak.</p>
+        <p>Kies de datum, het uur (ook meerdere), het lokaal en de klas. Voeg de aanvraag in één klik toe aan de kalender.</p>
       </div>
       <div class="step">
         <div class="step-num">3</div>
@@ -568,14 +709,52 @@
       <div class="step">
         <div class="step-num">4</div>
         <h3>Docent ziet status</h3>
-        <p>Elke docent ziet in de kalender direct de status van zijn aanvragen — kleurgecodeerd en overzichtelijk.</p>
+        <p>Elke docent ziet in zijn kalender direct de status van zijn aanvragen — kleurgecodeerd en overzichtelijk.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── UURINDELING ────────────────────────────────────────────────────────── -->
+<section id="uurindeling">
+  <div class="section-inner">
+    <div class="section-label">Uurindeling</div>
+    <h2 class="section-title">Volledig aanpasbaar aan jouw rooster</h2>
+    <p class="section-sub">Stel starttijden, duur en pauzes in. Heb je een afwijkende indeling voor bepaalde weken? Geen probleem.</p>
+
+    <div class="schedule-demo">
+      <!-- Standaard indeling -->
+      <div class="schedule-card">
+        <h4>Standaard uurindeling</h4>
+        <div class="schedule-row"><span class="schedule-num">1</span><span class="schedule-time">08:30</span><div class="schedule-bar"><div class="schedule-bar-fill" style="width:80%"></div></div></div>
+        <div class="schedule-row"><span class="schedule-num">2</span><span class="schedule-time">09:25</span><div class="schedule-bar"><div class="schedule-bar-fill" style="width:80%"></div></div></div>
+        <div class="schedule-row"><span class="schedule-num"></span><span class="schedule-time">10:20</span><span class="schedule-break">— Pauze 15 min —</span></div>
+        <div class="schedule-row"><span class="schedule-num">3</span><span class="schedule-time">10:35</span><div class="schedule-bar"><div class="schedule-bar-fill" style="width:80%"></div></div></div>
+        <div class="schedule-row"><span class="schedule-num">4</span><span class="schedule-time">11:30</span><div class="schedule-bar"><div class="schedule-bar-fill" style="width:80%"></div></div></div>
+        <div class="schedule-row"><span class="schedule-num"></span><span class="schedule-time">12:25</span><span class="schedule-break">— Pauze 30 min —</span></div>
+        <div class="schedule-row"><span class="schedule-num">5</span><span class="schedule-time">12:55</span><div class="schedule-bar"><div class="schedule-bar-fill" style="width:80%"></div></div></div>
+      </div>
+      <!-- Afwijkende indeling -->
+      <div class="schedule-card">
+        <h4>
+          Tentamenweek
+          <span class="schedule-card-badge">Week 17, 2026</span>
+        </h4>
+        <div class="schedule-row"><span class="schedule-num schedule-exc">1</span><span class="schedule-time schedule-exc">09:00</span><div class="schedule-bar"><div class="schedule-bar-fill" style="width:60%;background:#f59e0b"></div></div></div>
+        <div class="schedule-row"><span class="schedule-num schedule-exc">2</span><span class="schedule-time schedule-exc">10:00</span><div class="schedule-bar"><div class="schedule-bar-fill" style="width:60%;background:#f59e0b"></div></div></div>
+        <div class="schedule-row"><span class="schedule-num"></span><span class="schedule-time">11:00</span><span class="schedule-break">— Pauze 15 min —</span></div>
+        <div class="schedule-row"><span class="schedule-num schedule-exc">3</span><span class="schedule-time schedule-exc">11:15</span><div class="schedule-bar"><div class="schedule-bar-fill" style="width:60%;background:#f59e0b"></div></div></div>
+        <div class="schedule-row"><span class="schedule-num schedule-exc">4</span><span class="schedule-time schedule-exc">12:15</span><div class="schedule-bar"><div class="schedule-bar-fill" style="width:60%;background:#f59e0b"></div></div></div>
+        <div class="schedule-row" style="font-size:.7rem;color:var(--muted);padding-top:.5rem;border:none">
+          ✦ Kalender schakelt automatisch over voor week 17
+        </div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- ── AANPASBARE KLEUREN ─────────────────────────────────────────────────── -->
-<section>
+<section style="background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
   <div class="section-inner">
     <div class="section-label">Aanpasbaar</div>
     <h2 class="section-title">Elke school zijn eigen kleuren</h2>
@@ -586,32 +765,32 @@
         <div class="color-card-bar" style="background:#3b82f6"></div>
         <div class="color-card-body">
           <h4>Natuurkunde</h4>
-          <div class="color-mini-block" style="border-color:#22c55e;background:rgba(34,197,94,.15);color:#86efac">3HB — H4 Proef 3 · W107</div>
-          <div class="color-mini-block" style="border-color:#64748b;background:rgba(100,116,139,.15);color:#cbd5e1">4HA — Meting · W102</div>
+          <div class="color-mini-block" style="border-color:#009E73;background:rgba(0,158,115,.15);color:#5dd4b3">3HB — H4 Proef 3 · W107</div>
+          <div class="color-mini-block" style="border-color:#56B4E9;background:rgba(86,180,233,.15);color:#93d3f5">4HA — Meting · W102</div>
         </div>
       </div>
       <div class="color-card">
         <div class="color-card-bar" style="background:#16a34a"></div>
         <div class="color-card-body">
           <h4>Scheikunde</h4>
-          <div class="color-mini-block" style="border-color:#f59e0b;background:rgba(245,158,11,.15);color:#fcd34d">5VB — Titratie · W203</div>
-          <div class="color-mini-block" style="border-color:#22c55e;background:rgba(34,197,94,.15);color:#86efac">6VA — Destillatie · W204</div>
+          <div class="color-mini-block" style="border-color:#E69F00;background:rgba(230,159,0,.15);color:#f5cc6e">5VB — Titratie · W203</div>
+          <div class="color-mini-block" style="border-color:#009E73;background:rgba(0,158,115,.15);color:#5dd4b3">6VA — Destillatie · W204</div>
         </div>
       </div>
       <div class="color-card">
         <div class="color-card-bar" style="background:#9333ea"></div>
         <div class="color-card-body">
           <h4>Biologie</h4>
-          <div class="color-mini-block" style="border-color:#ef4444;background:rgba(239,68,68,.15);color:#fca5a5">2HB — Cellen · BIO1</div>
-          <div class="color-mini-block" style="border-color:#64748b;background:rgba(100,116,139,.15);color:#cbd5e1">3HB — DNA · BIO2</div>
+          <div class="color-mini-block" style="border-color:#D55E00;background:rgba(213,94,0,.15);color:#f09060">2HB — Cellen · BIO1</div>
+          <div class="color-mini-block" style="border-color:#56B4E9;background:rgba(86,180,233,.15);color:#93d3f5">3HB — DNA · BIO2</div>
         </div>
       </div>
       <div class="color-card">
         <div class="color-card-bar" style="background:#ea580c"></div>
         <div class="color-card-body">
           <h4>Techniek</h4>
-          <div class="color-mini-block" style="border-color:#22c55e;background:rgba(34,197,94,.15);color:#86efac">4HA — Robotica · T101</div>
-          <div class="color-mini-block" style="border-color:#f59e0b;background:rgba(245,158,11,.15);color:#fcd34d">5HB — Elektronica · T102</div>
+          <div class="color-mini-block" style="border-color:#009E73;background:rgba(0,158,115,.15);color:#5dd4b3">4HA — Robotica · T101</div>
+          <div class="color-mini-block" style="border-color:#E69F00;background:rgba(230,159,0,.15);color:#f5cc6e">5HB — Elektronica · T102</div>
         </div>
       </div>
     </div>
@@ -619,39 +798,39 @@
 </section>
 
 <!-- ── STATUS UITLEG ──────────────────────────────────────────────────────── -->
-<section style="background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+<section>
   <div class="section-inner">
     <div class="section-label">Statussen</div>
     <h2 class="section-title">Kleurgecodeerde statussen</h2>
-    <p class="section-sub">In één oogopslag ziet iedereen wat de stand van zaken is met elke practicumaanvraag. Labels en kleuren zijn aanpasbaar per school.</p>
+    <p class="section-sub">In één oogopslag ziet iedereen de stand van zaken. Kleuren en labels zijn aanpasbaar — standaard ingesteld op het kleurenblindveilige Wong-palet.</p>
 
     <div class="status-row">
-      <div class="status-pill" style="border-color:#64748b">
-        <div class="pill-dot" style="background:#64748b"></div>
-        <div>
-          <div style="font-weight:700;font-size:.85rem">Aangevraagd</div>
-          <div style="color:var(--muted);font-size:.75rem">Wacht op reactie van TOA</div>
+      <div class="status-pill" style="border-color:#56B4E9">
+        <div class="pill-dot" style="background:#56B4E9"></div>
+        <div class="pill-info">
+          <div class="pill-name">Aangevraagd</div>
+          <div class="pill-desc">Wacht op reactie van de TOA</div>
         </div>
       </div>
-      <div class="status-pill" style="border-color:#22c55e">
-        <div class="pill-dot" style="background:#22c55e"></div>
-        <div>
-          <div style="font-weight:700;font-size:.85rem">Goedgekeurd met TOA</div>
-          <div style="color:var(--muted);font-size:.75rem">TOA is aanwezig bij het practicum</div>
+      <div class="status-pill" style="border-color:#009E73">
+        <div class="pill-dot" style="background:#009E73"></div>
+        <div class="pill-info">
+          <div class="pill-name">Goedgekeurd met TOA</div>
+          <div class="pill-desc">TOA is aanwezig bij het practicum</div>
         </div>
       </div>
-      <div class="status-pill" style="border-color:#f59e0b">
-        <div class="pill-dot" style="background:#f59e0b"></div>
-        <div>
-          <div style="font-weight:700;font-size:.85rem">Goedgekeurd zonder TOA</div>
-          <div style="color:var(--muted);font-size:.75rem">Practicum gaat door, TOA niet aanwezig</div>
+      <div class="status-pill" style="border-color:#E69F00">
+        <div class="pill-dot" style="background:#E69F00"></div>
+        <div class="pill-info">
+          <div class="pill-name">Goedgekeurd zonder TOA</div>
+          <div class="pill-desc">Practicum gaat door, TOA niet aanwezig</div>
         </div>
       </div>
-      <div class="status-pill" style="border-color:#ef4444">
-        <div class="pill-dot" style="background:#ef4444"></div>
-        <div>
-          <div style="font-weight:700;font-size:.85rem">Afgekeurd</div>
-          <div style="color:var(--muted);font-size:.75rem">Aanvraag kan niet worden gehonoreerd</div>
+      <div class="status-pill" style="border-color:#D55E00">
+        <div class="pill-dot" style="background:#D55E00"></div>
+        <div class="pill-info">
+          <div class="pill-name">Afgekeurd</div>
+          <div class="pill-desc">Aanvraag kan niet worden gehonoreerd</div>
         </div>
       </div>
     </div>
@@ -727,12 +906,14 @@
           <span>🌐</span>
           <span>toaplanner.nl</span>
         </div>
-        <div style="margin-top:2rem;padding:1.25rem;background:var(--bg2);border:1px solid var(--border);border-radius:.75rem">
-          <p style="font-size:.85rem;margin-bottom:.75rem;font-weight:600">TOA Planner is:</p>
-          <ul style="color:var(--muted);font-size:.85rem;list-style:none;display:flex;flex-direction:column;gap:.4rem">
+        <div class="contact-checklist">
+          <p>TOA Planner is:</p>
+          <ul>
             <li>✓ &nbsp;Volledig aanpasbaar aan jouw school</li>
             <li>✓ &nbsp;Veilig — inloggen met schoolaccount</li>
             <li>✓ &nbsp;Overzichtelijk voor docenten én TOA</li>
+            <li>✓ &nbsp;Kleurenblindveilige statuskleuren</li>
+            <li>✓ &nbsp;Afwijkende uurindelingen per weeknummer</li>
           </ul>
         </div>
       </div>
@@ -783,13 +964,12 @@
 <!-- ── FOOTER ─────────────────────────────────────────────────────────────── -->
 <footer>
   <p style="margin-bottom:.5rem">
-    <strong style="color:var(--text)">TOA Planner</strong> — Practicumplanning voor het voortgezet onderwijs
+    <strong>TOA Planner</strong> — Practicumplanning voor het voortgezet onderwijs
   </p>
   <p><a href="mailto:info@toaplanner.nl" style="color:var(--muted)">info@toaplanner.nl</a></p>
 </footer>
 
 <script>
-  // ── Thema toggle ──────────────────────────────────────────────────────────
   const html = document.documentElement
   const btn  = document.getElementById('theme-toggle')
 
@@ -799,7 +979,6 @@
     localStorage.setItem('toa-promo-theme', theme)
   }
 
-  // Herstel vorige keuze
   const saved = localStorage.getItem('toa-promo-theme')
   applyTheme(saved === 'light' ? 'light' : 'dark')
 
@@ -807,7 +986,6 @@
     applyTheme(html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark')
   })
 
-  // ── Mock modal ────────────────────────────────────────────────────────────
   function showModal() {
     document.getElementById('mock-modal').classList.add('visible')
   }
@@ -815,7 +993,6 @@
     document.getElementById('mock-modal').classList.remove('visible')
   }
 
-  // ── Formspree AJAX ────────────────────────────────────────────────────────
   const form    = document.getElementById('contact-form')
   const success = document.getElementById('form-success')
 
