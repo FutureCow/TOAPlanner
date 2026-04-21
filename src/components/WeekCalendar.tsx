@@ -311,7 +311,7 @@ export default function WeekCalendar({ subject, session, subjectConfig, periodsP
                     return (
                       <div
                         key={di}
-                        className={`relative p-1 min-h-[3.5rem] border-r border-slate-700 last:border-r-0 group ${
+                        className={`relative p-1 min-h-[3.5rem] border-r border-slate-700 last:border-r-0 group overflow-hidden ${
                           period % 2 === 0 ? 'bg-slate-900/20' : ''
                         } ${isAbsent ? 'bg-slate-900/40' : ''}`}
                         title={isAbsent ? 'TOA niet aanwezig op deze dag' : undefined}
@@ -326,7 +326,7 @@ export default function WeekCalendar({ subject, session, subjectConfig, periodsP
                         )}
                         <div className={`flex overflow-hidden ${sideBySide && cells.length > 1 ? 'flex-row gap-0.5' : 'flex-col'}`}>
                           {cells.map(({ request: r, isFirst }) => (
-                            <div key={r.id} className={sideBySide && cells.length > 1 ? 'flex-1 min-w-0' : undefined}>
+                            <div key={r.id} className={sideBySide && cells.length > 1 ? 'flex-1 min-w-0' : 'min-w-0 w-full overflow-hidden'}>
                               <RequestBlock
                                 request={r}
                                 isFirst={isFirst}
