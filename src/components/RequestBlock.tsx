@@ -46,7 +46,7 @@ export default function RequestBlock({ request, isFirst, onClick, accentColor, s
         title={`${request.klas ? request.klas + ' – ' : ''}${request.title} (vervolg)`}
       >
         <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: statusColor, opacity: 0.6 }} />
-        <span className="text-[0.65rem] truncate text-slate-300 opacity-75 min-w-0">
+        <span className="text-[0.65rem] truncate text-slate-300 opacity-75 min-w-0 flex-1">
           {request.klas ? `${request.klas} – ` : ''}{request.title}
         </span>
       </div>
