@@ -331,7 +331,7 @@ export default function WeekCalendar({ subject, session, subjectConfig, periodsP
                       <div
                         key={di}
                         className={`relative p-1 min-h-[3.5rem] border-r border-slate-700 last:border-r-0 group overflow-hidden ${
-                          period % 2 === 0 ? 'bg-slate-900/20' : ''
+                          ''
                         } ${isAbsent ? 'bg-slate-900/40' : ''}`}
                         title={isAbsent ? 'TOA niet aanwezig op deze dag' : undefined}
                       >
