@@ -114,8 +114,6 @@ export default function WeekCalendar({ subject, session, subjectConfig, periodsP
       const periods = Array.from({ length: periodsPerDay }, (_, i) => i + 1)
       const slots = buildTimeSlots(periods, periodStartTime, periodDuration, calBreaks)
 
-      const containerHeight = periodGridRef.current.scrollHeight
-
       if (slots.length === 0) {
         setLineY(null)
         return
