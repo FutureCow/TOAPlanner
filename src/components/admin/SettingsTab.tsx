@@ -1,7 +1,16 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
 import { SubjectConfig } from '@/types'
-import { getPeriodStartTime } from '@/lib/periodTimes'
+import { getPeriodStartTime, type Break } from '@/lib/periodTimes'
+
+interface ExceptionSchedule {
+  id: string
+  name: string
+  periodStartTime: string
+  periodDuration: number
+  breaks: Break[]
+  weeks: string[]
+}
 
 const DAYS = ['Ma', 'Di', 'Wo', 'Do', 'Vr']
 const DAY_NAMES = ['Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag']
@@ -42,6 +51,245 @@ const STATUS_PRESET_COLORS: { hex: string; label: string; wong?: boolean }[] = [
   { hex: '#9333ea', label: 'Paars'           },
   { hex: '#db2777', label: 'Roze'            },
 ]
+
+// ── Exception schedule card ─────────────────────────────────────────────────
+
+interface ExceptionScheduleCardProps {
+  schedule: ExceptionSchedule
+  periodsPerDay: number
+  onSaved: () => void
+  onDeleted: () => void
+}
+
+function parseWeekKey(key: string): string {
+  const [year, week] = key.split('-')
+  return `Week ${week}, ${year}`
+}
+
+function ExceptionScheduleCard({ schedule, periodsPerDay, onSaved, onDeleted }: ExceptionScheduleCardProps) {
+  const [expanded, setExpanded] = useState(false)
+  const [name, setName] = useState(schedule.name)
+  const [startTime, setStartTime] = useState(schedule.periodStartTime)
+  const [duration, setDuration] = useState(schedule.periodDuration)
+  const [breaks, setBreaks] = useState<Break[]>(Array.isArray(schedule.breaks) ? schedule.breaks : [])
+  const [weeks, setWeeks] = useState<string[]>(schedule.weeks ?? [])
+  const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
+  const [error, setError] = useState('')
+
+  const [showBreakForm, setShowBreakForm] = useState(false)
+  const [newBreakAfter, setNewBreakAfter] = useState(1)
+  const [newBreakDuration, setNewBreakDuration] = useState(15)
+  const [newBreakLabel, setNewBreakLabel] = useState('')
+
+  const [showWeekForm, setShowWeekForm] = useState(false)
+  const [newWeekYear, setNewWeekYear] = useState(new Date().getFullYear())
+  const [newWeekNum, setNewWeekNum] = useState(1)
+
+  function addBreak() {
+    setBreaks(prev =>
+      [...prev, { afterPeriod: newBreakAfter, duration: newBreakDuration, label: newBreakLabel }]
+        .sort((a, b) => a.afterPeriod - b.afterPeriod)
+    )
+    setShowBreakForm(false)
+    setNewBreakLabel('')
+  }
+
+  function removeBreak(idx: number) {
+    setBreaks(prev => prev.filter((_, i) => i !== idx))
+  }
+
+  function addWeek() {
+    const key = `${newWeekYear}-${newWeekNum}`
+    if (!weeks.includes(key)) {
+      setWeeks(prev => [...prev, key].sort())
+    }
+    setShowWeekForm(false)
+  }
+
+  function removeWeek(key: string) {
+    setWeeks(prev => prev.filter(w => w !== key))
+  }
+
+  async function handleSave() {
+    if (!name.trim()) { setError('Naam is verplicht'); return }
+    setSaving(true); setError(''); setSaved(false)
+    const res = await fetch(`/api/admin/exception-schedules/${schedule.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: name.trim(), periodStartTime: startTime, periodDuration: duration, breaks, weeks }),
+    })
+    setSaving(false)
+    if (res.ok) { setSaved(true); setTimeout(() => setSaved(false), 2000); onSaved() }
+    else { const d = await res.json().catch(() => ({})); setError(d.error ?? 'Er is iets misgegaan.') }
+  }
+
+  async function handleDelete() {
+    if (!confirm(`Afwijkende uurindeling "${schedule.name}" verwijderen?`)) return
+    const res = await fetch(`/api/admin/exception-schedules/${schedule.id}`, { method: 'DELETE' })
+    if (res.ok) onDeleted()
+  }
+
+  return (
+    <div className="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
+      <button
+        onClick={() => setExpanded(e => !e)}
+        className="w-full flex items-center justify-between px-3 py-2.5 text-left hover:bg-slate-700/40 transition-colors"
+      >
+        <div>
+          <span className="text-sm font-medium text-slate-200">{schedule.name}</span>
+          <span className="ml-2 text-xs text-slate-500">
+            {schedule.weeks.length === 0
+              ? 'Geen weken'
+              : `${schedule.weeks.length} week${schedule.weeks.length !== 1 ? 'en' : ''}`}
+          </span>
+        </div>
+        <span className="text-slate-500 text-xs">{expanded ? '▲' : '▼'}</span>
+      </button>
+
+      {expanded && (
+        <div className="border-t border-slate-700 p-3 space-y-3">
+          <div>
+            <label className="block text-xs text-slate-400 mb-1">Naam</label>
+            <input
+              value={name}
+              onChange={e => setName(e.target.value)}
+              className="w-full bg-slate-900 border border-slate-600 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+            />
+          </div>
+
+          <div className="flex gap-3 items-end flex-wrap">
+            <div>
+              <label className="block text-xs text-slate-400 mb-1">Starttijd eerste uur</label>
+              <input
+                type="time"
+                value={startTime}
+                onChange={e => setStartTime(e.target.value)}
+                className="bg-slate-900 border border-slate-600 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-slate-400 mb-1">Duur per uur (min)</label>
+              <input
+                type="number"
+                min={10}
+                max={120}
+                value={duration}
+                onChange={e => setDuration(Number(e.target.value))}
+                className="w-20 bg-slate-900 border border-slate-600 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+              />
+            </div>
+          </div>
+
+          {/* Preview */}
+          <div>
+            <p className="text-xs text-slate-500 mb-1">Berekende tijden:</p>
+            <div className="flex gap-1.5 flex-wrap">
+              {Array.from({ length: periodsPerDay }, (_, i) => i + 1).map(p => (
+                <span key={p} className="text-xs text-slate-400 bg-slate-900 rounded px-1.5 py-0.5">
+                  <span className="font-semibold text-slate-300">{p}</span>
+                  {' → '}
+                  {getPeriodStartTime(p, startTime, duration, breaks)}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Breaks */}
+          <div>
+            <p className="text-xs text-slate-400 font-semibold mb-1.5">Pauzes</p>
+            {breaks.length === 0 && <p className="text-xs text-slate-600 mb-1.5">Geen pauzes.</p>}
+            <div className="space-y-1 mb-1.5">
+              {breaks.map((b, idx) => (
+                <div key={idx} className="flex items-center gap-2 text-xs text-slate-300 bg-slate-900 rounded px-2 py-1.5">
+                  <span>Na uur {b.afterPeriod} — {b.duration} min</span>
+                  {b.label && <span className="text-slate-500">({b.label})</span>}
+                  <button onClick={() => removeBreak(idx)} className="ml-auto text-slate-500 hover:text-red-400">✕</button>
+                </div>
+              ))}
+            </div>
+            {showBreakForm ? (
+              <div className="flex gap-2 items-end flex-wrap bg-slate-900 rounded p-2">
+                <div>
+                  <label className="block text-xs text-slate-400 mb-1">Na uur</label>
+                  <select value={newBreakAfter} onChange={e => setNewBreakAfter(Number(e.target.value))}
+                    className="bg-slate-700 border border-slate-600 rounded px-2 py-1 text-xs text-white focus:outline-none">
+                    {Array.from({ length: periodsPerDay - 1 }, (_, i) => i + 1).map(n => (
+                      <option key={n} value={n}>{n}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs text-slate-400 mb-1">Duur (min)</label>
+                  <input type="number" min={1} max={120} value={newBreakDuration}
+                    onChange={e => setNewBreakDuration(Number(e.target.value))}
+                    className="w-16 bg-slate-700 border border-slate-600 rounded px-2 py-1 text-xs text-white focus:outline-none" />
+                </div>
+                <div>
+                  <label className="block text-xs text-slate-400 mb-1">Label (optioneel)</label>
+                  <input value={newBreakLabel} onChange={e => setNewBreakLabel(e.target.value)}
+                    placeholder="Kleine pauze"
+                    className="bg-slate-700 border border-slate-600 rounded px-2 py-1 text-xs text-white focus:outline-none w-28" />
+                </div>
+                <button onClick={addBreak} className="px-2 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded text-xs">Toevoegen</button>
+                <button onClick={() => setShowBreakForm(false)} className="px-2 py-1 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded text-xs">Annuleren</button>
+              </div>
+            ) : (
+              <button onClick={() => setShowBreakForm(true)} className="text-xs text-blue-400 hover:text-blue-300">+ Pauze toevoegen</button>
+            )}
+          </div>
+
+          {/* Weeks */}
+          <div>
+            <p className="text-xs text-slate-400 font-semibold mb-1.5">Van toepassing op weken</p>
+            {weeks.length === 0 && <p className="text-xs text-slate-600 mb-1.5">Geen weken geselecteerd.</p>}
+            <div className="flex flex-wrap gap-1.5 mb-1.5">
+              {weeks.map(key => (
+                <span key={key} className="inline-flex items-center gap-1 text-xs bg-blue-900/40 border border-blue-700/50 text-blue-300 rounded px-2 py-0.5">
+                  {parseWeekKey(key)}
+                  <button onClick={() => removeWeek(key)} className="text-blue-500 hover:text-red-400 ml-0.5">✕</button>
+                </span>
+              ))}
+            </div>
+            {showWeekForm ? (
+              <div className="flex gap-2 items-end flex-wrap bg-slate-900 rounded p-2">
+                <div>
+                  <label className="block text-xs text-slate-400 mb-1">Jaar</label>
+                  <input type="number" min={2020} max={2099} value={newWeekYear}
+                    onChange={e => setNewWeekYear(Number(e.target.value))}
+                    className="w-20 bg-slate-700 border border-slate-600 rounded px-2 py-1 text-xs text-white focus:outline-none" />
+                </div>
+                <div>
+                  <label className="block text-xs text-slate-400 mb-1">Weeknummer</label>
+                  <input type="number" min={1} max={53} value={newWeekNum}
+                    onChange={e => setNewWeekNum(Number(e.target.value))}
+                    className="w-16 bg-slate-700 border border-slate-600 rounded px-2 py-1 text-xs text-white focus:outline-none" />
+                </div>
+                <button onClick={addWeek} className="px-2 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded text-xs">Toevoegen</button>
+                <button onClick={() => setShowWeekForm(false)} className="px-2 py-1 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded text-xs">Annuleren</button>
+              </div>
+            ) : (
+              <button onClick={() => setShowWeekForm(true)} className="text-xs text-blue-400 hover:text-blue-300">+ Week toevoegen</button>
+            )}
+          </div>
+
+          {error && <p className="text-red-400 text-xs">{error}</p>}
+          <div className="flex items-center justify-between pt-1 border-t border-slate-700">
+            <button onClick={handleDelete} className="text-xs text-red-500/60 hover:text-red-400 transition-colors">
+              Verwijderen
+            </button>
+            <button onClick={handleSave} disabled={saving}
+              className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
+                saved ? 'bg-green-700 text-white' : 'bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white'
+              }`}>
+              {saving ? 'Opslaan…' : saved ? '✓' : 'Opslaan'}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
 
 // ── Subject card ────────────────────────────────────────────────────────────
 
@@ -202,6 +450,13 @@ export default function SettingsTab() {
   const [statusSaving, setStatusSaving] = useState(false)
   const [statusSaved, setStatusSaved] = useState(false)
 
+  // Exception schedules
+  const [exceptionSchedules, setExceptionSchedules] = useState<ExceptionSchedule[]>([])
+  const [showAddException, setShowAddException] = useState(false)
+  const [newExceptionName, setNewExceptionName] = useState('')
+  const [addingException, setAddingException] = useState(false)
+  const [addExceptionError, setAddExceptionError] = useState('')
+
   // Subjects
   const [subjects, setSubjects] = useState([] as SubjectConfig[])
   const [showAdd, setShowAdd] = useState(false)
@@ -230,6 +485,13 @@ export default function SettingsTab() {
       })
     })
   }, [])
+
+  const loadExceptionSchedules = useCallback(async () => {
+    const res = await fetch('/api/admin/exception-schedules')
+    if (res.ok) setExceptionSchedules(await res.json())
+  }, [])
+
+  useEffect(() => { loadExceptionSchedules() }, [loadExceptionSchedules])
 
   const loadSubjects = useCallback(async () => {
     const res = await fetch('/api/admin/subjects')
@@ -313,6 +575,19 @@ export default function SettingsTab() {
 
   function removeBreak(idx: number) {
     setBreaks(prev => prev.filter((_, i) => i !== idx))
+  }
+
+  async function handleAddException() {
+    if (!newExceptionName.trim()) { setAddExceptionError('Naam is verplicht'); return }
+    setAddingException(true); setAddExceptionError('')
+    const res = await fetch('/api/admin/exception-schedules', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: newExceptionName.trim() }),
+    })
+    setAddingException(false)
+    if (res.ok) { setShowAddException(false); setNewExceptionName(''); loadExceptionSchedules() }
+    else { const d = await res.json().catch(() => ({})); setAddExceptionError(d.error ?? 'Er is iets misgegaan.') }
   }
 
   async function handleAdd() {
@@ -496,6 +771,57 @@ export default function SettingsTab() {
               )}
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* ── Afwijkende uurindeling ── */}
+      <section>
+        <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wide mb-3">Afwijkende uurindeling</h2>
+        <div className="bg-slate-900 border border-slate-700 rounded-lg p-4 space-y-3">
+          <p className="text-xs text-slate-500">
+            Weken waarbij de uurindeling afwijkt van de standaard. De kalender gebruikt automatisch de afwijkende tijden voor die weken.
+          </p>
+          <div className="space-y-2">
+            {exceptionSchedules.map(s => (
+              <ExceptionScheduleCard
+                key={s.id}
+                schedule={s}
+                periodsPerDay={periodsPerDay}
+                onSaved={loadExceptionSchedules}
+                onDeleted={loadExceptionSchedules}
+              />
+            ))}
+            {exceptionSchedules.length === 0 && (
+              <p className="text-xs text-slate-600">Geen afwijkende uurindelingen ingesteld.</p>
+            )}
+          </div>
+          {showAddException ? (
+            <div className="flex gap-2 items-end flex-wrap bg-slate-800 rounded p-3">
+              <div className="flex-1 min-w-[180px]">
+                <label className="block text-xs text-slate-400 mb-1">Naam *</label>
+                <input
+                  value={newExceptionName}
+                  onChange={e => setNewExceptionName(e.target.value)}
+                  placeholder="bijv. Tentamenweek"
+                  className="w-full bg-slate-900 border border-slate-600 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                />
+              </div>
+              {addExceptionError && <p className="w-full text-red-400 text-xs">{addExceptionError}</p>}
+              <button onClick={handleAddException} disabled={addingException}
+                className="px-3 py-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white rounded text-xs font-medium">
+                {addingException ? 'Aanmaken…' : 'Aanmaken'}
+              </button>
+              <button onClick={() => { setShowAddException(false); setAddExceptionError('') }}
+                className="px-3 py-2 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded text-xs">
+                Annuleren
+              </button>
+            </div>
+          ) : (
+            <button onClick={() => setShowAddException(true)}
+              className="text-xs text-blue-400 hover:text-blue-300 transition-colors">
+              + Afwijkende uurindeling toevoegen
+            </button>
+          )}
         </div>
       </section>
 

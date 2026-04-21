@@ -3,6 +3,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react'
 import type { Session } from 'next-auth'
 import { RequestWithUser, SubjectConfig } from '@/types'
 import { getWeekDates, getWeekLabel, prevWeek, nextWeek, toDateString } from '@/lib/week'
+import { getISOWeek, getISOWeekYear } from 'date-fns'
 import RequestBlock, { DEFAULT_STATUS_COLORS, DEFAULT_STATUS_LABELS } from './RequestBlock'
 import RequestModal from './RequestModal'
 import RequestDetailPanel from './RequestDetailPanel'
@@ -32,6 +33,7 @@ export default function WeekCalendar({ subject, session, subjectConfig, periodsP
   const [periodStartTime, setPeriodStartTime] = useState('')
   const [periodDuration, setPeriodDuration]   = useState(50)
   const [calBreaks, setCalBreaks]             = useState<Break[]>([])
+  const [exceptionSchedules, setExceptionSchedules] = useState<{ periodStartTime: string; periodDuration: number; breaks: Break[]; weeks: string[] }[]>([])
   const [showTimeLine, setShowTimeLine] = useState(() => localStorage.getItem('show-timeline') === 'true')
   const [lineY, setLineY] = useState<number | null>(null)
   const periodGridRef = useRef<HTMLDivElement>(null)
@@ -40,6 +42,12 @@ export default function WeekCalendar({ subject, session, subjectConfig, periodsP
   const today = toDateString(new Date())
   const accentColor = subjectConfig?.accentColor ?? '#4f7cff'
   const absenceDays = subjectConfig?.absenceDays ?? []
+
+  const activeWeekKey = `${getISOWeekYear(currentDate)}-${getISOWeek(currentDate)}`
+  const activeException = exceptionSchedules.find(e => e.weeks.includes(activeWeekKey))
+  const activePeriodStartTime = activeException?.periodStartTime ?? periodStartTime
+  const activePeriodDuration  = activeException?.periodDuration  ?? periodDuration
+  const activeCalBreaks       = activeException ? (Array.isArray(activeException.breaks) ? activeException.breaks : []) : calBreaks
 
   const load = useCallback(async () => {
     const dates = getWeekDates(currentDate)
@@ -75,6 +83,7 @@ export default function WeekCalendar({ subject, session, subjectConfig, periodsP
         if (d.periodStartTime) setPeriodStartTime(d.periodStartTime)
         if (d.periodDuration)  setPeriodDuration(d.periodDuration)
         if (Array.isArray(d.breaks)) setCalBreaks(d.breaks)
+        if (Array.isArray(d.exceptionSchedules)) setExceptionSchedules(d.exceptionSchedules)
       })
       .catch(() => {})
   }, [])
@@ -100,19 +109,19 @@ export default function WeekCalendar({ subject, session, subjectConfig, periodsP
   }, [])
 
   useEffect(() => {
-    if (!showTimeLine || !periodStartTime) {
+    if (!showTimeLine || !activePeriodStartTime) {
       setLineY(null)
       return
     }
 
     function calculateLineY() {
-      if (!periodGridRef.current || !periodStartTime) return
+      if (!periodGridRef.current || !activePeriodStartTime) return
 
       const now = new Date()
       const nowMin = now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60
 
       const periods = Array.from({ length: periodsPerDay }, (_, i) => i + 1)
-      const slots = buildTimeSlots(periods, periodStartTime, periodDuration, calBreaks)
+      const slots = buildTimeSlots(periods, activePeriodStartTime, activePeriodDuration, activeCalBreaks)
 
       if (slots.length === 0) {
         setLineY(null)
@@ -148,7 +157,7 @@ export default function WeekCalendar({ subject, session, subjectConfig, periodsP
     calculateLineY()
     const interval = setInterval(calculateLineY, 30_000)
     return () => clearInterval(interval)
-  }, [showTimeLine, periodStartTime, periodDuration, calBreaks, periodsPerDay])
+  }, [showTimeLine, activePeriodStartTime, activePeriodDuration, activeCalBreaks, periodsPerDay, currentDate, exceptionSchedules])
 
   function getCellRequests(date: Date, period: number): { request: RequestWithUser; isFirst: boolean }[] {
     const ds = toDateString(date)
@@ -165,7 +174,14 @@ export default function WeekCalendar({ subject, session, subjectConfig, periodsP
     <div>
       {/* Week navigation */}
       <div className="flex items-center justify-between mb-3">
-        <span className="font-bold text-slate-200 text-sm">{getWeekLabel(weekDates)}</span>
+        <div className="flex items-center gap-2">
+          <span className="font-bold text-slate-200 text-sm">{getWeekLabel(weekDates)}</span>
+          {activeException && (
+            <span className="text-[0.65rem] bg-amber-900/40 border border-amber-700/50 text-amber-300 rounded px-1.5 py-0.5 font-medium">
+              {activeException.name}
+            </span>
+          )}
+        </div>
         <div className="flex gap-1">
           <button
             onClick={() => setCurrentDate(getWeekDates(new Date())[0])}
@@ -265,7 +281,7 @@ export default function WeekCalendar({ subject, session, subjectConfig, periodsP
           {/* Period rows */}
           <div ref={periodGridRef} className="relative">
           {PERIODS.map(period => {
-            const breakBefore = calBreaks.find(b => b.afterPeriod === period - 1)
+            const breakBefore = activeCalBreaks.find(b => b.afterPeriod === period - 1)
             return (
               <React.Fragment key={period}>
                 {breakBefore && (
@@ -275,8 +291,8 @@ export default function WeekCalendar({ subject, session, subjectConfig, periodsP
                     style={{ gridTemplateColumns: GRID_COLS }}
                   >
                     <div className="flex items-center justify-center border-r border-slate-600 bg-slate-900/40 text-[0.5rem] text-slate-600 font-normal leading-tight text-center" style={{ minHeight: '1.5rem' }}>
-                      {periodStartTime
-                        ? getBreakStartTime(breakBefore.afterPeriod, periodStartTime, periodDuration, calBreaks)
+                      {activePeriodStartTime
+                        ? getBreakStartTime(breakBefore.afterPeriod, activePeriodStartTime, activePeriodDuration, activeCalBreaks)
                         : 'P'}
                     </div>
                     <div
@@ -297,9 +313,9 @@ export default function WeekCalendar({ subject, session, subjectConfig, periodsP
                   {/* Period number */}
                   <div className="flex flex-col items-center justify-center border-r border-slate-600 bg-slate-900/60 font-bold text-[0.7rem] min-h-[3.5rem]">
                     <span className="text-slate-400">{period}</span>
-                    {periodStartTime && (
+                    {activePeriodStartTime && (
                       <span className="text-[0.55rem] text-slate-600 font-normal leading-tight">
-                        {getPeriodStartTime(period, periodStartTime, periodDuration, calBreaks)}
+                        {getPeriodStartTime(period, activePeriodStartTime, activePeriodDuration, activeCalBreaks)}
                       </span>
                     )}
                   </div>

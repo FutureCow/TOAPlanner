@@ -59,6 +59,15 @@ model AppSettings {
   breaks           Json?   // Array of { afterPeriod: number, duration: number, label?: string }
 }
 
+model ExceptionSchedule {
+  id              String   @id @default(cuid())
+  name            String
+  periodStartTime String   @default("08:30")
+  periodDuration  Int      @default(50)
+  breaks          Json?    // Array of { afterPeriod: number, duration: number, label?: string }
+  weeks           String[] @default([]) // "YYYY-W" format, e.g. "2026-17"
+}
+
 enum Status {
   PENDING
   APPROVED_WITH_TOA
