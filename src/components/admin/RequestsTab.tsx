@@ -11,11 +11,11 @@ const STATUS_LABELS: Record<Status, string> = {
   APPROVED_WITHOUT_TOA: 'Zonder TOA',
   REJECTED: 'Afgekeurd',
 }
-const STATUS_STYLES: Record<Status, string> = {
-  PENDING: 'bg-slate-700 text-slate-300',
-  APPROVED_WITH_TOA: 'bg-green-900 text-green-300',
-  APPROVED_WITHOUT_TOA: 'bg-amber-900 text-amber-300',
-  REJECTED: 'bg-red-900 text-red-300',
+const STATUS_STYLES: Record<Status, { bg: string; color: string }> = {
+  PENDING:              { bg: 'rgba(86,180,233,0.15)',  color: '#56B4E9' },
+  APPROVED_WITH_TOA:    { bg: 'rgba(0,158,115,0.15)',   color: '#009E73' },
+  APPROVED_WITHOUT_TOA: { bg: 'rgba(230,159,0,0.15)',   color: '#E69F00' },
+  REJECTED:             { bg: 'rgba(213,94,0,0.15)',    color: '#D55E00' },
 }
 const STATUS_VALUES: Status[] = ['PENDING', 'APPROVED_WITH_TOA', 'APPROVED_WITHOUT_TOA', 'REJECTED']
 
@@ -47,7 +47,8 @@ function StatusCell({ request, onUpdated }: { request: RequestWithUser; onUpdate
       <button
         onClick={() => setOpen(o => !o)}
         title="Klik om status te wijzigen"
-        className={`px-1.5 py-0.5 rounded text-[0.65rem] font-medium cursor-pointer hover:opacity-80 transition-opacity ${STATUS_STYLES[request.status]}`}
+        className="px-1.5 py-0.5 rounded text-[0.65rem] font-medium cursor-pointer hover:opacity-80 transition-opacity"
+        style={{ background: STATUS_STYLES[request.status].bg, color: STATUS_STYLES[request.status].color }}
       >
         {STATUS_LABELS[request.status]} ▾
       </button>
@@ -57,10 +58,11 @@ function StatusCell({ request, onUpdated }: { request: RequestWithUser; onUpdate
             <button
               key={s}
               onClick={() => changeStatus(s)}
-              className={`w-full text-left px-3 py-1.5 text-xs hover:bg-slate-800 transition-colors text-slate-200 ${
+              className={`w-full text-left px-3 py-1.5 text-xs hover:bg-slate-800 transition-colors flex items-center gap-2 ${
                 s === request.status ? 'font-bold' : 'opacity-60'
               }`}
             >
+              <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: STATUS_STYLES[s].color }} />
               {STATUS_LABELS[s]}
             </button>
           ))}
