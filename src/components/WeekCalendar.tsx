@@ -157,9 +157,9 @@ export default function WeekCalendar({ subject, session, subjectConfig, periodsP
       setLineY(el.offsetTop + fraction * el.offsetHeight)
     }
 
-    calculateLineY()
+    const raf = requestAnimationFrame(calculateLineY)
     const interval = setInterval(calculateLineY, 30_000)
-    return () => clearInterval(interval)
+    return () => { cancelAnimationFrame(raf); clearInterval(interval) }
   }, [showTimeLine, activePeriodStartTime, activePeriodDuration, activeCalBreaks, periodsPerDay, currentDate, exceptionSchedules])
 
   function getCellRequests(date: Date, period: number): { request: RequestWithUser; isFirst: boolean }[] {
