@@ -10,7 +10,7 @@ export default function Icon() {
         style={{
           width: 32,
           height: 32,
-          background: '#0f172a',
+          background: '#3b82f6',
           borderRadius: 6,
           display: 'flex',
           alignItems: 'center',
@@ -30,17 +30,17 @@ export default function Icon() {
               <div key={i} style={{
                 width: 3,
                 height: 3,
-                background: '#2563eb',
+                background: '#ffffff',
                 borderRadius: 1,
               }} />
             ))}
           </div>
           {/* Data rows with colored cells representing statuses */}
           {([
-            ['#334155','#334155','#22c55e','#334155','#334155'],
-            ['#22c55e','#334155','#334155','#f59e0b','#334155'],
-            ['#334155','#22c55e','#334155','#334155','#22c55e'],
-            ['#334155','#334155','#f59e0b','#334155','#334155'],
+            ['#93c5fd','#93c5fd','#22c55e','#93c5fd','#93c5fd'],
+            ['#22c55e','#93c5fd','#93c5fd','#f59e0b','#93c5fd'],
+            ['#93c5fd','#22c55e','#93c5fd','#93c5fd','#22c55e'],
+            ['#93c5fd','#93c5fd','#f59e0b','#93c5fd','#93c5fd'],
           ] as string[][]).map((row, ri) => (
             <div key={ri} style={{ display: 'flex', gap: 2 }}>
               {row.map((color, ci) => (
