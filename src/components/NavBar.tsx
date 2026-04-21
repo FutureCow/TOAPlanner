@@ -132,8 +132,8 @@ export default function NavBar() {
       </div>
 
       <div className="flex items-center gap-2">
-        {/* Font size */}
-        <div className="flex items-center gap-0.5 bg-slate-800 rounded px-1 py-0.5">
+        {/* Font size — desktop: drie knoppen, mobiel: één knop die cyclet */}
+        <div className="hidden sm:flex items-center gap-0.5 bg-slate-800 rounded px-1 py-0.5">
           {(['klein', 'middel', 'groot'] as FontSize[]).map((s, i) => (
             <button
               key={s}
@@ -148,6 +148,14 @@ export default function NavBar() {
             </button>
           ))}
         </div>
+        <button
+          className="flex sm:hidden w-7 h-7 items-center justify-center rounded bg-slate-800 text-slate-400 hover:text-white transition-colors font-medium"
+          style={{ fontSize: fontSize === 'klein' ? '0.65rem' : fontSize === 'middel' ? '0.75rem' : '0.85rem' }}
+          title={`Tekstgrootte: ${fontSize}`}
+          onClick={() => changeFont(fontSize === 'klein' ? 'middel' : fontSize === 'middel' ? 'groot' : 'klein')}
+        >
+          A
+        </button>
 
         {/* Theme toggle */}
         <button
