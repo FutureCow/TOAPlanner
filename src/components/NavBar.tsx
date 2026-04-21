@@ -73,7 +73,7 @@ export default function NavBar() {
     <nav className="bg-slate-900 border-b border-slate-800 px-4 py-2 flex items-center justify-between gap-4">
       {schoolLogo && (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={schoolLogo} alt="schoollogo" className="h-7 w-auto object-contain opacity-70 shrink-0" />
+        <img src={schoolLogo} alt="schoollogo" className="hidden sm:block h-7 w-auto object-contain opacity-70 shrink-0" />
       )}
       {/* Desktop: links */}
       <div className="hidden sm:flex items-center gap-1 flex-wrap flex-1">
@@ -174,7 +174,7 @@ export default function NavBar() {
           onClick={() => signOut({ callbackUrl: '/login' })}
           className="text-xs text-slate-500 hover:text-slate-300 transition-colors whitespace-nowrap"
         >
-          {session.user.abbreviation.toUpperCase()} · Uitloggen
+          <span className="hidden sm:inline">{session.user.abbreviation.toUpperCase()} · </span>Uitloggen
         </button>
       </div>
     </nav>
