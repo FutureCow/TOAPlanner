@@ -1,6 +1,6 @@
 'use client'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useSession, signOut } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import { SubjectConfig } from '@/types'
@@ -20,6 +20,7 @@ function applyFont(size: FontSize) {
 
 export default function NavBar() {
   const pathname = usePathname()
+  const router = useRouter()
   const { data: session } = useSession()
   const [subjects, setSubjects] = useState<SubjectConfig[]>([])
   const [theme, setTheme] = useState<'dark' | 'light'>('dark')
@@ -74,7 +75,8 @@ export default function NavBar() {
         // eslint-disable-next-line @next/next/no-img-element
         <img src={schoolLogo} alt="schoollogo" className="h-7 w-auto object-contain opacity-70 shrink-0" />
       )}
-      <div className="flex items-center gap-1 flex-wrap flex-1">
+      {/* Desktop: links */}
+      <div className="hidden sm:flex items-center gap-1 flex-wrap flex-1">
         {subjects.map((s) => {
           const isActive = pathname === `/${s.id}`
           return (
@@ -112,6 +114,21 @@ export default function NavBar() {
             Admin
           </Link>
         )}
+      </div>
+
+      {/* Mobile: dropdown */}
+      <div className="flex sm:hidden flex-1">
+        <select
+          value={pathname}
+          onChange={e => router.push(e.target.value)}
+          className="flex-1 bg-slate-800 border border-slate-700 rounded px-2 py-1.5 text-sm text-white focus:outline-none focus:border-slate-500"
+        >
+          {subjects.map(s => (
+            <option key={s.id} value={`/${s.id}`}>{s.name}</option>
+          ))}
+          <option value="/overzicht">Overzicht</option>
+          {session.user.isAdmin && <option value="/admin">Admin</option>}
+        </select>
       </div>
 
       <div className="flex items-center gap-2">
