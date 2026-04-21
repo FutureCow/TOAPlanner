@@ -38,7 +38,7 @@ export default function RequestBlock({ request, isFirst, onClick, accentColor, s
     return (
       <div
         onClick={() => onClick(request)}
-        className="border-l-[3px] rounded-sm px-1 py-0.5 cursor-pointer hover:brightness-125 transition-all mb-1 flex items-center gap-1"
+        className="border-l-[3px] rounded-sm px-1 py-0.5 cursor-pointer hover:brightness-125 transition-all mb-1 flex items-center gap-1 w-full overflow-hidden min-w-0"
         style={{
           backgroundColor: statusColor + '18',
           borderLeftColor: borderColor,
