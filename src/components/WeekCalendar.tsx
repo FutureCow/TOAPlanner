@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, useEffect, useCallback, useRef } from 'react'
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import type { Session } from 'next-auth'
 import { RequestWithUser, SubjectConfig } from '@/types'
 import { getWeekDates, getWeekLabel, prevWeek, nextWeek, toDateString } from '@/lib/week'
@@ -33,7 +33,7 @@ export default function WeekCalendar({ subject, session, subjectConfig, periodsP
   const [periodStartTime, setPeriodStartTime] = useState('')
   const [periodDuration, setPeriodDuration]   = useState(50)
   const [calBreaks, setCalBreaks]             = useState<Break[]>([])
-  const [exceptionSchedules, setExceptionSchedules] = useState<{ periodStartTime: string; periodDuration: number; breaks: Break[]; weeks: string[] }[]>([])
+  const [exceptionSchedules, setExceptionSchedules] = useState<{ id: string; name: string; periodStartTime: string; periodDuration: number; breaks: Break[]; weeks: string[] }[]>([])
   const [showTimeLine, setShowTimeLine] = useState(() => localStorage.getItem('show-timeline') === 'true')
   const [lineY, setLineY] = useState<number | null>(null)
   const periodGridRef = useRef<HTMLDivElement>(null)
@@ -47,7 +47,10 @@ export default function WeekCalendar({ subject, session, subjectConfig, periodsP
   const activeException = exceptionSchedules.find(e => e.weeks.includes(activeWeekKey))
   const activePeriodStartTime = activeException?.periodStartTime ?? periodStartTime
   const activePeriodDuration  = activeException?.periodDuration  ?? periodDuration
-  const activeCalBreaks       = activeException ? (Array.isArray(activeException.breaks) ? activeException.breaks : []) : calBreaks
+  const activeCalBreaks = useMemo(
+    () => activeException ? (Array.isArray(activeException.breaks) ? activeException.breaks : []) : calBreaks,
+    [activeException, calBreaks]
+  )
 
   const load = useCallback(async () => {
     const dates = getWeekDates(currentDate)
