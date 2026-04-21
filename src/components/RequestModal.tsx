@@ -164,16 +164,16 @@ export default function RequestModal({ date, period, subject, request, onClose, 
   ]
 
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-2 sm:p-4" onClick={onClose}>
       <div
-        className="relative bg-slate-900 border border-slate-700 rounded-xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto"
+        className="relative bg-slate-900 border border-slate-700 rounded-xl p-4 sm:p-6 w-full max-w-md max-h-[95vh] sm:max-h-[90vh] overflow-y-auto"
         onClick={e => e.stopPropagation()}
       >
-        <h2 className="text-lg font-bold text-white mb-4">
+        <h2 className="text-base sm:text-lg font-bold text-white mb-3 sm:mb-4">
           {isEditing ? 'Aanvraag bewerken' : 'Nieuwe aanvraag'}
         </h2>
 
-        <form onSubmit={handleSubmit} className="space-y-3">
+        <form onSubmit={handleSubmit} className="space-y-2 sm:space-y-3">
           {/* Klas + Naam */}
           <div className="grid grid-cols-[5rem_1fr] gap-2">
             <div>
@@ -181,7 +181,7 @@ export default function RequestModal({ date, period, subject, request, onClose, 
               <input
                 value={klas}
                 onChange={e => setKlas(e.target.value)}
-                className="w-full bg-slate-800 border border-slate-600 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                className="w-full bg-slate-800 border border-slate-600 rounded px-3 py-1.5 sm:py-2 text-sm text-white focus:outline-none focus:border-blue-500"
                 placeholder="3HB"
               />
             </div>
@@ -190,7 +190,7 @@ export default function RequestModal({ date, period, subject, request, onClose, 
               <input
                 value={title}
                 onChange={e => setTitle(e.target.value)}
-                className="w-full bg-slate-800 border border-slate-600 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                className="w-full bg-slate-800 border border-slate-600 rounded px-3 py-1.5 sm:py-2 text-sm text-white focus:outline-none focus:border-blue-500"
                 placeholder="bijv. H4 proef 3 Lampjes"
               />
             </div>
@@ -203,7 +203,7 @@ export default function RequestModal({ date, period, subject, request, onClose, 
               <input
                 value={classroom}
                 onChange={e => setClassroom(e.target.value)}
-                className="w-full bg-slate-800 border border-slate-600 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                className="w-full bg-slate-800 border border-slate-600 rounded px-3 py-1.5 sm:py-2 text-sm text-white focus:outline-none focus:border-blue-500"
                 placeholder="bijv. W107"
               />
             </div>
@@ -216,7 +216,7 @@ export default function RequestModal({ date, period, subject, request, onClose, 
               type="date"
               value={selectedDate}
               onChange={e => setSelectedDate(e.target.value)}
-              className="w-full bg-slate-800 border border-slate-600 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+              className="w-full bg-slate-800 border border-slate-600 rounded px-3 py-1.5 sm:py-2 text-sm text-white focus:outline-none focus:border-blue-500"
             />
           </div>
 
@@ -244,7 +244,7 @@ export default function RequestModal({ date, period, subject, request, onClose, 
                   setSelectedPeriod(v)
                   setSelectedPeriodEnd(v)
                 }}
-                className="w-full bg-slate-800 border border-slate-600 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                className="w-full bg-slate-800 border border-slate-600 rounded px-3 py-1.5 sm:py-2 text-sm text-white focus:outline-none focus:border-blue-500"
               >
                 {periodOptions}
               </select>
@@ -253,7 +253,7 @@ export default function RequestModal({ date, period, subject, request, onClose, 
                 <select
                   value={selectedPeriod}
                   onChange={e => setSelectedPeriod(Number(e.target.value))}
-                  className="bg-slate-800 border border-slate-600 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                  className="bg-slate-800 border border-slate-600 rounded px-3 py-1.5 sm:py-2 text-sm text-white focus:outline-none focus:border-blue-500"
                 >
                   {ALL_PERIODS.map(p => <option key={p} value={p}>{p}e uur</option>)}
                 </select>
@@ -261,7 +261,7 @@ export default function RequestModal({ date, period, subject, request, onClose, 
                 <select
                   value={selectedPeriodEnd}
                   onChange={e => setSelectedPeriodEnd(Number(e.target.value))}
-                  className="bg-slate-800 border border-slate-600 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                  className="bg-slate-800 border border-slate-600 rounded px-3 py-1.5 sm:py-2 text-sm text-white focus:outline-none focus:border-blue-500"
                 >
                   {ALL_PERIODS.filter(p => p >= selectedPeriod).map(p => (
                     <option key={p} value={p}>{p}e uur</option>
@@ -277,7 +277,7 @@ export default function RequestModal({ date, period, subject, request, onClose, 
             <select
               value={selectedSubject}
               onChange={e => setSelectedSubject(e.target.value)}
-              className="w-full bg-slate-800 border border-slate-600 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+              className="w-full bg-slate-800 border border-slate-600 rounded px-3 py-1.5 sm:py-2 text-sm text-white focus:outline-none focus:border-blue-500"
             >
               {subjects.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
             </select>
@@ -285,7 +285,7 @@ export default function RequestModal({ date, period, subject, request, onClose, 
 
           {/* Recurring — only for new requests */}
           {!isEditing && !isHeleDag && (
-            <label className="flex items-center gap-2.5 cursor-pointer bg-slate-800 border border-slate-700 rounded-lg px-3 py-2.5">
+            <label className="flex items-center gap-2.5 cursor-pointer bg-slate-800 border border-slate-700 rounded-lg px-3 py-2">
               <input
                 type="checkbox"
                 checked={recurring}
