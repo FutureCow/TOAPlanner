@@ -21,12 +21,20 @@ function applyFont(size: FontSize) {
 export default function NavBar() {
   const pathname = usePathname()
   const router = useRouter()
-  const { data: session } = useSession()
+  const { data: session, status } = useSession()
   const [subjects, setSubjects] = useState<SubjectConfig[]>([])
   const [theme, setTheme] = useState<'dark' | 'light'>('dark')
   const [fontSize, setFontSize] = useState<FontSize>('middel')
   const [schoolLogo, setSchoolLogo] = useState<string | null>(null)
   const [showTimeLine, setShowTimeLine] = useState(false)
+
+  useEffect(() => {
+    function onVisible() {
+      if (document.visibilityState === 'visible') router.refresh()
+    }
+    document.addEventListener('visibilitychange', onVisible)
+    return () => document.removeEventListener('visibilitychange', onVisible)
+  }, [router])
 
   useEffect(() => {
     const savedTheme = (localStorage.getItem('theme') ?? 'dark') as 'dark' | 'light'
@@ -67,7 +75,8 @@ export default function NavBar() {
     window.dispatchEvent(new CustomEvent('timeline-changed', { detail: next }))
   }
 
-  if (!session) return null
+  if (status === 'unauthenticated') return null
+  if (!session) return <nav className="bg-slate-900 border-b border-slate-800 h-[41px]" />
 
   return (
     <nav className="bg-slate-900 border-b border-slate-800 px-4 py-2 flex items-center justify-between gap-4">
