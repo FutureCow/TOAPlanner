@@ -378,13 +378,13 @@
     .schedule-exc { color: #f59e0b; font-weight: 600; }
 
     /* ── STATUS PILLS ────────────────────────────────────────────────── */
-    .status-row { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; margin-top: 2.5rem; }
+    .status-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-top: 2.5rem; }
+    @media (min-width: 900px) { .status-row { grid-template-columns: repeat(4, 1fr); } }
     .status-pill {
       display: flex; align-items: center; gap: .75rem;
       background: var(--bg2); border: 1px solid var(--border);
       border-left-width: 4px; border-radius: .6rem;
       padding: .875rem 1.25rem; font-size: .875rem; font-weight: 500;
-      min-width: 220px;
     }
     .pill-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
     .pill-info { display: flex; flex-direction: column; gap: .15rem; }
