@@ -33,12 +33,8 @@ export async function POST(req: NextRequest) {
         <p>${bericht.replace(/\n/g, '<br>')}</p>
       `,
     })
-  } catch (err) {
-    console.error('[contact] SMTP fout:', err)
-    return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'SMTP fout' },
-      { status: 500 }
-    )
+  } catch {
+    return NextResponse.json({ error: 'Versturen mislukt.' }, { status: 500 })
   }
 
   return NextResponse.json({ ok: true })
