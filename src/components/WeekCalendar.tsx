@@ -121,7 +121,7 @@ export default function WeekCalendar({ subject, session, subjectConfig, periodsP
     } else {
       scrollRef.current.scrollLeft = 0
     }
-  }, [currentDate])
+  }, [currentDate, weekDates, today])
 
   useEffect(() => {
     if (!showTimeLine || !activePeriodStartTime) {

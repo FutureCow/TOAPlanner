@@ -1,4 +1,5 @@
 import { NextAuthOptions, getServerSession } from 'next-auth'
+import type { JWT } from 'next-auth/jwt'
 import GoogleProvider from 'next-auth/providers/google'
 import AzureADProvider from 'next-auth/providers/azure-ad'
 import { getSchoolConfig, getPrisma } from './school'
@@ -84,7 +85,8 @@ export function getAuthOptions(slug: string): NextAuthOptions {
         if (!token.schoolSlug) {
           token.schoolSlug = slug
         } else if (token.schoolSlug !== slug) {
-          return null
+          // NextAuth v4 types don't allow null, but null does invalidate the session at runtime
+          return null as unknown as JWT
         }
 
         if (token.email) {
