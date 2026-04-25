@@ -920,7 +920,7 @@
       </div>
 
       <div>
-        <form id="contact-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+        <form id="contact-form">
           <div class="form-row">
             <div>
               <label for="naam">Naam *</label>
@@ -939,19 +939,19 @@
             <label for="onderwerp">Onderwerp</label>
             <select id="onderwerp" name="onderwerp">
               <option value="">Selecteer een onderwerp</option>
-              <option value="interesse">Interesse in TOA Planner</option>
-              <option value="demo">Demo aanvragen</option>
-              <option value="vraag">Algemene vraag</option>
-              <option value="anders">Anders</option>
+              <option value="Interesse in TOA Planner">Interesse in TOA Planner</option>
+              <option value="Demo aanvragen">Demo aanvragen</option>
+              <option value="Algemene vraag">Algemene vraag</option>
+              <option value="Anders">Anders</option>
             </select>
           </div>
           <div>
             <label for="bericht">Bericht *</label>
             <textarea id="bericht" name="bericht" required placeholder="Vertel ons iets over je school en wat je van TOA Planner verwacht…"></textarea>
           </div>
-          <p class="form-note">* Verplichte velden. Je gegevens worden alleen gebruikt om je vraag te beantwoorden.</p>
+          <p class="form-note">* Verplichte velden. Je e-mailprogramma opent met het ingevulde bericht.</p>
           <div id="form-success" class="form-success">
-            ✓ Bedankt voor je bericht! We nemen zo snel mogelijk contact met je op.
+            ✓ Je e-mailprogramma is geopend met het ingevulde bericht. Klik op Verzenden om het te versturen.
           </div>
           <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:.75rem">
             Verstuur bericht
@@ -997,19 +997,24 @@
   const form    = document.getElementById('contact-form')
   const success = document.getElementById('form-success')
 
-  form.addEventListener('submit', async function(e) {
-    if (form.action.includes('YOUR_FORM_ID')) return
+  form.addEventListener('submit', function(e) {
     e.preventDefault()
-    const data = new FormData(form)
-    const res = await fetch(form.action, {
-      method: 'POST', body: data,
-      headers: { 'Accept': 'application/json' }
-    })
-    if (res.ok) {
-      form.reset()
-      success.style.display = 'block'
-      setTimeout(() => success.style.display = 'none', 6000)
-    }
+    const naam      = document.getElementById('naam').value.trim()
+    const school    = document.getElementById('school').value.trim()
+    const email     = document.getElementById('email').value.trim()
+    const onderwerp = document.getElementById('onderwerp').value || 'Contactformulier TOA Planner'
+    const bericht   = document.getElementById('bericht').value.trim()
+
+    const subject = encodeURIComponent(onderwerp)
+    const body = encodeURIComponent(
+      `Naam: ${naam}\nSchool: ${school}\nE-mail: ${email}\n\n${bericht}`
+    )
+
+    window.location.href = `mailto:info@toaplanner.nl?subject=${subject}&body=${body}`
+
+    form.reset()
+    success.style.display = 'block'
+    setTimeout(() => success.style.display = 'none', 8000)
   })
 </script>
 </body>
