@@ -21,9 +21,11 @@ export async function buildSignInResult(
 
   if (!existing) {
     const settings = await db.appSettings.findUnique({ where: { id: 1 } })
-    if (!settings?.registrationOpen) return '/login?error=RegistrationClosed'
+    // Treat missing settings (new school, empty DB) as registration open
+    if (settings !== null && !settings.registrationOpen) return '/login?error=RegistrationClosed'
 
     const userCount = await db.user.count()
+    const isFirst = userCount === 0
     await db.user.create({
       data: {
         id,
@@ -31,7 +33,8 @@ export async function buildSignInResult(
         name: name ?? email,
         image,
         abbreviation: generateAbbreviation(email),
-        isAdmin: userCount === 0,
+        isAdmin: isFirst,
+        isTOA: isFirst,
       },
     })
   } else {
