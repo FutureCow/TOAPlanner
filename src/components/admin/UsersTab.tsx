@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { UserRow, SubjectConfig } from '@/types'
 import { format } from 'date-fns'
 import { nl } from 'date-fns/locale'
@@ -18,6 +18,53 @@ function avatarColor(name: string) {
   let hash = 0
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash)
   return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length]
+}
+
+function AbbreviationCell({ value, onSave }: { value: string; onSave: (v: string) => void }) {
+  const [editing, setEditing] = useState(false)
+  const [draft, setDraft] = useState(value.toUpperCase())
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  function start() {
+    setDraft(value.toUpperCase())
+    setEditing(true)
+    setTimeout(() => inputRef.current?.select(), 0)
+  }
+
+  function commit() {
+    const clean = draft.trim().toUpperCase().slice(0, 6)
+    if (clean && clean !== value.toUpperCase()) onSave(clean)
+    setEditing(false)
+  }
+
+  function onKey(e: React.KeyboardEvent) {
+    if (e.key === 'Enter') commit()
+    if (e.key === 'Escape') setEditing(false)
+  }
+
+  if (editing) {
+    return (
+      <input
+        ref={inputRef}
+        value={draft}
+        onChange={e => setDraft(e.target.value.toUpperCase())}
+        onBlur={commit}
+        onKeyDown={onKey}
+        maxLength={6}
+        className="w-14 bg-slate-800 border border-blue-500 text-slate-200 font-semibold text-[0.7rem] rounded px-1.5 py-0.5 uppercase focus:outline-none"
+      />
+    )
+  }
+
+  return (
+    <button
+      onClick={start}
+      title="Klik om afkorting te wijzigen"
+      className="text-slate-300 font-semibold text-[0.7rem] bg-slate-700 hover:bg-slate-600 px-1.5 py-0.5 rounded transition-colors cursor-pointer"
+    >
+      {value.toUpperCase()}
+    </button>
+  )
 }
 
 export default function UsersTab() {
@@ -86,9 +133,7 @@ export default function UsersTab() {
                 </td>
                 {/* Abbreviation */}
                 <td className="px-3 py-2.5">
-                  <span className="text-slate-300 font-semibold text-[0.7rem] bg-slate-700 px-1.5 py-0.5 rounded">
-                    {u.abbreviation.toUpperCase()}
-                  </span>
+                  <AbbreviationCell value={u.abbreviation} onSave={val => updateUser(u.id, { abbreviation: val })} />
                 </td>
                 {/* Roles */}
                 <td className="px-3 py-2.5">

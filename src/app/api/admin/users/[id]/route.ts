@@ -9,7 +9,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   if (!session?.user.isAdmin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 
   const body = await req.json()
-  const { isTeacher, isTOA, isAdmin, allowed, defaultPage } = body
+  const { isTeacher, isTOA, isAdmin, allowed, defaultPage, abbreviation } = body
 
   const updateData: Record<string, unknown> = {}
   if (isTeacher !== undefined) updateData.isTeacher = isTeacher
@@ -17,6 +17,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   if (isAdmin !== undefined) updateData.isAdmin = isAdmin
   if (allowed !== undefined) updateData.allowed = allowed
   if (defaultPage !== undefined) updateData.defaultPage = defaultPage || null
+  if (abbreviation !== undefined) updateData.abbreviation = String(abbreviation).toUpperCase().slice(0, 6)
 
   const db = getPrisma(slug)
   const user = await db.user.update({ where: { id: params.id }, data: updateData })
