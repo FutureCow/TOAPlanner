@@ -51,8 +51,6 @@ export function getAuthOptions(slug: string): NextAuthOptions {
 
   return {
     secret: process.env.NEXTAUTH_SECRET,
-    // trustHost is a NextAuth v5 option but works in v4 at runtime; cast to silence the type error
-    ...({ trustHost: true } as object),
     session: { strategy: 'jwt' },
     providers: [
       ...(config.googleClientId
