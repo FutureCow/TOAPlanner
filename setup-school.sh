@@ -1,14 +1,93 @@
 #!/bin/bash
-# setup-school.sh — voeg een nieuwe school toe aan TOA Planner (multi-tenant)
+# setup-school.sh — beheer scholen in TOA Planner (multi-tenant)
 set -e
 
 APP_DIR="/opt/toa-planner"
 cd "$APP_DIR"
 
-# Laad globale .env (bevat NEXTAUTH_SECRET, NEXTAUTH_URL, etc.)
+# Laad globale .env
 set -a
 source "$APP_DIR/.env"
 set +a
+
+SCHOOLS_FILE="$APP_DIR/schools.json"
+
+# ── Actie kiezen ─────────────────────────────────────────────────────────────
+echo ""
+echo "TOA Planner — Schoolbeheer"
+echo "--------------------------"
+echo "1) School toevoegen"
+echo "2) School verwijderen"
+echo ""
+read -p "Keuze [1/2]: " ACTION
+
+# ════════════════════════════════════════════════════════════════════════════
+# SCHOOL VERWIJDEREN
+# ════════════════════════════════════════════════════════════════════════════
+if [ "$ACTION" = "2" ]; then
+  [ -f "$SCHOOLS_FILE" ] || { echo "Geen schools.json gevonden."; exit 1; }
+
+  echo ""
+  echo "Bekende scholen:"
+  node -e "
+const data = JSON.parse(require('fs').readFileSync('$SCHOOLS_FILE', 'utf8'));
+Object.keys(data).forEach(k => console.log('  •', k, '—', data[k].name));
+"
+
+  echo ""
+  read -p "School slug om te verwijderen: " SLUG
+  [ -z "$SLUG" ] && { echo "Geen slug opgegeven."; exit 1; }
+
+  # Haal DB-gegevens op uit schools.json
+  DB_URL=$(node -e "
+const data = JSON.parse(require('fs').readFileSync('$SCHOOLS_FILE', 'utf8'));
+if (!data['$SLUG']) { console.error('School niet gevonden: $SLUG'); process.exit(1); }
+console.log(data['$SLUG'].databaseUrl);
+")
+
+  # Extraheer DB-naam en gebruiker uit de connection string
+  # postgresql://user:pass@host:port/dbname
+  DB_USER=$(echo "$DB_URL" | sed 's|postgresql://||' | cut -d: -f1)
+  DB_NAME=$(echo "$DB_URL" | sed 's|.*/||')
+
+  echo ""
+  echo "==> Dit wordt verwijderd:"
+  echo "    • School '$SLUG' uit schools.json"
+  echo "    • PostgreSQL database: $DB_NAME"
+  echo "    • PostgreSQL gebruiker: $DB_USER"
+  echo ""
+  read -p "Weet je het zeker? Type de slug ter bevestiging: " CONFIRM
+  [ "$CONFIRM" != "$SLUG" ] && { echo "Geannuleerd."; exit 0; }
+
+  # Verwijder uit schools.json
+  echo "==> schools.json bijwerken..."
+  node -e "
+const fs = require('fs');
+const data = JSON.parse(fs.readFileSync('$SCHOOLS_FILE', 'utf8'));
+delete data['$SLUG'];
+fs.writeFileSync('$SCHOOLS_FILE', JSON.stringify(data, null, 2));
+console.log('School verwijderd uit schools.json');
+"
+
+  # Drop database en gebruiker
+  echo "==> PostgreSQL database en gebruiker verwijderen..."
+  su - postgres -c "psql" <<EOF
+\set ON_ERROR_STOP off
+DROP DATABASE IF EXISTS "$DB_NAME";
+DROP USER IF EXISTS "$DB_USER";
+\set ON_ERROR_STOP on
+EOF
+
+  echo ""
+  echo "==> Klaar! School '$SLUG' is verwijderd."
+  echo "    Herstart de app: pm2 restart toa-planner"
+  echo ""
+  exit 0
+fi
+
+# ════════════════════════════════════════════════════════════════════════════
+# SCHOOL TOEVOEGEN
+# ════════════════════════════════════════════════════════════════════════════
 
 # ── Invoer ──────────────────────────────────────────────────────────────────
 read -p "School slug (subdomein, bijv. 'amersfoortseberg'): " SLUG
@@ -61,10 +140,8 @@ DATABASE_URL="$DB_URL" npx prisma migrate deploy
 # ── schools.json updaten ─────────────────────────────────────────────────────
 echo "==> schools.json bijwerken..."
 
-SCHOOLS_FILE="$APP_DIR/schools.json"
 [ -f "$SCHOOLS_FILE" ] || echo '{}' > "$SCHOOLS_FILE"
 
-# Bouw JSON entry
 ENTRY=$(cat <<JSONEOF
 {
   "name": "$SCHOOL_NAME",
@@ -81,7 +158,6 @@ if [ -n "$AZURE_CLIENT_ID" ]; then
 fi
 ENTRY="$ENTRY }"
 
-# Voeg toe aan bestaande schools.json via node
 node -e "
 const fs = require('fs');
 const f = '$SCHOOLS_FILE';
