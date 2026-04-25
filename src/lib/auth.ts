@@ -51,6 +51,7 @@ export function getAuthOptions(slug: string): NextAuthOptions {
 
   return {
     secret: process.env.NEXTAUTH_SECRET,
+    trustHost: true,
     session: { strategy: 'jwt' },
     providers: [
       ...(config.googleClientId
