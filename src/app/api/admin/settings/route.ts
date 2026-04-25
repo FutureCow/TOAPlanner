@@ -32,6 +32,8 @@ export async function PATCH(req: NextRequest) {
   if (body.periodStartTime !== undefined) update.periodStartTime = String(body.periodStartTime)
   if (body.periodDuration  !== undefined) update.periodDuration  = Number(body.periodDuration)
   if (Array.isArray(body.breaks)) update.breaks = body.breaks
+  if (body.abbreviationFormat !== undefined) update.abbreviationFormat = String(body.abbreviationFormat)
+  if (body.abbreviationLength !== undefined) update.abbreviationLength = Math.min(6, Math.max(2, Number(body.abbreviationLength)))
 
   const db = getPrisma(slug)
   const settings = await db.appSettings.upsert({

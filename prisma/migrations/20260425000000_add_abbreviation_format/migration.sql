@@ -1,0 +1,2 @@
+ALTER TABLE "AppSettings" ADD COLUMN IF NOT EXISTS "abbreviationFormat" TEXT NOT NULL DEFAULT 'email';
+ALTER TABLE "AppSettings" ADD COLUMN IF NOT EXISTS "abbreviationLength" INTEGER NOT NULL DEFAULT 4;

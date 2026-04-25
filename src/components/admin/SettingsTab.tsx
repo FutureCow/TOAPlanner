@@ -444,6 +444,10 @@ const STATUS_ROWS = [
 export default function SettingsTab() {
   // App settings
   const [registrationOpen, setRegistrationOpen] = useState(true)
+  const [abbreviationFormat, setAbbreviationFormat] = useState('email')
+  const [abbreviationLength, setAbbreviationLength] = useState(4)
+  const [abbrSaving, setAbbrSaving] = useState(false)
+  const [abbrSaved, setAbbrSaved] = useState(false)
   const [logo, setLogo] = useState('')
   const [logoInput, setLogoInput] = useState('')
   const [periodsPerDay, setPeriodsPerDay] = useState(10)
@@ -491,6 +495,8 @@ export default function SettingsTab() {
       setPeriodStartTime(d.periodStartTime ?? '08:30')
       setPeriodDuration(d.periodDuration ?? 50)
       setBreaks(Array.isArray(d.breaks) ? d.breaks : [])
+      setAbbreviationFormat(d.abbreviationFormat ?? 'email')
+      setAbbreviationLength(d.abbreviationLength ?? 4)
       setSettingsLoading(false)
       const sl = d.statusLabels || {}
       const sc = d.statusColors || {}
@@ -559,6 +565,17 @@ export default function SettingsTab() {
     })
     setStatusSaving(false); setStatusSaved(true)
     setTimeout(() => setStatusSaved(false), 2000)
+  }
+
+  async function saveAbbreviationSettings() {
+    setAbbrSaving(true); setAbbrSaved(false)
+    await fetch('/api/admin/settings', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ abbreviationFormat, abbreviationLength }),
+    })
+    setAbbrSaving(false); setAbbrSaved(true)
+    setTimeout(() => setAbbrSaved(false), 2000)
   }
 
   async function savePeriods(value: number) {
@@ -994,6 +1011,50 @@ export default function SettingsTab() {
                 </div>
               </button>
             )}
+          </div>
+
+          {/* Abbreviation format */}
+          <div className="bg-slate-900 border border-slate-700 rounded-lg p-4">
+            <p className="font-semibold text-slate-200 text-sm mb-1">Afkortingopmaak</p>
+            <p className="text-xs text-slate-500 mb-3">
+              Bepaalt hoe de afkorting van nieuwe gebruikers automatisch wordt samengesteld.
+              Bestaande afkortingen worden niet gewijzigd.
+            </p>
+            <div className="flex flex-wrap gap-3 items-end">
+              <div>
+                <label className="block text-xs text-slate-500 mb-1">Samenstelling</label>
+                <select
+                  value={abbreviationFormat}
+                  onChange={e => setAbbreviationFormat(e.target.value)}
+                  className="bg-slate-800 border border-slate-600 text-slate-200 rounded px-2 py-1.5 text-xs focus:outline-none focus:border-blue-500"
+                >
+                  <option value="email">E-mailadres (bijv. jdev)</option>
+                  <option value="firstname">Voornaam (bijv. jan)</option>
+                  <option value="lastname">Achternaam (bijv. vrie)</option>
+                  <option value="initials">Initialen (bijv. JdV)</option>
+                  <option value="firstlast">Voornaam + achternaam initiaal (bijv. jvri)</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs text-slate-500 mb-1">Lengte</label>
+                <select
+                  value={abbreviationLength}
+                  onChange={e => setAbbreviationLength(Number(e.target.value))}
+                  className="bg-slate-800 border border-slate-600 text-slate-200 rounded px-2 py-1.5 text-xs focus:outline-none focus:border-blue-500"
+                >
+                  {[2, 3, 4, 5, 6].map(n => <option key={n} value={n}>{n} tekens</option>)}
+                </select>
+              </div>
+              <button
+                onClick={saveAbbreviationSettings}
+                disabled={abbrSaving}
+                className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${
+                  abbrSaved ? 'bg-green-700 text-white' : 'bg-blue-600 hover:bg-blue-500 disabled:opacity-40 text-white'
+                }`}
+              >
+                {abbrSaving ? 'Opslaan…' : abbrSaved ? '✓ Opgeslagen' : 'Opslaan'}
+              </button>
+            </div>
           </div>
 
           {/* School logo */}

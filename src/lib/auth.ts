@@ -3,7 +3,7 @@ import type { JWT } from 'next-auth/jwt'
 import GoogleProvider from 'next-auth/providers/google'
 import AzureADProvider from 'next-auth/providers/azure-ad'
 import { getSchoolConfig, getPrisma } from './school'
-import { generateAbbreviation } from './week'
+import { generateAbbreviation, type AbbreviationFormat } from './week'
 
 export async function buildSignInResult(
   email: string,
@@ -26,13 +26,19 @@ export async function buildSignInResult(
 
     const userCount = await db.user.count()
     const isFirst = userCount === 0
+    const abbr = generateAbbreviation(
+      email,
+      name,
+      (settings?.abbreviationFormat ?? 'email') as AbbreviationFormat,
+      settings?.abbreviationLength ?? 4,
+    )
     await db.user.create({
       data: {
         id,
         email,
         name: name ?? email,
         image,
-        abbreviation: generateAbbreviation(email),
+        abbreviation: abbr,
         isAdmin: isFirst,
         isTOA: isFirst,
       },

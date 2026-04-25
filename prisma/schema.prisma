@@ -54,9 +54,11 @@ model AppSettings {
   periodsPerDay    Int     @default(10)
   statusLabels     Json?   // Record<Status, string>
   statusColors     Json?   // Record<Status, string>
-  periodStartTime  String  @default("08:30")
-  periodDuration   Int     @default(50)
-  breaks           Json?   // Array of { afterPeriod: number, duration: number, label?: string }
+  periodStartTime      String  @default("08:30")
+  periodDuration       Int     @default(50)
+  breaks               Json?   // Array of { afterPeriod: number, duration: number, label?: string }
+  abbreviationFormat   String  @default("email")   // email | firstname | lastname | initials | firstlast
+  abbreviationLength   Int     @default(4)
 }
 
 model ExceptionSchedule {
