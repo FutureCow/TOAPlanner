@@ -949,11 +949,14 @@
             <label for="bericht">Bericht *</label>
             <textarea id="bericht" name="bericht" required placeholder="Vertel ons iets over je school en wat je van TOA Planner verwacht…"></textarea>
           </div>
-          <p class="form-note">* Verplichte velden. Je e-mailprogramma opent met het ingevulde bericht.</p>
+          <p class="form-note">* Verplichte velden. Je gegevens worden alleen gebruikt om je vraag te beantwoorden.</p>
           <div id="form-success" class="form-success">
-            ✓ Je e-mailprogramma is geopend met het ingevulde bericht. Klik op Verzenden om het te versturen.
+            ✓ Bedankt voor je bericht! We nemen zo snel mogelijk contact met je op.
           </div>
-          <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:.75rem">
+          <div id="form-error" class="form-success" style="background:rgba(213,94,0,.1);border-color:rgba(213,94,0,.3);color:#f09060;display:none">
+            ✕ Er ging iets mis. Probeer het opnieuw of mail naar <a href="mailto:info@toaplanner.nl" style="color:inherit">info@toaplanner.nl</a>.
+          </div>
+          <button type="submit" id="form-submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:.75rem">
             Verstuur bericht
           </button>
         </form>
@@ -996,25 +999,41 @@
 
   const form    = document.getElementById('contact-form')
   const success = document.getElementById('form-success')
+  const error   = document.getElementById('form-error')
+  const submit  = document.getElementById('form-submit')
 
-  form.addEventListener('submit', function(e) {
+  form.addEventListener('submit', async function(e) {
     e.preventDefault()
-    const naam      = document.getElementById('naam').value.trim()
-    const school    = document.getElementById('school').value.trim()
-    const email     = document.getElementById('email').value.trim()
-    const onderwerp = document.getElementById('onderwerp').value || 'Contactformulier TOA Planner'
-    const bericht   = document.getElementById('bericht').value.trim()
+    submit.disabled = true
+    submit.textContent = 'Versturen…'
+    success.style.display = 'none'
+    error.style.display   = 'none'
 
-    const subject = encodeURIComponent(onderwerp)
-    const body = encodeURIComponent(
-      `Naam: ${naam}\nSchool: ${school}\nE-mail: ${email}\n\n${bericht}`
-    )
-
-    window.location.href = `mailto:info@toaplanner.nl?subject=${subject}&body=${body}`
-
-    form.reset()
-    success.style.display = 'block'
-    setTimeout(() => success.style.display = 'none', 8000)
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          naam:      document.getElementById('naam').value.trim(),
+          school:    document.getElementById('school').value.trim(),
+          email:     document.getElementById('email').value.trim(),
+          onderwerp: document.getElementById('onderwerp').value || 'Contactformulier TOA Planner',
+          bericht:   document.getElementById('bericht').value.trim(),
+        }),
+      })
+      if (res.ok) {
+        form.reset()
+        success.style.display = 'block'
+        setTimeout(() => success.style.display = 'none', 8000)
+      } else {
+        error.style.display = 'block'
+      }
+    } catch {
+      error.style.display = 'block'
+    } finally {
+      submit.disabled = false
+      submit.textContent = 'Verstuur bericht'
+    }
   })
 </script>
 </body>
