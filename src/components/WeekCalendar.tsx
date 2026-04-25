@@ -46,10 +46,10 @@ export default function WeekCalendar({ subject, session, subjectConfig, periodsP
 
   const activeWeekKey = `${getISOWeekYear(currentDate)}-${getISOWeek(currentDate)}`
   const activeException = exceptionSchedules.find(e => e.weeks.includes(activeWeekKey))
-  const activePeriodStartTime = activeException?.periodStartTime ?? periodStartTime
-  const activePeriodDuration  = activeException?.periodDuration  ?? periodDuration
+  const activePeriodStartTime = (activeException && activeException.periodStartTime) ? activeException.periodStartTime : periodStartTime
+  const activePeriodDuration  = (activeException && activeException.periodStartTime) ? activeException.periodDuration  : periodDuration
   const activeCalBreaks = useMemo(
-    () => activeException ? (Array.isArray(activeException.breaks) ? activeException.breaks : []) : calBreaks,
+    () => (activeException && activeException.periodStartTime) ? (Array.isArray(activeException.breaks) ? activeException.breaks : []) : calBreaks,
     [activeException, calBreaks]
   )
 

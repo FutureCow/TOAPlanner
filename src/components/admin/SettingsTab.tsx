@@ -69,7 +69,8 @@ function parseWeekKey(key: string): string {
 function ExceptionScheduleCard({ schedule, periodsPerDay, onSaved, onDeleted }: ExceptionScheduleCardProps) {
   const [expanded, setExpanded] = useState(false)
   const [name, setName] = useState(schedule.name)
-  const [startTime, setStartTime] = useState(schedule.periodStartTime)
+  const [useDefault, setUseDefault] = useState(!schedule.periodStartTime)
+  const [startTime, setStartTime] = useState(schedule.periodStartTime || '08:30')
   const [duration, setDuration] = useState(schedule.periodDuration)
   const [breaks, setBreaks] = useState<Break[]>(Array.isArray(schedule.breaks) ? schedule.breaks : [])
   const [weeks, setWeeks] = useState<string[]>(schedule.weeks ?? [])
@@ -117,7 +118,7 @@ function ExceptionScheduleCard({ schedule, periodsPerDay, onSaved, onDeleted }: 
     const res = await fetch(`/api/admin/exception-schedules/${schedule.id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: name.trim(), periodStartTime: startTime, periodDuration: duration, breaks, weeks }),
+      body: JSON.stringify({ name: name.trim(), periodStartTime: useDefault ? '' : startTime, periodDuration: useDefault ? 50 : duration, breaks: useDefault ? [] : breaks, weeks }),
     })
     setSaving(false)
     if (res.ok) { setSaved(true); setTimeout(() => setSaved(false), 2000); onSaved() }
@@ -125,7 +126,7 @@ function ExceptionScheduleCard({ schedule, periodsPerDay, onSaved, onDeleted }: 
   }
 
   async function handleDelete() {
-    if (!confirm(`Afwijkende uurindeling "${schedule.name}" verwijderen?`)) return
+    if (!confirm(`Afwijkende week of uurindeling "${schedule.name}" verwijderen?`)) return
     const res = await fetch(`/api/admin/exception-schedules/${schedule.id}`, { method: 'DELETE' })
     if (res.ok) onDeleted()
   }
@@ -158,86 +159,102 @@ function ExceptionScheduleCard({ schedule, periodsPerDay, onSaved, onDeleted }: 
             />
           </div>
 
-          <div className="flex gap-3 items-end flex-wrap">
-            <div>
-              <label className="block text-xs text-slate-400 mb-1">Starttijd eerste uur</label>
-              <input
-                type="time"
-                value={startTime}
-                onChange={e => setStartTime(e.target.value)}
-                className="bg-slate-900 border border-slate-600 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
-              />
+          <label className="flex items-center gap-2 cursor-pointer select-none">
+            <div
+              onClick={() => setUseDefault(v => !v)}
+              className={`w-8 h-4 rounded-full relative transition-colors flex-shrink-0 ${useDefault ? 'bg-blue-600' : 'bg-slate-600'}`}
+            >
+              <div className={`absolute top-0.5 w-3 h-3 bg-white rounded-full shadow transition-all ${useDefault ? 'left-4' : 'left-0.5'}`} />
             </div>
-            <div>
-              <label className="block text-xs text-slate-400 mb-1">Duur per uur (min)</label>
-              <input
-                type="number"
-                min={10}
-                max={120}
-                value={duration}
-                onChange={e => setDuration(Number(e.target.value))}
-                className="w-20 bg-slate-900 border border-slate-600 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
-              />
-            </div>
-          </div>
+            <span className="text-xs text-slate-300">Zelfde uurindeling als standaard</span>
+          </label>
 
-          {/* Preview */}
-          <div>
-            <p className="text-xs text-slate-500 mb-1">Berekende tijden:</p>
-            <div className="flex gap-1.5 flex-wrap">
-              {Array.from({ length: periodsPerDay }, (_, i) => i + 1).map(p => (
-                <span key={p} className="text-xs text-slate-400 bg-slate-900 rounded px-1.5 py-0.5">
-                  <span className="font-semibold text-slate-300">{p}</span>
-                  {' → '}
-                  {getPeriodStartTime(p, startTime, duration, breaks)}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          {/* Breaks */}
-          <div>
-            <p className="text-xs text-slate-400 font-semibold mb-1.5">Pauzes</p>
-            {breaks.length === 0 && <p className="text-xs text-slate-600 mb-1.5">Geen pauzes.</p>}
-            <div className="space-y-1 mb-1.5">
-              {breaks.map((b, idx) => (
-                <div key={idx} className="flex items-center gap-2 text-xs text-slate-300 bg-slate-900 rounded px-2 py-1.5">
-                  <span>Na uur {b.afterPeriod} — {b.duration} min</span>
-                  {b.label && <span className="text-slate-500">({b.label})</span>}
-                  <button onClick={() => removeBreak(idx)} className="ml-auto text-slate-500 hover:text-red-400">✕</button>
-                </div>
-              ))}
-            </div>
-            {showBreakForm ? (
-              <div className="flex gap-2 items-end flex-wrap bg-slate-900 rounded p-2">
+          {useDefault ? (
+            <p className="text-xs text-slate-500 italic">De tijden en pauzes van de standaard uurindeling worden gebruikt voor deze weken.</p>
+          ) : (
+            <>
+              <div className="flex gap-3 items-end flex-wrap">
                 <div>
-                  <label className="block text-xs text-slate-400 mb-1">Na uur</label>
-                  <select value={newBreakAfter} onChange={e => setNewBreakAfter(Number(e.target.value))}
-                    className="bg-slate-700 border border-slate-600 rounded px-2 py-1 text-xs text-white focus:outline-none">
-                    {Array.from({ length: periodsPerDay - 1 }, (_, i) => i + 1).map(n => (
-                      <option key={n} value={n}>{n}</option>
-                    ))}
-                  </select>
+                  <label className="block text-xs text-slate-400 mb-1">Starttijd eerste uur</label>
+                  <input
+                    type="time"
+                    value={startTime}
+                    onChange={e => setStartTime(e.target.value)}
+                    className="bg-slate-900 border border-slate-600 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                  />
                 </div>
                 <div>
-                  <label className="block text-xs text-slate-400 mb-1">Duur (min)</label>
-                  <input type="number" min={1} max={120} value={newBreakDuration}
-                    onChange={e => setNewBreakDuration(Number(e.target.value))}
-                    className="w-16 bg-slate-700 border border-slate-600 rounded px-2 py-1 text-xs text-white focus:outline-none" />
+                  <label className="block text-xs text-slate-400 mb-1">Duur per uur (min)</label>
+                  <input
+                    type="number"
+                    min={10}
+                    max={120}
+                    value={duration}
+                    onChange={e => setDuration(Number(e.target.value))}
+                    className="w-20 bg-slate-900 border border-slate-600 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                  />
                 </div>
-                <div>
-                  <label className="block text-xs text-slate-400 mb-1">Label (optioneel)</label>
-                  <input value={newBreakLabel} onChange={e => setNewBreakLabel(e.target.value)}
-                    placeholder="Kleine pauze"
-                    className="bg-slate-700 border border-slate-600 rounded px-2 py-1 text-xs text-white focus:outline-none w-28" />
-                </div>
-                <button onClick={addBreak} className="px-2 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded text-xs">Toevoegen</button>
-                <button onClick={() => setShowBreakForm(false)} className="px-2 py-1 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded text-xs">Annuleren</button>
               </div>
-            ) : (
-              <button onClick={() => setShowBreakForm(true)} className="text-xs text-blue-400 hover:text-blue-300">+ Pauze toevoegen</button>
-            )}
-          </div>
+
+              {/* Preview */}
+              <div>
+                <p className="text-xs text-slate-500 mb-1">Berekende tijden:</p>
+                <div className="flex gap-1.5 flex-wrap">
+                  {Array.from({ length: periodsPerDay }, (_, i) => i + 1).map(p => (
+                    <span key={p} className="text-xs text-slate-400 bg-slate-900 rounded px-1.5 py-0.5">
+                      <span className="font-semibold text-slate-300">{p}</span>
+                      {' → '}
+                      {getPeriodStartTime(p, startTime, duration, breaks)}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Breaks */}
+              <div>
+                <p className="text-xs text-slate-400 font-semibold mb-1.5">Pauzes</p>
+                {breaks.length === 0 && <p className="text-xs text-slate-600 mb-1.5">Geen pauzes.</p>}
+                <div className="space-y-1 mb-1.5">
+                  {breaks.map((b, idx) => (
+                    <div key={idx} className="flex items-center gap-2 text-xs text-slate-300 bg-slate-900 rounded px-2 py-1.5">
+                      <span>Na uur {b.afterPeriod} — {b.duration} min</span>
+                      {b.label && <span className="text-slate-500">({b.label})</span>}
+                      <button onClick={() => removeBreak(idx)} className="ml-auto text-slate-500 hover:text-red-400">✕</button>
+                    </div>
+                  ))}
+                </div>
+                {showBreakForm ? (
+                  <div className="flex gap-2 items-end flex-wrap bg-slate-900 rounded p-2">
+                    <div>
+                      <label className="block text-xs text-slate-400 mb-1">Na uur</label>
+                      <select value={newBreakAfter} onChange={e => setNewBreakAfter(Number(e.target.value))}
+                        className="bg-slate-700 border border-slate-600 rounded px-2 py-1 text-xs text-white focus:outline-none">
+                        {Array.from({ length: periodsPerDay - 1 }, (_, i) => i + 1).map(n => (
+                          <option key={n} value={n}>{n}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs text-slate-400 mb-1">Duur (min)</label>
+                      <input type="number" min={1} max={120} value={newBreakDuration}
+                        onChange={e => setNewBreakDuration(Number(e.target.value))}
+                        className="w-16 bg-slate-700 border border-slate-600 rounded px-2 py-1 text-xs text-white focus:outline-none" />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-slate-400 mb-1">Label (optioneel)</label>
+                      <input value={newBreakLabel} onChange={e => setNewBreakLabel(e.target.value)}
+                        placeholder="Kleine pauze"
+                        className="bg-slate-700 border border-slate-600 rounded px-2 py-1 text-xs text-white focus:outline-none w-28" />
+                    </div>
+                    <button onClick={addBreak} className="px-2 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded text-xs">Toevoegen</button>
+                    <button onClick={() => setShowBreakForm(false)} className="px-2 py-1 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded text-xs">Annuleren</button>
+                  </div>
+                ) : (
+                  <button onClick={() => setShowBreakForm(true)} className="text-xs text-blue-400 hover:text-blue-300">+ Pauze toevoegen</button>
+                )}
+              </div>
+            </>
+          )}
 
           {/* Weeks */}
           <div>
@@ -774,12 +791,12 @@ export default function SettingsTab() {
         </div>
       </section>
 
-      {/* ── Afwijkende uurindeling ── */}
+      {/* ── Afwijkende week of uurindeling ── */}
       <section>
-        <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wide mb-3">Afwijkende uurindeling</h2>
+        <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wide mb-3">Afwijkende week of uurindeling</h2>
         <div className="bg-slate-900 border border-slate-700 rounded-lg p-4 space-y-3">
           <p className="text-xs text-slate-500">
-            Weken waarbij de uurindeling afwijkt van de standaard. De kalender gebruikt automatisch de afwijkende tijden voor die weken.
+            Weken met een andere naam of uurindeling. De kalender gebruikt automatisch de instellingen voor die weken.
           </p>
           <div className="space-y-2">
             {exceptionSchedules.map(s => (
@@ -792,7 +809,7 @@ export default function SettingsTab() {
               />
             ))}
             {exceptionSchedules.length === 0 && (
-              <p className="text-xs text-slate-600">Geen afwijkende uurindelingen ingesteld.</p>
+              <p className="text-xs text-slate-600">Geen afwijkende week- of uurindelingen ingesteld.</p>
             )}
           </div>
           {showAddException ? (
@@ -819,7 +836,7 @@ export default function SettingsTab() {
           ) : (
             <button onClick={() => setShowAddException(true)}
               className="text-xs text-blue-400 hover:text-blue-300 transition-colors">
-              + Afwijkende uurindeling toevoegen
+              + Afwijkende week of uurindeling toevoegen
             </button>
           )}
         </div>
