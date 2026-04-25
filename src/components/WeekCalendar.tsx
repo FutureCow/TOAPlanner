@@ -34,7 +34,7 @@ export default function WeekCalendar({ subject, session, subjectConfig, periodsP
   const [periodDuration, setPeriodDuration]   = useState(50)
   const [calBreaks, setCalBreaks]             = useState<Break[]>([])
   const [exceptionSchedules, setExceptionSchedules] = useState<{ id: string; name: string; periodStartTime: string; periodDuration: number; breaks: Break[]; weeks: string[] }[]>([])
-  const [showTimeLine, setShowTimeLine] = useState(() => localStorage.getItem('show-timeline') === 'true')
+  const [showTimeLine, setShowTimeLine] = useState(() => typeof window !== 'undefined' && localStorage.getItem('show-timeline') === 'true')
   const [lineY, setLineY] = useState<number | null>(null)
   const periodGridRef = useRef<HTMLDivElement>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
