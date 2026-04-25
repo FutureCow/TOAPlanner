@@ -20,18 +20,18 @@ function weekLabel(monday: Date) {
   return `Week ${getISOWeek(monday)} · ${from}–${format(friday, 'd MMM', { locale: nl })} ${getISOWeekYear(monday)}`
 }
 
-function buildWeekOptions(weeks = 52) {
+function buildWeekOptions(back = 2, forward = 8) {
   const base = toMonday(new Date())
-  const start = addWeeks(base, -Math.floor(weeks / 2))
-  return Array.from({ length: weeks }, (_, i) => {
-    const monday = addWeeks(start, i)
+  const total = back + 1 + forward
+  return Array.from({ length: total }, (_, i) => {
+    const monday = addWeeks(base, i - back)
     return { value: weekKey(monday), label: weekLabel(monday) }
   })
 }
 
 function WeekPicker({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   const monday = value ? toMonday(new Date(value + 'T00:00:00')) : null
-  const options = buildWeekOptions(52)
+  const options = buildWeekOptions(2, 8)
 
   function navigate(delta: number) {
     const base = monday ?? toMonday(new Date())
