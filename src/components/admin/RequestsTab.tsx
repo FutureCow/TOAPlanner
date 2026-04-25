@@ -2,8 +2,45 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { RequestWithUser, SubjectConfig } from '@/types'
 import { Status } from '@prisma/client'
-import { format } from 'date-fns'
+import { format, addWeeks, startOfWeek, addDays, getISOWeek } from 'date-fns'
 import { nl } from 'date-fns/locale'
+
+function WeekPicker({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  function toMonday(d: Date) {
+    return startOfWeek(d, { weekStartsOn: 1 })
+  }
+  const monday = value ? toMonday(new Date(value + 'T00:00:00')) : null
+  const friday = monday ? addDays(monday, 4) : null
+
+  function navigate(delta: number) {
+    const base = monday ?? toMonday(new Date())
+    onChange(format(addWeeks(base, delta), 'yyyy-MM-dd'))
+  }
+
+  const label = monday && friday
+    ? `Week ${getISOWeek(monday)} · ${format(monday, 'd', { locale: nl })}–${format(friday, 'd MMM', { locale: nl })}`
+    : 'Kies week'
+
+  return (
+    <div className="flex items-center gap-0.5">
+      <button onClick={() => navigate(-1)} className="px-1.5 py-1 text-slate-400 hover:text-slate-200 hover:bg-slate-700 rounded text-xs transition-colors" title="Vorige week">‹</button>
+      <button
+        onClick={() => navigate(0)}
+        className={`px-2 py-1 rounded text-xs border transition-colors whitespace-nowrap ${
+          monday ? 'bg-slate-800 border-slate-600 text-slate-200' : 'bg-slate-800 border-slate-700 text-slate-500'
+        }`}
+        title={monday ? 'Klik voor huidige week' : 'Kies een week'}
+        onDoubleClick={() => onChange(format(toMonday(new Date()), 'yyyy-MM-dd'))}
+      >
+        {label}
+      </button>
+      <button onClick={() => navigate(1)} className="px-1.5 py-1 text-slate-400 hover:text-slate-200 hover:bg-slate-700 rounded text-xs transition-colors" title="Volgende week">›</button>
+      {monday && (
+        <button onClick={() => onChange('')} className="ml-0.5 text-slate-500 hover:text-slate-300 text-xs px-1" title="Filter wissen">✕</button>
+      )}
+    </div>
+  )
+}
 
 const STATUS_LABELS: Record<Status, string> = {
   PENDING: 'Aangevraagd',
@@ -142,23 +179,7 @@ export default function RequestsTab() {
           <option value="">Alle statussen</option>
           {STATUS_VALUES.map(v => <option key={v} value={v}>{STATUS_LABELS[v]}</option>)}
         </select>
-        <div className="flex items-center gap-1">
-          <div className="relative flex items-center">
-            <svg className="absolute left-2 text-slate-400 pointer-events-none" width="13" height="13" viewBox="0 0 16 16" fill="currentColor">
-              <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
-            </svg>
-            <input
-              type="date"
-              value={weekFilter}
-              onChange={e => setWeekFilter(e.target.value)}
-              className="date-input bg-slate-800 border border-slate-700 text-slate-300 rounded pl-7 pr-2 py-1.5 text-xs [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:cursor-pointer"
-              title="Filter op week (kies een dag in de gewenste week)"
-            />
-          </div>
-          {weekFilter && (
-            <button onClick={() => setWeekFilter('')} className="text-slate-500 hover:text-slate-300 text-xs">✕</button>
-          )}
-        </div>
+        <WeekPicker value={weekFilter} onChange={setWeekFilter} />
         <input value={search} onChange={e => setSearch(e.target.value)}
           placeholder="Zoek op naam of docent…"
           className="flex-1 min-w-[150px] bg-slate-800 border border-slate-700 text-slate-300 rounded px-2 py-1.5 text-xs" />
