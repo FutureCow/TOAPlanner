@@ -2,38 +2,55 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { RequestWithUser, SubjectConfig } from '@/types'
 import { Status } from '@prisma/client'
-import { format, addWeeks, startOfWeek, addDays, getISOWeek } from 'date-fns'
+import { format, addWeeks, startOfWeek, addDays, getISOWeek, getISOWeekYear } from 'date-fns'
 import { nl } from 'date-fns/locale'
 
+function toMonday(d: Date) {
+  return startOfWeek(d, { weekStartsOn: 1 })
+}
+
+function weekKey(monday: Date) {
+  return format(monday, 'yyyy-MM-dd')
+}
+
+function weekLabel(monday: Date) {
+  const friday = addDays(monday, 4)
+  const sameMonth = format(monday, 'MMM', { locale: nl }) === format(friday, 'MMM', { locale: nl })
+  const from = sameMonth ? format(monday, 'd') : format(monday, 'd MMM', { locale: nl })
+  return `Week ${getISOWeek(monday)} · ${from}–${format(friday, 'd MMM', { locale: nl })} ${getISOWeekYear(monday)}`
+}
+
+function buildWeekOptions(weeks = 52) {
+  const base = toMonday(new Date())
+  const start = addWeeks(base, -Math.floor(weeks / 2))
+  return Array.from({ length: weeks }, (_, i) => {
+    const monday = addWeeks(start, i)
+    return { value: weekKey(monday), label: weekLabel(monday) }
+  })
+}
+
 function WeekPicker({ value, onChange }: { value: string; onChange: (v: string) => void }) {
-  function toMonday(d: Date) {
-    return startOfWeek(d, { weekStartsOn: 1 })
-  }
   const monday = value ? toMonday(new Date(value + 'T00:00:00')) : null
-  const friday = monday ? addDays(monday, 4) : null
+  const options = buildWeekOptions(52)
 
   function navigate(delta: number) {
     const base = monday ?? toMonday(new Date())
-    onChange(format(addWeeks(base, delta), 'yyyy-MM-dd'))
+    onChange(weekKey(addWeeks(base, delta)))
   }
-
-  const label = monday && friday
-    ? `Week ${getISOWeek(monday)} · ${format(monday, 'd', { locale: nl })}–${format(friday, 'd MMM', { locale: nl })}`
-    : 'Kies week'
 
   return (
     <div className="flex items-center gap-0.5">
       <button onClick={() => navigate(-1)} className="px-1.5 py-1 text-slate-400 hover:text-slate-200 hover:bg-slate-700 rounded text-xs transition-colors" title="Vorige week">‹</button>
-      <button
-        onClick={() => navigate(0)}
-        className={`px-2 py-1 rounded text-xs border transition-colors whitespace-nowrap ${
-          monday ? 'bg-slate-800 border-slate-600 text-slate-200' : 'bg-slate-800 border-slate-700 text-slate-500'
-        }`}
-        title={monday ? 'Klik voor huidige week' : 'Kies een week'}
-        onDoubleClick={() => onChange(format(toMonday(new Date()), 'yyyy-MM-dd'))}
+      <select
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        className="bg-slate-800 border border-slate-600 text-slate-200 rounded px-2 py-1 text-xs focus:outline-none focus:border-blue-500 cursor-pointer"
       >
-        {label}
-      </button>
+        <option value="">Kies week…</option>
+        {options.map(o => (
+          <option key={o.value} value={o.value}>{o.label}</option>
+        ))}
+      </select>
       <button onClick={() => navigate(1)} className="px-1.5 py-1 text-slate-400 hover:text-slate-200 hover:bg-slate-700 rounded text-xs transition-colors" title="Volgende week">›</button>
       {monday && (
         <button onClick={() => onChange('')} className="ml-0.5 text-slate-500 hover:text-slate-300 text-xs px-1" title="Filter wissen">✕</button>
