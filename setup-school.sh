@@ -14,10 +14,11 @@ set +a
 read -p "School slug (subdomein, bijv. 'amersfoortseberg'): " SLUG
 read -p "Volledige naam van de school: " SCHOOL_NAME
 read -p "Toegestaan e-maildomein (bijv. 'school.nl'): " ALLOWED_DOMAIN
-read -p "PostgreSQL database naam: " DB_NAME
-read -p "PostgreSQL gebruikersnaam [toa_user]: " DB_USER
-DB_USER="${DB_USER:-toa_user}"
-read -s -p "PostgreSQL wachtwoord: " DB_PASS
+read -p "PostgreSQL database naam [toa_${SLUG}]: " DB_NAME
+DB_NAME="${DB_NAME:-toa_${SLUG}}"
+read -p "PostgreSQL gebruikersnaam [toa_${SLUG}]: " DB_USER
+DB_USER="${DB_USER:-toa_${SLUG}}"
+read -s -p "PostgreSQL wachtwoord voor gebruiker '$DB_USER': " DB_PASS
 echo
 read -p "Google Client ID (leeg = overslaan): " GOOGLE_CLIENT_ID
 if [ -n "$GOOGLE_CLIENT_ID" ]; then
@@ -33,12 +34,24 @@ fi
 
 DB_URL="postgresql://${DB_USER}:${DB_PASS}@localhost:5432/${DB_NAME}"
 
-# ── Database aanmaken ────────────────────────────────────────────────────────
+# ── Gebruiker en database aanmaken ───────────────────────────────────────────
 echo ""
-echo "==> Database aanmaken: $DB_NAME"
+echo "==> PostgreSQL gebruiker aanmaken: $DB_USER"
 su - postgres -c "psql" <<EOF
-CREATE DATABASE "$DB_NAME" OWNER $DB_USER;
-GRANT ALL PRIVILEGES ON DATABASE "$DB_NAME" TO $DB_USER;
+DO \$\$
+BEGIN
+  IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '$DB_USER') THEN
+    CREATE USER "$DB_USER" WITH PASSWORD '$DB_PASS';
+    RAISE NOTICE 'Gebruiker % aangemaakt.', '$DB_USER';
+  ELSE
+    ALTER USER "$DB_USER" WITH PASSWORD '$DB_PASS';
+    RAISE NOTICE 'Gebruiker % bestond al, wachtwoord bijgewerkt.', '$DB_USER';
+  END IF;
+END
+\$\$;
+
+CREATE DATABASE "$DB_NAME" OWNER "$DB_USER";
+GRANT ALL PRIVILEGES ON DATABASE "$DB_NAME" TO "$DB_USER";
 EOF
 
 # ── Migraties uitvoeren op nieuwe database ───────────────────────────────────
