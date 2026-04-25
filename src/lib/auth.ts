@@ -78,6 +78,15 @@ export function getAuthOptions(slug: string): NextAuthOptions {
         )
       },
       async jwt({ token }) {
+        // Bind token to the school it was created for.
+        // On first issuance the slug is not yet set; set it now.
+        // On subsequent requests, reject tokens issued for a different school.
+        if (!token.schoolSlug) {
+          token.schoolSlug = slug
+        } else if (token.schoolSlug !== slug) {
+          return null
+        }
+
         if (token.email) {
           const db = getPrisma(slug)
           const dbUser = await db.user.findUnique({

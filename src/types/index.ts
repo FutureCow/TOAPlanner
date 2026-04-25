@@ -73,5 +73,6 @@ declare module 'next-auth/jwt' {
     isTOA: boolean
     isAdmin: boolean
     defaultPage?: string | null
+    schoolSlug?: string
   }
 }
