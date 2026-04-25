@@ -18,20 +18,28 @@ export async function POST(req: NextRequest) {
     },
   })
 
-  await transporter.sendMail({
-    from:     `"TOA Planner Contact" <${process.env.SMTP_USER}>`,
-    to:       process.env.CONTACT_EMAIL ?? 'info@toaplanner.nl',
-    replyTo:  email,
-    subject:  onderwerp || 'Contactformulier TOA Planner',
-    text: `Naam:   ${naam}\nSchool: ${school}\nEmail:  ${email}\n\n${bericht}`,
-    html: `
-      <p><strong>Naam:</strong> ${naam}</p>
-      <p><strong>School:</strong> ${school}</p>
-      <p><strong>E-mail:</strong> <a href="mailto:${email}">${email}</a></p>
-      <hr>
-      <p>${bericht.replace(/\n/g, '<br>')}</p>
-    `,
-  })
+  try {
+    await transporter.sendMail({
+      from:     `"TOA Planner Contact" <${process.env.SMTP_USER}>`,
+      to:       process.env.CONTACT_EMAIL ?? 'info@toaplanner.nl',
+      replyTo:  email,
+      subject:  onderwerp || 'Contactformulier TOA Planner',
+      text: `Naam:   ${naam}\nSchool: ${school}\nEmail:  ${email}\n\n${bericht}`,
+      html: `
+        <p><strong>Naam:</strong> ${naam}</p>
+        <p><strong>School:</strong> ${school}</p>
+        <p><strong>E-mail:</strong> <a href="mailto:${email}">${email}</a></p>
+        <hr>
+        <p>${bericht.replace(/\n/g, '<br>')}</p>
+      `,
+    })
+  } catch (err) {
+    console.error('[contact] SMTP fout:', err)
+    return NextResponse.json(
+      { error: err instanceof Error ? err.message : 'SMTP fout' },
+      { status: 500 }
+    )
+  }
 
   return NextResponse.json({ ok: true })
 }
