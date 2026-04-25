@@ -9,7 +9,11 @@ export async function GET() {
   if (!session?.user.isAdmin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 
   const db = getPrisma(slug)
-  const settings = await db.appSettings.findUnique({ where: { id: 1 } })
+  const settings = await db.appSettings.upsert({
+    where: { id: 1 },
+    update: {},
+    create: { id: 1 },
+  })
   return NextResponse.json(settings)
 }
 
