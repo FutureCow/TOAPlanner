@@ -37,6 +37,7 @@ export default function WeekCalendar({ subject, session, subjectConfig, periodsP
   const [showTimeLine, setShowTimeLine] = useState(() => localStorage.getItem('show-timeline') === 'true')
   const [lineY, setLineY] = useState<number | null>(null)
   const periodGridRef = useRef<HTMLDivElement>(null)
+  const scrollRef = useRef<HTMLDivElement>(null)
 
   const weekDates = getWeekDates(currentDate)
   const today = toDateString(new Date())
@@ -110,6 +111,17 @@ export default function WeekCalendar({ subject, session, subjectConfig, periodsP
     window.addEventListener('timeline-changed', onTimelineChanged)
     return () => window.removeEventListener('timeline-changed', onTimelineChanged)
   }, [])
+
+  useEffect(() => {
+    if (!scrollRef.current) return
+    const todayIndex = weekDates.findIndex(d => toDateString(d) === today)
+    const isCurrentWeek = todayIndex !== -1
+    if (isCurrentWeek && todayIndex > 2) {
+      scrollRef.current.scrollLeft = scrollRef.current.scrollWidth
+    } else {
+      scrollRef.current.scrollLeft = 0
+    }
+  }, [currentDate])
 
   useEffect(() => {
     if (!showTimeLine || !activePeriodStartTime) {
@@ -209,7 +221,7 @@ export default function WeekCalendar({ subject, session, subjectConfig, periodsP
       </div>
 
       {/* Calendar grid */}
-      <div className="border border-slate-600 rounded-xl overflow-x-auto text-xs bg-slate-900">
+      <div ref={scrollRef} className="border border-slate-600 rounded-xl overflow-x-auto text-xs bg-slate-900">
         <div className="min-w-[560px]">
 
           {/* Day headers */}
