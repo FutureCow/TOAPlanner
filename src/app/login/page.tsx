@@ -9,18 +9,23 @@ const ERROR_MESSAGES: Record<string, string> = {
   Default: 'Er is iets misgegaan. Probeer opnieuw.',
 }
 
-const SHOW_AZURE = Boolean(process.env.NEXT_PUBLIC_AZURE_AD_ENABLED)
-
 function LoginContent() {
   const params = useSearchParams()
   const error = params.get('error')
   const message = error ? (ERROR_MESSAGES[error] ?? ERROR_MESSAGES.Default) : null
   const [schoolLogo, setSchoolLogo] = useState<string | null>(null)
+  const [hasGoogle, setHasGoogle] = useState(true)
+  const [hasAzure, setHasAzure] = useState(false)
 
   useEffect(() => {
     fetch('/api/settings')
       .then(r => r.ok ? r.json() : null)
-      .then(d => { if (d?.schoolLogo) setSchoolLogo(d.schoolLogo) })
+      .then(d => {
+        if (!d) return
+        if (d.schoolLogo) setSchoolLogo(d.schoolLogo)
+        if (d.hasGoogle !== undefined) setHasGoogle(d.hasGoogle)
+        if (d.hasAzure  !== undefined) setHasAzure(d.hasAzure)
+      })
       .catch(() => {})
   }, [])
 
@@ -64,7 +69,7 @@ function LoginContent() {
 
           {/* Buttons */}
           <div className="space-y-3">
-            <button
+            {hasGoogle && <button
               onClick={() => signIn('google', { callbackUrl: '/' })}
               className="w-full flex items-center justify-center gap-3 bg-white hover:bg-slate-100 text-slate-800 font-semibold py-2.5 px-4 rounded-xl transition-colors shadow-sm text-sm"
             >
@@ -76,9 +81,9 @@ function LoginContent() {
                 <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.962L3.964 7.294C4.672 5.163 6.656 3.58 9 3.58Z"/>
               </svg>
               Inloggen met Google
-            </button>
+            </button>}
 
-            {SHOW_AZURE && (
+            {hasAzure && (
               <button
                 onClick={() => signIn('azure-ad', { callbackUrl: '/' })}
                 className="w-full flex items-center justify-center gap-3 bg-slate-800 hover:bg-slate-700 text-white font-semibold py-2.5 px-4 rounded-xl transition-colors border border-slate-700 text-sm"
