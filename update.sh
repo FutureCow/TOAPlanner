@@ -14,7 +14,7 @@ echo "==> Installing dependencies..."
 npm ci
 
 echo "==> Running database migrations..."
-npx prisma migrate deploy
+bash "$(dirname "$0")/migrate-all.sh"
 
 echo "==> Building..."
 npm run build
