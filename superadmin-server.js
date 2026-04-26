@@ -1,10 +1,12 @@
 #!/usr/bin/env node
 'use strict'
 
-const http = require('http')
-const fs   = require('fs')
-const path = require('path')
-const { Pool } = require('pg')
+const http   = require('http')
+const fs     = require('fs')
+const path   = require('path')
+const crypto = require('crypto')
+const { Pool, Client } = require('pg')
+const { spawn } = require('child_process')
 
 const APP_DIR      = __dirname
 const SCHOOLS_FILE = path.join(APP_DIR, 'schools.json')
@@ -28,6 +30,34 @@ function loadSchools() {
 
 function saveSchools(d) {
   fs.writeFileSync(SCHOOLS_FILE, JSON.stringify(d, null, 2))
+}
+
+function genPassword() {
+  return crypto.randomBytes(18).toString('base64').replace(/[^a-zA-Z0-9]/g, '').slice(0, 24)
+}
+
+function runPsql(sql) {
+  return new Promise((resolve, reject) => {
+    const proc = spawn('su', ['-', 'postgres', '-c', 'psql -v ON_ERROR_STOP=1'],
+      { stdio: ['pipe', 'pipe', 'pipe'] })
+    let out = ''
+    proc.stdout.on('data', d => out += d)
+    proc.stderr.on('data', d => out += d)
+    proc.on('close', code => code === 0 ? resolve(out) : reject(new Error(out.trim())))
+    proc.stdin.write(sql)
+    proc.stdin.end()
+  })
+}
+
+function runMigrations(dbUrl) {
+  return new Promise((resolve, reject) => {
+    const proc = spawn('npx', ['prisma', 'migrate', 'deploy'],
+      { cwd: APP_DIR, env: { ...process.env, DATABASE_URL: dbUrl }, stdio: ['ignore', 'pipe', 'pipe'] })
+    let out = ''
+    proc.stdout.on('data', d => out += d)
+    proc.stderr.on('data', d => out += d)
+    proc.on('close', code => code === 0 ? resolve(out) : reject(new Error(out.trim())))
+  })
 }
 
 async function readBody(req) {
@@ -86,6 +116,64 @@ async function handle(req, res) {
       if (b[k] === '') delete s[slug][k]; else s[slug][k] = b[k]
     }
     saveSchools(s)
+    return json(res, 200, { ok: true })
+  }
+
+  // ── POST /api/schools — school aanmaken
+  if (m === 'POST' && u.pathname === '/api/schools') {
+    const b = await readBody(req)
+    const { slug, name, allowedDomain, dbName, dbUser, dbPassword,
+            googleClientId, googleClientSecret, azureClientId, azureClientSecret, azureTenantId } = b
+    if (!slug || !name || !allowedDomain) return json(res, 400, { error: 'slug, naam en domein zijn verplicht' })
+    if (!/^[a-z0-9-]+$/.test(slug)) return json(res, 400, { error: 'Ongeldige slug' })
+    const s = loadSchools()
+    if (s[slug]) return json(res, 409, { error: 'Slug al in gebruik' })
+    const finalDb   = dbName     || `toa_${slug}`
+    const finalUser = dbUser     || `toa_${slug}`
+    const finalPass = dbPassword || genPassword()
+    const dbUrl = `postgresql://${finalUser}:${finalPass}@localhost:5432/${finalDb}`
+    try {
+      await runPsql(`
+        DO $$ BEGIN
+          IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '${finalUser}') THEN
+            CREATE USER "${finalUser}" WITH PASSWORD '${finalPass.replace(/'/g, "''")}';
+          ELSE
+            ALTER USER "${finalUser}" WITH PASSWORD '${finalPass.replace(/'/g, "''")}';
+          END IF;
+        END $$;
+        CREATE DATABASE "${finalDb}" OWNER "${finalUser}";
+        GRANT ALL PRIVILEGES ON DATABASE "${finalDb}" TO "${finalUser}";
+      `)
+      await runMigrations(dbUrl)
+    } catch(e) {
+      return json(res, 500, { error: 'Database aanmaken mislukt: ' + e.message })
+    }
+    const entry = { name, databaseUrl: dbUrl, allowedDomain }
+    if (googleClientId)    { entry.googleClientId = googleClientId; entry.googleClientSecret = googleClientSecret || '' }
+    if (azureClientId)     { entry.azureClientId = azureClientId; entry.azureClientSecret = azureClientSecret || ''; entry.azureTenantId = azureTenantId || '' }
+    s[slug] = entry
+    saveSchools(s)
+    return json(res, 201, { ok: true, dbUrl })
+  }
+
+  // ── DELETE /api/schools/:slug — school verwijderen
+  if (m === 'DELETE' && parts[0] === 'api' && parts[1] === 'schools' && parts[2] && !parts[3]) {
+    const slug = parts[2]
+    const s = loadSchools()
+    if (!s[slug]) return json(res, 404, { error: 'Niet gevonden' })
+    const dbUrl  = s[slug].databaseUrl
+    const dbUser = dbUrl.replace(/postgresql:\/\//, '').split(':')[0]
+    const dbName = dbUrl.split('/').pop()
+    delete s[slug]
+    saveSchools(s)
+    try {
+      await runPsql(`
+        DROP DATABASE IF EXISTS "${dbName}";
+        DROP USER IF EXISTS "${dbUser}";
+      `)
+    } catch(e) {
+      return json(res, 200, { ok: true, warning: 'schools.json bijgewerkt maar DB verwijderen mislukt: ' + e.message })
+    }
     return json(res, 200, { ok: true })
   }
 
@@ -219,6 +307,7 @@ input[type=text]:focus,input[type=password]:focus,select:focus{outline:none;bord
 <!-- ── SCHOLEN ── -->
 <section id="tab-schools" class="section active">
   <div style="display:flex;justify-content:flex-end;margin-bottom:1rem">
+    <button class="btn btn-blue" onclick="openCreateModal()">+ Nieuwe school</button>
   </div>
   <table id="schools-table">
     <thead><tr>
@@ -242,6 +331,42 @@ input[type=text]:focus,input[type=password]:focus,select:focus{outline:none;bord
 </section>
 
 </main>
+
+<!-- ── SCHOOL CREATE MODAL ── -->
+<div class="modal-overlay" id="create-modal">
+  <div class="modal">
+    <h2>Nieuwe school aanmaken</h2>
+    <div class="field"><label>Slug (subdomein) *</label><input type="text" id="create-slug" placeholder="bijv. mijnschool" style="font-family:monospace"></div>
+    <div class="field"><label>Naam *</label><input type="text" id="create-name"></div>
+    <div class="field">
+      <label>Toegestaan e-maildomein *</label>
+      <input type="text" id="create-domain" placeholder="school.nl">
+      <div style="font-size:.7rem;color:#475569;margin-top:.25rem">Meerdere domeinen scheiden met een komma.</div>
+    </div>
+    <hr style="border-color:#2d3347;margin:.5rem 0 1rem">
+    <p style="font-size:.75rem;color:#64748b;margin-bottom:.75rem">Database (leeg = automatisch op basis van slug)</p>
+    <div class="field"><label>Database naam</label><input type="text" id="create-dbname" placeholder="toa_mijnschool"></div>
+    <div class="field"><label>Database gebruiker</label><input type="text" id="create-dbuser" placeholder="toa_mijnschool"></div>
+    <div class="field"><label>Database wachtwoord</label>
+      <input type="text" id="create-dbpass" placeholder="leeg = automatisch gegenereerd">
+    </div>
+    <hr style="border-color:#2d3347;margin:.5rem 0 1rem">
+    <p style="font-size:.75rem;color:#64748b;margin-bottom:.75rem">Google OAuth (leeg = niet gebruikt)</p>
+    <div class="field"><label>Google Client ID</label><input type="text" id="create-google-id"></div>
+    <div class="field"><label>Google Client Secret</label><input type="password" id="create-google-secret"></div>
+    <hr style="border-color:#2d3347;margin:.5rem 0 1rem">
+    <p style="font-size:.75rem;color:#64748b;margin-bottom:.75rem">Azure AD (leeg = niet gebruikt)</p>
+    <div class="field"><label>Azure Client ID</label><input type="text" id="create-azure-id"></div>
+    <div class="field"><label>Azure Client Secret</label><input type="password" id="create-azure-secret"></div>
+    <div class="field"><label>Azure Tenant ID</label><input type="text" id="create-azure-tenant"></div>
+    <div id="create-status" style="font-size:.8rem;color:#94a3b8;margin-top:.5rem"></div>
+    <div id="create-error" class="error-msg"></div>
+    <div class="modal-actions">
+      <button class="btn btn-sm" onclick="closeCreateModal()" style="background:#2d3347;color:#e2e8f0">Annuleren</button>
+      <button class="btn btn-blue btn-sm" id="create-btn" onclick="createSchool()">Aanmaken</button>
+    </div>
+  </div>
+</div>
 
 <!-- ── SCHOOL EDIT MODAL ── -->
 <div class="modal-overlay" id="school-modal">
@@ -317,7 +442,10 @@ function renderSchools() {
       <td style="color:#94a3b8">\${s.allowedDomain}</td>
       <td>\${s.googleClientId ? '<span class="badge badge-green">✓</span>' : '<span style="color:#475569">—</span>'}</td>
       <td>\${s.azureClientId  ? '<span class="badge badge-green">✓</span>' : '<span style="color:#475569">—</span>'}</td>
-      <td><button class="btn btn-sm" style="background:#2d3347;color:#e2e8f0" onclick='openModal(\${JSON.stringify(s)})'>Bewerken</button></td>
+      <td style="display:flex;gap:.4rem">
+        <button class="btn btn-sm" style="background:#2d3347;color:#e2e8f0" onclick='openModal(\${JSON.stringify(s)})'>Bewerken</button>
+        <button class="btn btn-sm btn-red" onclick="deleteSchool('\${s.slug}','\${s.name}')">Verwijderen</button>
+      </td>
     </tr>
   \`).join('')
 }
@@ -444,6 +572,74 @@ function editAbbr(id, current, slug) {
 
 function esc(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+}
+
+// ── Create school ─────────────────────────────────────────────────────────────
+function openCreateModal() {
+  ['create-slug','create-name','create-domain','create-dbname','create-dbuser','create-dbpass',
+   'create-google-id','create-google-secret','create-azure-id','create-azure-secret','create-azure-tenant']
+    .forEach(id => document.getElementById(id).value = '')
+  document.getElementById('create-error').textContent  = ''
+  document.getElementById('create-status').textContent = ''
+  document.getElementById('create-btn').disabled = false
+  document.getElementById('create-modal').classList.add('open')
+}
+
+function closeCreateModal() {
+  document.getElementById('create-modal').classList.remove('open')
+}
+
+async function createSchool() {
+  const slug = document.getElementById('create-slug').value.trim().toLowerCase()
+  const name = document.getElementById('create-name').value.trim()
+  const domain = document.getElementById('create-domain').value.trim()
+  if (!slug || !name || !domain) {
+    document.getElementById('create-error').textContent = 'Slug, naam en domein zijn verplicht.'
+    return
+  }
+  const body = {
+    slug, name, allowedDomain: domain,
+    dbName:            document.getElementById('create-dbname').value.trim()   || undefined,
+    dbUser:            document.getElementById('create-dbuser').value.trim()   || undefined,
+    dbPassword:        document.getElementById('create-dbpass').value.trim()   || undefined,
+    googleClientId:    document.getElementById('create-google-id').value.trim()    || undefined,
+    googleClientSecret:document.getElementById('create-google-secret').value.trim()|| undefined,
+    azureClientId:     document.getElementById('create-azure-id').value.trim()     || undefined,
+    azureClientSecret: document.getElementById('create-azure-secret').value.trim() || undefined,
+    azureTenantId:     document.getElementById('create-azure-tenant').value.trim() || undefined,
+  }
+  document.getElementById('create-btn').disabled = true
+  document.getElementById('create-status').textContent = 'Database aanmaken en migraties uitvoeren… (kan 30 seconden duren)'
+  document.getElementById('create-error').textContent = ''
+  const res = await fetch('/api/schools', {
+    method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body)
+  })
+  const data = await res.json()
+  if (!res.ok) {
+    document.getElementById('create-error').textContent = data.error || 'Aanmaken mislukt.'
+    document.getElementById('create-status').textContent = ''
+    document.getElementById('create-btn').disabled = false
+    return
+  }
+  closeCreateModal()
+  await loadSchools()
+  alert(\`School "\${name}" aangemaakt!\\n\\nVergeet niet:\\n• DNS: \${slug}.toaplanner.nl → server\\n• Google OAuth redirect URI toevoegen indien van toepassing\\n• pm2 restart toa-planner\`)
+}
+
+document.getElementById('create-modal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeCreateModal()
+})
+
+// ── Delete school ─────────────────────────────────────────────────────────────
+async function deleteSchool(slug, name) {
+  if (!confirm(\`School "\${name}" (\${slug}) verwijderen?\\n\\nDit verwijdert de PostgreSQL database en alle gegevens. Dit kan niet ongedaan worden gemaakt!\`)) return
+  const confirmSlug = prompt(\`Type de slug "\${slug}" ter bevestiging:\`)
+  if (confirmSlug !== slug) { alert('Geannuleerd.'); return }
+  const res = await fetch('/api/schools/' + slug, { method: 'DELETE' })
+  const data = await res.json()
+  if (data.warning) alert('Let op: ' + data.warning)
+  if (!res.ok && !data.warning) { alert('Verwijderen mislukt: ' + (data.error || '')); return }
+  await loadSchools()
 }
 
 // ── Init ──────────────────────────────────────────────────────────────────────
