@@ -93,16 +93,25 @@ async function handle(req, res) {
   // ── GET /api/schools
   if (m === 'GET' && u.pathname === '/api/schools') {
     const s = loadSchools()
-    return json(res, 200, Object.entries(s).map(([slug, cfg]) => ({
-      slug,
-      name:              cfg.name,
-      allowedDomain:     cfg.allowedDomain,
-      googleClientId:    cfg.googleClientId    ?? '',
-      googleClientSecret:cfg.googleClientSecret ?? '',
-      azureClientId:     cfg.azureClientId     ?? '',
-      azureClientSecret: cfg.azureClientSecret  ?? '',
-      azureTenantId:     cfg.azureTenantId     ?? '',
-    })))
+    const entries = await Promise.all(Object.entries(s).map(async ([slug, cfg]) => {
+      let userCount = null
+      try {
+        const { rows } = await getPool(cfg.databaseUrl).query(`SELECT COUNT(*)::int AS count FROM "User"`)
+        userCount = rows[0].count
+      } catch {}
+      return {
+        slug,
+        name:               cfg.name,
+        allowedDomain:      cfg.allowedDomain,
+        googleClientId:     cfg.googleClientId    ?? '',
+        googleClientSecret: cfg.googleClientSecret ?? '',
+        azureClientId:      cfg.azureClientId     ?? '',
+        azureClientSecret:  cfg.azureClientSecret  ?? '',
+        azureTenantId:      cfg.azureTenantId     ?? '',
+        userCount,
+      }
+    }))
+    return json(res, 200, entries)
   }
 
   // ── PATCH /api/schools/:slug
@@ -365,7 +374,7 @@ input[type=text]:focus,input[type=password]:focus,select:focus{outline:none;bord
   </div>
   <table id="schools-table">
     <thead><tr>
-      <th>Slug</th><th>Naam</th><th>Domein</th><th>Google</th><th>Azure</th><th></th>
+      <th>Slug</th><th>Naam</th><th>Domein</th><th>Gebruikers</th><th>Google</th><th>Azure</th><th></th>
     </tr></thead>
     <tbody id="schools-body"><tr><td colspan="6" style="color:#64748b;padding:2rem;text-align:center">Laden…</td></tr></tbody>
   </table>
@@ -515,6 +524,7 @@ function renderSchools() {
       <td><span class="chip">\${s.slug}</span></td>
       <td style="font-weight:600;color:#f1f5f9">\${s.name}</td>
       <td style="color:#94a3b8">\${s.allowedDomain}</td>
+      <td style="text-align:center">\${s.userCount !== null ? \`<span class="chip">\${s.userCount}</span>\` : '<span style="color:#475569">—</span>'}</td>
       <td>\${s.googleClientId ? '<span class="badge badge-green">✓</span>' : '<span style="color:#475569">—</span>'}</td>
       <td>\${s.azureClientId  ? '<span class="badge badge-green">✓</span>' : '<span style="color:#475569">—</span>'}</td>
       <td style="display:flex;gap:.4rem">
