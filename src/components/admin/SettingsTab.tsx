@@ -954,7 +954,7 @@ export default function SettingsTab() {
             <div>
               <label className="block text-xs text-slate-400 mb-1">Naam *</label>
               <input value={newName} onChange={e => setNewName(e.target.value)}
-                placeholder="bijv. Aardrijkskunde"
+                placeholder="bijv. Scheikunde"
                 className="w-full bg-slate-900 border border-slate-600 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500" />
             </div>
             <div>
