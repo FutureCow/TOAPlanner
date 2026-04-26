@@ -89,6 +89,20 @@ async function handle(req, res) {
     return json(res, 200, { ok: true })
   }
 
+  // ── POST /api/schools/:slug/rename
+  if (m === 'POST' && parts[0] === 'api' && parts[1] === 'schools' && parts[2] && parts[3] === 'rename') {
+    const slug = parts[2]
+    const s = loadSchools()
+    if (!s[slug]) return json(res, 404, { error: 'Niet gevonden' })
+    const { newSlug } = await readBody(req)
+    if (!newSlug || !/^[a-z0-9-]+$/.test(newSlug)) return json(res, 400, { error: 'Ongeldige slug (alleen a-z, 0-9, koppelteken)' })
+    if (s[newSlug]) return json(res, 409, { error: 'Slug al in gebruik' })
+    s[newSlug] = s[slug]
+    delete s[slug]
+    saveSchools(s)
+    return json(res, 200, { ok: true, newSlug })
+  }
+
   // ── GET /api/schools/:slug/users
   if (m === 'GET' && parts[1] === 'schools' && parts[3] === 'users' && !parts[4]) {
     const slug = parts[2]
@@ -234,6 +248,16 @@ input[type=text]:focus,input[type=password]:focus,select:focus{outline:none;bord
   <div class="modal">
     <h2 id="modal-title">School bewerken</h2>
     <input type="hidden" id="edit-slug">
+    <div class="field">
+      <label>Subdomein (slug)</label>
+      <div style="display:flex;gap:.5rem;align-items:center">
+        <input type="text" id="edit-new-slug" placeholder="bijv. mijnschool" style="font-family:monospace">
+        <button class="btn btn-sm" style="background:#2d3347;color:#e2e8f0;white-space:nowrap" onclick="renameSchool()">Hernoemen</button>
+      </div>
+      <div style="font-size:.7rem;color:#475569;margin-top:.25rem">Alleen a-z, 0-9 en koppeltekens. Wijzig ook DNS en OAuth redirect URI.</div>
+      <div id="rename-error" class="error-msg"></div>
+    </div>
+    <hr style="border-color:#2d3347;margin:.5rem 0 1rem">
     <div class="field"><label>Naam</label><input type="text" id="edit-name"></div>
     <div class="field"><label>Toegestaan e-maildomein</label><input type="text" id="edit-domain" placeholder="school.nl"></div>
     <hr style="border-color:#2d3347;margin:.5rem 0 1rem">
@@ -296,6 +320,7 @@ function renderSchools() {
 
 function openModal(s) {
   document.getElementById('edit-slug').value          = s.slug
+  document.getElementById('edit-new-slug').value      = s.slug
   document.getElementById('edit-name').value          = s.name
   document.getElementById('edit-domain').value        = s.allowedDomain
   document.getElementById('edit-google-id').value     = s.googleClientId    || ''
@@ -305,7 +330,25 @@ function openModal(s) {
   document.getElementById('edit-azure-tenant').value  = s.azureTenantId     || ''
   document.getElementById('modal-title').textContent  = 'School bewerken — ' + s.slug
   document.getElementById('modal-error').textContent  = ''
+  document.getElementById('rename-error').textContent = ''
   document.getElementById('school-modal').classList.add('open')
+}
+
+async function renameSchool() {
+  const slug    = document.getElementById('edit-slug').value
+  const newSlug = document.getElementById('edit-new-slug').value.trim().toLowerCase()
+  const errEl   = document.getElementById('rename-error')
+  errEl.textContent = ''
+  if (newSlug === slug) { errEl.textContent = 'Nieuwe slug is gelijk aan de huidige.'; return }
+  if (!confirm(\`Subdomein wijzigen van "\${slug}" naar "\${newSlug}"?\\n\\nVergeet niet DNS en OAuth redirect URI aan te passen!\`)) return
+  const res = await fetch('/api/schools/' + slug + '/rename', {
+    method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ newSlug })
+  })
+  const data = await res.json()
+  if (!res.ok) { errEl.textContent = data.error || 'Hernoemen mislukt.'; return }
+  closeModal()
+  await loadSchools()
+  alert(\`Subdomein gewijzigd naar "\${newSlug}".\\n\\nVergeet niet:\\n• DNS: \${newSlug}.toaplanner.nl → server\\n• Google OAuth redirect URI:\\n  https://\${newSlug}.toaplanner.nl/api/auth/callback/google\\n• Caddy regel aanpassen indien van toepassing\\n• pm2 restart toa-planner\`)
 }
 
 function closeModal() {
