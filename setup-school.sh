@@ -161,8 +161,11 @@ read -p "PostgreSQL database naam [toa_${SLUG}]: " DB_NAME
 DB_NAME="${DB_NAME:-toa_${SLUG}}"
 read -p "PostgreSQL gebruikersnaam [toa_${SLUG}]: " DB_USER
 DB_USER="${DB_USER:-toa_${SLUG}}"
-read -s -p "PostgreSQL wachtwoord voor gebruiker '$DB_USER': " DB_PASS
-echo
+AUTO_PASS=$(openssl rand -base64 24 | tr -d '/+=' | cut -c1-24)
+echo ""
+echo "Automatisch gegenereerd wachtwoord: $AUTO_PASS"
+read -p "PostgreSQL wachtwoord voor '$DB_USER' [Enter = gebruik bovenstaande]: " DB_PASS_INPUT
+DB_PASS="${DB_PASS_INPUT:-$AUTO_PASS}"
 read -p "Google Client ID (leeg = overslaan): " GOOGLE_CLIENT_ID
 if [ -n "$GOOGLE_CLIENT_ID" ]; then
   read -s -p "Google Client Secret: " GOOGLE_CLIENT_SECRET
