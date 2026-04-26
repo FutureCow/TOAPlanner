@@ -259,7 +259,11 @@ input[type=text]:focus,input[type=password]:focus,select:focus{outline:none;bord
     </div>
     <hr style="border-color:#2d3347;margin:.5rem 0 1rem">
     <div class="field"><label>Naam</label><input type="text" id="edit-name"></div>
-    <div class="field"><label>Toegestaan e-maildomein</label><input type="text" id="edit-domain" placeholder="school.nl"></div>
+    <div class="field">
+      <label>Toegestaan e-maildomein</label>
+      <input type="text" id="edit-domain" placeholder="school.nl, andere.nl">
+      <div style="font-size:.7rem;color:#475569;margin-top:.25rem">Meerdere domeinen scheiden met een komma.</div>
+    </div>
     <hr style="border-color:#2d3347;margin:.5rem 0 1rem">
     <p style="font-size:.75rem;color:#64748b;margin-bottom:.75rem">Google OAuth (leeg = niet gebruikt)</p>
     <div class="field"><label>Google Client ID</label><input type="text" id="edit-google-id"></div>

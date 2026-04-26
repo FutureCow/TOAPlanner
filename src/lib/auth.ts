@@ -14,7 +14,8 @@ export async function buildSignInResult(
   slug: string
 ): Promise<true | string | false> {
   const domain = email.split('@')[1]
-  if (domain !== allowedDomain) return false
+  const allowed = allowedDomain.split(',').map(d => d.trim().toLowerCase()).filter(Boolean)
+  if (!allowed.includes(domain.toLowerCase())) return false
 
   const db = getPrisma(slug)
   const existing = await db.user.findUnique({ where: { email } })

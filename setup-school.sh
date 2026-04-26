@@ -156,7 +156,7 @@ fi
 # ── Invoer ──────────────────────────────────────────────────────────────────
 read -p "School slug (subdomein, bijv. 'amersfoortseberg'): " SLUG
 read -p "Volledige naam van de school: " SCHOOL_NAME
-read -p "Toegestaan e-maildomein (bijv. 'school.nl'): " ALLOWED_DOMAIN
+read -p "Toegestaan e-maildomein (bijv. 'school.nl', meerdere scheiden met komma): " ALLOWED_DOMAIN
 read -p "PostgreSQL database naam [toa_${SLUG}]: " DB_NAME
 DB_NAME="${DB_NAME:-toa_${SLUG}}"
 read -p "PostgreSQL gebruikersnaam [toa_${SLUG}]: " DB_USER
