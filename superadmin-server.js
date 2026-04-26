@@ -119,6 +119,19 @@ async function handle(req, res) {
     return json(res, 200, { ok: true })
   }
 
+  // ── POST /api/restart
+  if (m === 'POST' && u.pathname === '/api/restart') {
+    return new Promise(resolve => {
+      const proc = spawn('pm2', ['restart', 'toa-planner'], { stdio: ['ignore', 'pipe', 'pipe'] })
+      let out = ''
+      proc.stdout.on('data', d => out += d)
+      proc.stderr.on('data', d => out += d)
+      proc.on('close', code => resolve(json(res, code === 0 ? 200 : 500,
+        code === 0 ? { ok: true } : { error: out.trim() }
+      )))
+    })
+  }
+
   // ── POST /api/schools — school aanmaken
   if (m === 'POST' && u.pathname === '/api/schools') {
     const b = await readBody(req)
@@ -295,6 +308,12 @@ input[type=text]:focus,input[type=password]:focus,select:focus{outline:none;bord
 <header>
   <h1>TOA Planner</h1>
   <span>Superadmin</span>
+  <div style="margin-left:auto">
+    <button class="btn btn-sm" id="restart-btn" onclick="restartApp()"
+      style="background:#1e2231;border:1px solid #2d3347;color:#94a3b8">
+      ↺ Herstart app
+    </button>
+  </div>
 </header>
 
 <div class="tabs">
@@ -640,6 +659,25 @@ async function deleteSchool(slug, name) {
   if (data.warning) alert('Let op: ' + data.warning)
   if (!res.ok && !data.warning) { alert('Verwijderen mislukt: ' + (data.error || '')); return }
   await loadSchools()
+}
+
+// ── Restart ───────────────────────────────────────────────────────────────────
+async function restartApp() {
+  const btn = document.getElementById('restart-btn')
+  btn.disabled = true
+  btn.textContent = '↺ Herstarten…'
+  const res = await fetch('/api/restart', { method: 'POST' })
+  if (res.ok) {
+    btn.textContent = '✓ Herstart'
+    btn.style.color = '#4ade80'
+    setTimeout(() => { btn.textContent = '↺ Herstart app'; btn.style.color = ''; btn.disabled = false }, 3000)
+  } else {
+    const d = await res.json()
+    btn.textContent = '✕ Mislukt'
+    btn.style.color = '#f87171'
+    alert('Herstart mislukt: ' + (d.error || ''))
+    setTimeout(() => { btn.textContent = '↺ Herstart app'; btn.style.color = ''; btn.disabled = false }, 3000)
+  }
 }
 
 // ── Init ──────────────────────────────────────────────────────────────────────
