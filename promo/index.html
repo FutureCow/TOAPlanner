@@ -628,7 +628,7 @@
       <div class="feature-card">
         <div class="feature-icon" style="background:rgba(0,158,115,.15)">✅</div>
         <h3>Statusbeheer voor de TOA</h3>
-        <p>Van aangevraagd naar goedgekeurd met of zonder TOA, of afgekeurd — overzichtelijk in één weergave met kleurenblindveilige kleuren.</p>
+        <p>Van aangevraagd naar goedgekeurd met of zonder TOA, of afgekeurd — overzichtelijk in één weergave.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon" style="background:rgba(99,102,241,.15)">🔁</div>
@@ -673,7 +673,7 @@
       <div class="feature-card">
         <div class="feature-icon" style="background:rgba(249,115,22,.15)">🎨</div>
         <h3>Aanpasbare statussen en kleuren</h3>
-        <p>Schoollogo, statuskleuren en -labels zijn volledig in te stellen. Het Wong kleurenblindveilige palet is standaard ingesteld.</p>
+        <p>Schoollogo, statuskleuren en -labels zijn volledig in te stellen naar de huisstijl van jouw school.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon" style="background:rgba(100,116,139,.15)">🌗</div>
@@ -803,7 +803,7 @@
   <div class="section-inner">
     <div class="section-label">Statussen</div>
     <h2 class="section-title">Kleurgecodeerde statussen</h2>
-    <p class="section-sub">In één oogopslag ziet iedereen de stand van zaken. Kleuren en labels zijn aanpasbaar — standaard ingesteld op het kleurenblindveilige Wong-palet.</p>
+    <p class="section-sub">In één oogopslag ziet iedereen de stand van zaken. Kleuren en labels zijn volledig aanpasbaar naar de huisstijl van jouw school.</p>
 
     <div class="status-row">
       <div class="status-pill" style="border-color:#56B4E9">
@@ -984,7 +984,7 @@
   }
 
   const saved = localStorage.getItem('toa-promo-theme')
-  applyTheme(saved === 'light' ? 'light' : 'dark')
+  applyTheme(saved === 'dark' ? 'dark' : 'light')
 
   btn.addEventListener('click', () => {
     applyTheme(html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark')
