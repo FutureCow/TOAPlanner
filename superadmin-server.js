@@ -119,6 +119,41 @@ async function handle(req, res) {
     return json(res, 200, { ok: true })
   }
 
+  // ── GET /api/schools/:slug/settings
+  if (m === 'GET' && parts[1] === 'schools' && parts[3] === 'settings' && !parts[4]) {
+    const slug = parts[2]
+    const s = loadSchools()
+    if (!s[slug]) return json(res, 404, { error: 'Niet gevonden' })
+    try {
+      const { rows } = await getPool(s[slug].databaseUrl).query(
+        `SELECT "schoolLogo", "registrationOpen" FROM "AppSettings" WHERE id=1`
+      )
+      return json(res, 200, rows[0] ?? { schoolLogo: null, registrationOpen: true })
+    } catch(e) { return json(res, 500, { error: e.message }) }
+  }
+
+  // ── PATCH /api/schools/:slug/settings
+  if (m === 'PATCH' && parts[1] === 'schools' && parts[3] === 'settings' && !parts[4]) {
+    const slug = parts[2]
+    const s = loadSchools()
+    if (!s[slug]) return json(res, 404, { error: 'Niet gevonden' })
+    const b = await readBody(req)
+    const sets = [], vals = []
+    let i = 1
+    if (b.schoolLogo        !== undefined) { sets.push(`"schoolLogo"=$${i++}`);        vals.push(b.schoolLogo || null) }
+    if (b.registrationOpen  !== undefined) { sets.push(`"registrationOpen"=$${i++}`);  vals.push(!!b.registrationOpen) }
+    if (!sets.length) return json(res, 400, { error: 'Niets te wijzigen' })
+    try {
+      await getPool(s[slug].databaseUrl).query(
+        `INSERT INTO "AppSettings" (id) VALUES (1) ON CONFLICT (id) DO NOTHING`
+      )
+      await getPool(s[slug].databaseUrl).query(
+        `UPDATE "AppSettings" SET ${sets.join(',')} WHERE id=1`, vals
+      )
+      return json(res, 200, { ok: true })
+    } catch(e) { return json(res, 500, { error: e.message }) }
+  }
+
   // ── POST /api/restart
   if (m === 'POST' && u.pathname === '/api/restart') {
     return new Promise(resolve => {
@@ -422,6 +457,27 @@ input[type=text]:focus,input[type=password]:focus,select:focus{outline:none;bord
       <button class="btn btn-sm" onclick="closeModal()" style="background:#2d3347;color:#e2e8f0">Annuleren</button>
       <button class="btn btn-blue btn-sm" onclick="saveSchool()">Opslaan</button>
     </div>
+
+    <hr style="border-color:#2d3347;margin:1.2rem 0">
+    <p style="font-size:.8rem;font-weight:600;color:#94a3b8;margin-bottom:.75rem">App-instellingen</p>
+    <div class="field">
+      <label>Schoollogo URL</label>
+      <div style="display:flex;gap:.5rem;align-items:center">
+        <input type="text" id="edit-logo" placeholder="https://…/logo.png">
+        <img id="logo-preview" src="" alt="" style="height:32px;display:none;border-radius:.3rem;background:#1e2231;padding:2px">
+      </div>
+    </div>
+    <div class="field" style="display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <label style="display:block;margin-bottom:0">Nieuwe aanmeldingen</label>
+        <div style="font-size:.7rem;color:#475569">Staat toe dat nieuwe gebruikers inloggen</div>
+      </div>
+      <button id="reg-toggle" onclick="toggleRegistration()" class="btn btn-sm" style="background:#2d3347;color:#e2e8f0;min-width:110px">Laden…</button>
+    </div>
+    <div id="app-settings-error" class="error-msg"></div>
+    <div style="display:flex;justify-content:flex-end;margin-top:.75rem">
+      <button class="btn btn-blue btn-sm" onclick="saveAppSettings()">App-instellingen opslaan</button>
+    </div>
   </div>
 </div>
 
@@ -482,7 +538,63 @@ function openModal(s) {
   document.getElementById('modal-title').textContent  = 'School bewerken — ' + s.slug
   document.getElementById('modal-error').textContent  = ''
   document.getElementById('rename-error').textContent = ''
+  document.getElementById('app-settings-error').textContent = ''
   document.getElementById('school-modal').classList.add('open')
+  loadAppSettings(s.slug)
+}
+
+let currentRegOpen = true
+
+async function loadAppSettings(slug) {
+  document.getElementById('reg-toggle').textContent = 'Laden…'
+  document.getElementById('edit-logo').value = ''
+  document.getElementById('logo-preview').style.display = 'none'
+  try {
+    const res = await fetch('/api/schools/' + slug + '/settings')
+    if (!res.ok) return
+    const d = await res.json()
+    currentRegOpen = d.registrationOpen ?? true
+    updateRegToggle()
+    const logo = d.schoolLogo || ''
+    document.getElementById('edit-logo').value = logo
+    updateLogoPreview(logo)
+  } catch {}
+}
+
+function updateRegToggle() {
+  const btn = document.getElementById('reg-toggle')
+  btn.textContent = currentRegOpen ? '✓ Open' : '✗ Gesloten'
+  btn.style.background = currentRegOpen ? '#15803d' : '#991b1b'
+  btn.style.color = '#fff'
+}
+
+function toggleRegistration() {
+  currentRegOpen = !currentRegOpen
+  updateRegToggle()
+}
+
+function updateLogoPreview(url) {
+  const img = document.getElementById('logo-preview')
+  if (url) { img.src = url; img.style.display = ''; img.onerror = () => img.style.display = 'none' }
+  else img.style.display = 'none'
+}
+
+document.getElementById('edit-logo').addEventListener('input', e => updateLogoPreview(e.target.value))
+
+async function saveAppSettings() {
+  const slug = document.getElementById('edit-slug').value
+  const errEl = document.getElementById('app-settings-error')
+  errEl.textContent = ''
+  const res = await fetch('/api/schools/' + slug + '/settings', {
+    method: 'PATCH', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ schoolLogo: document.getElementById('edit-logo').value.trim(), registrationOpen: currentRegOpen })
+  })
+  if (res.ok) {
+    errEl.style.color = '#4ade80'; errEl.textContent = '✓ Opgeslagen'
+    setTimeout(() => { errEl.textContent = ''; errEl.style.color = '' }, 2000)
+  } else {
+    errEl.style.color = ''; errEl.textContent = 'Opslaan mislukt.'
+  }
 }
 
 async function renameSchool() {
