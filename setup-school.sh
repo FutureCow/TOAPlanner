@@ -18,8 +18,9 @@ echo "TOA Planner — Schoolbeheer"
 echo "--------------------------"
 echo "1) School toevoegen"
 echo "2) School verwijderen"
+echo "3) School hernoemen (slug / subdomein)"
 echo ""
-read -p "Keuze [1/2]: " ACTION
+read -p "Keuze [1/2/3]: " ACTION
 
 # ════════════════════════════════════════════════════════════════════════════
 # SCHOOL VERWIJDEREN
@@ -82,6 +83,69 @@ EOF
   echo "==> Klaar! School '$SLUG' is verwijderd."
   echo "    Herstart de app: pm2 restart toa-planner"
   echo ""
+  exit 0
+fi
+
+# ════════════════════════════════════════════════════════════════════════════
+# SCHOOL HERNOEMEN
+# ════════════════════════════════════════════════════════════════════════════
+if [ "$ACTION" = "3" ]; then
+  [ -f "$SCHOOLS_FILE" ] || { echo "Geen schools.json gevonden."; exit 1; }
+
+  echo ""
+  echo "Bekende scholen:"
+  node -e "
+const data = JSON.parse(require('fs').readFileSync('$SCHOOLS_FILE', 'utf8'));
+Object.keys(data).forEach(k => console.log('  •', k, '—', data[k].name));
+"
+
+  echo ""
+  read -p "Huidige slug:  " OLD_SLUG
+  [ -z "$OLD_SLUG" ] && { echo "Geen slug opgegeven."; exit 1; }
+
+  read -p "Nieuwe slug:   " NEW_SLUG
+  [ -z "$NEW_SLUG" ] && { echo "Geen slug opgegeven."; exit 1; }
+  [ "$OLD_SLUG" = "$NEW_SLUG" ] && { echo "Slugs zijn gelijk, niets te doen."; exit 0; }
+
+  # Controleer of oude slug bestaat en nieuwe nog niet
+  node -e "
+const data = JSON.parse(require('fs').readFileSync('$SCHOOLS_FILE', 'utf8'));
+if (!data['$OLD_SLUG']) { console.error('School niet gevonden: $OLD_SLUG'); process.exit(1); }
+if (data['$NEW_SLUG'])  { console.error('Slug al in gebruik: $NEW_SLUG'); process.exit(1); }
+"
+
+  echo ""
+  read -p "Bevestig: hernoem '$OLD_SLUG' naar '$NEW_SLUG'? [j/N] " CONFIRM
+  [ "$CONFIRM" != "j" ] && { echo "Geannuleerd."; exit 0; }
+
+  # Hernoem de sleutel in schools.json
+  node -e "
+const fs = require('fs');
+const data = JSON.parse(fs.readFileSync('$SCHOOLS_FILE', 'utf8'));
+data['$NEW_SLUG'] = data['$OLD_SLUG'];
+delete data['$OLD_SLUG'];
+fs.writeFileSync('$SCHOOLS_FILE', JSON.stringify(data, null, 2));
+console.log('schools.json bijgewerkt');
+"
+
+  SCHOOL_NAME=$(node -e "
+const data = JSON.parse(require('fs').readFileSync('$SCHOOLS_FILE', 'utf8'));
+console.log(data['$NEW_SLUG'].name);
+")
+
+  echo ""
+  echo "==> Klaar! Vergeet niet:"
+  echo "    • DNS: wijs $NEW_SLUG.toaplanner.nl naar de server"
+  echo "    • Verwijder DNS-record voor $OLD_SLUG.toaplanner.nl"
+  echo "    • Google OAuth: voeg redirect URI toe:"
+  echo "      https://${NEW_SLUG}.toaplanner.nl/api/auth/callback/google"
+  echo "    • Google OAuth: verwijder oude redirect URI:"
+  echo "      https://${OLD_SLUG}.toaplanner.nl/api/auth/callback/google"
+  echo "    • Als Caddy een aparte regel heeft voor $OLD_SLUG: pas die aan"
+  echo "    • Herstart de app: pm2 restart toa-planner"
+  echo ""
+  echo "    School '$SCHOOL_NAME' is nu bereikbaar op:"
+  echo "    https://${NEW_SLUG}.toaplanner.nl"
   exit 0
 fi
 
