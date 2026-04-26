@@ -27,6 +27,7 @@ npm run build
 
 echo "==> Restarting app..."
 pm2 restart toa-planner
+pm2 restart toa-superadmin --update-env 2>/dev/null || pm2 start ecosystem.config.js --only toa-superadmin
 
 echo "==> Done!"
-pm2 status toa-planner
+pm2 status
