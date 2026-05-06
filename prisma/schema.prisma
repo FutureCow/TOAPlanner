@@ -16,9 +16,10 @@ model User {
   isTOA        Boolean   @default(false)
   isAdmin      Boolean   @default(false)
   allowed      Boolean   @default(true)
-  defaultPage  String?
-  createdAt    DateTime  @default(now())
-  requests     Request[]
+  defaultPage   String?
+  calendarToken String?   @unique
+  createdAt     DateTime  @default(now())
+  requests      Request[]
 }
 
 model Request {

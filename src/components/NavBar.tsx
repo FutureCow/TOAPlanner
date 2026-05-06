@@ -27,6 +27,7 @@ export default function NavBar() {
   const [fontSize, setFontSize] = useState<FontSize>('middel')
   const [schoolLogo, setSchoolLogo] = useState<string | null>(null)
   const [showTimeLine, setShowTimeLine] = useState(false)
+  const [calendarCopied, setCalendarCopied] = useState(false)
 
   useEffect(() => {
     function onVisible() {
@@ -73,6 +74,20 @@ export default function NavBar() {
     setShowTimeLine(next)
     localStorage.setItem('show-timeline', String(next))
     window.dispatchEvent(new CustomEvent('timeline-changed', { detail: next }))
+  }
+
+  async function copyCalendarUrl() {
+    // Fetch existing token, generate if missing
+    let res = await fetch('/api/calendar/token')
+    let { token } = await res.json()
+    if (!token) {
+      res = await fetch('/api/calendar/token', { method: 'POST' })
+      token = (await res.json()).token
+    }
+    const url = `${window.location.origin}/api/calendar/${token}`
+    await navigator.clipboard.writeText(url)
+    setCalendarCopied(true)
+    setTimeout(() => setCalendarCopied(false), 2000)
   }
 
   if (status === 'unauthenticated') return null
@@ -185,6 +200,19 @@ export default function NavBar() {
         >
           ◔
         </button>
+
+        {/* Calendar subscribe — alleen voor TOA en Admin */}
+        {(session.user.isTOA || session.user.isAdmin) && (
+          <button
+            onClick={copyCalendarUrl}
+            title="Kopieer agenda-abonnement URL"
+            className={`w-7 h-7 flex items-center justify-center rounded bg-slate-800 transition-colors text-sm ${
+              calendarCopied ? 'text-green-400' : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            {calendarCopied ? '✓' : '📅'}
+          </button>
+        )}
 
         {/* User / logout */}
         <button
