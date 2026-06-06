@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import nodemailer from 'nodemailer'
 
+function h(s: string): string {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;').replace(/'/g, '&#39;')
+}
+
 export async function POST(req: NextRequest) {
   const { naam, school, email, onderwerp, bericht } = await req.json()
 
@@ -26,11 +31,11 @@ export async function POST(req: NextRequest) {
       subject:  onderwerp || 'Contactformulier TOA Planner',
       text: `Naam:   ${naam}\nSchool: ${school}\nEmail:  ${email}\n\n${bericht}`,
       html: `
-        <p><strong>Naam:</strong> ${naam}</p>
-        <p><strong>School:</strong> ${school}</p>
-        <p><strong>E-mail:</strong> <a href="mailto:${email}">${email}</a></p>
+        <p><strong>Naam:</strong> ${h(naam)}</p>
+        <p><strong>School:</strong> ${h(school)}</p>
+        <p><strong>E-mail:</strong> <a href="mailto:${h(email)}">${h(email)}</a></p>
         <hr>
-        <p>${bericht.replace(/\n/g, '<br>')}</p>
+        <p>${h(bericht).replace(/\n/g, '<br>')}</p>
       `,
     })
   } catch {
