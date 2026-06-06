@@ -477,6 +477,7 @@ export default function SettingsTab() {
   const [placeholderClassroom, setPlaceholderClassroom] = useState('')
   const [placeholderSaving, setPlaceholderSaving] = useState(false)
   const [placeholderSaved, setPlaceholderSaved] = useState(false)
+  const [placeholderError, setPlaceholderError] = useState('')
 
   // Exception schedules
   const [exceptionSchedules, setExceptionSchedules] = useState<ExceptionSchedule[]>([])
@@ -589,18 +590,32 @@ export default function SettingsTab() {
   }
 
   async function savePlaceholders() {
-    setPlaceholderSaving(true); setPlaceholderSaved(false)
-    await fetch('/api/admin/settings', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        placeholderKlas:      placeholderKlas.trim()      || null,
-        placeholderTitle:     placeholderTitle.trim()     || null,
-        placeholderClassroom: placeholderClassroom.trim() || null,
-      }),
-    })
-    setPlaceholderSaving(false); setPlaceholderSaved(true)
-    setTimeout(() => setPlaceholderSaved(false), 2000)
+    setPlaceholderSaving(true); setPlaceholderSaved(false); setPlaceholderError('')
+    try {
+      const res = await fetch('/api/admin/settings', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          placeholderKlas:      placeholderKlas.trim()      || null,
+          placeholderTitle:     placeholderTitle.trim()     || null,
+          placeholderClassroom: placeholderClassroom.trim() || null,
+        }),
+      })
+      const d = await res.json()
+      if (!res.ok) {
+        setPlaceholderError(d.error ?? `Fout ${res.status}`)
+      } else {
+        setPlaceholderKlas(d.placeholderKlas ?? '')
+        setPlaceholderTitle(d.placeholderTitle ?? '')
+        setPlaceholderClassroom(d.placeholderClassroom ?? '')
+        setPlaceholderSaved(true)
+        setTimeout(() => setPlaceholderSaved(false), 2000)
+      }
+    } catch {
+      setPlaceholderError('Netwerkfout bij opslaan')
+    } finally {
+      setPlaceholderSaving(false)
+    }
   }
 
   async function savePeriods(value: number) {
@@ -1118,7 +1133,8 @@ export default function SettingsTab() {
                   className="w-full bg-slate-800 border border-slate-600 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
                 />
               </div>
-              <div className="flex justify-end">
+              <div className="flex items-center justify-end gap-3">
+                {placeholderError && <p className="text-red-400 text-xs">{placeholderError}</p>}
                 <button
                   onClick={savePlaceholders}
                   disabled={placeholderSaving}

@@ -21,5 +21,8 @@ export async function GET() {
     periodDuration:     settings?.periodDuration     ?? 50,
     breaks:             settings?.breaks             ?? [],
     exceptionSchedules: exceptionSchedules,
+    placeholderKlas:      settings?.placeholderKlas      ?? null,
+    placeholderTitle:     settings?.placeholderTitle     ?? null,
+    placeholderClassroom: settings?.placeholderClassroom ?? null,
   })
 }

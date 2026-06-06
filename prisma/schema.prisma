@@ -62,6 +62,9 @@ model AppSettings {
   breaks               Json?   // Array of { afterPeriod: number, duration: number, label?: string }
   abbreviationFormat   String  @default("email")   // email | firstname | lastname | initials | firstlast
   abbreviationLength   Int     @default(4)
+  placeholderKlas      String?
+  placeholderTitle     String?
+  placeholderClassroom String?
 }
 
 model ExceptionSchedule {

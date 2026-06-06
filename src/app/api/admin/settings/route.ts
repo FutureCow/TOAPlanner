@@ -34,6 +34,9 @@ export async function PATCH(req: NextRequest) {
   if (Array.isArray(body.breaks)) update.breaks = body.breaks
   if (body.abbreviationFormat !== undefined) update.abbreviationFormat = String(body.abbreviationFormat)
   if (body.abbreviationLength !== undefined) update.abbreviationLength = Math.min(6, Math.max(2, Number(body.abbreviationLength)))
+  if (body.placeholderKlas      !== undefined) update.placeholderKlas      = body.placeholderKlas      || null
+  if (body.placeholderTitle     !== undefined) update.placeholderTitle     = body.placeholderTitle     || null
+  if (body.placeholderClassroom !== undefined) update.placeholderClassroom = body.placeholderClassroom || null
 
   const db = getPrisma(slug)
   const settings = await db.appSettings.upsert({
