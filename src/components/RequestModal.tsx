@@ -50,6 +50,7 @@ export default function RequestModal({ date, period, subject, request, onClose, 
     request ? (request.periodEnd != null && request.periodEnd !== request.period) : false
   )
   const [recurring, setRecurring] = useState(false)
+  const [withoutToa, setWithoutToa] = useState(request?.withoutToa ?? false)
   const [selectedSubject, setSelectedSubject] = useState<string>(request?.subject ?? subject ?? '')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
@@ -84,6 +85,7 @@ export default function RequestModal({ date, period, subject, request, onClose, 
     period: selectedPeriod,
     periodEnd: !isHeleDag && multiHour && selectedPeriodEnd > selectedPeriod ? selectedPeriodEnd : null,
     subject: selectedSubject,
+    withoutToa,
   })
 
   async function applyEdit(scope: 'one' | 'series') {
@@ -283,24 +285,34 @@ export default function RequestModal({ date, period, subject, request, onClose, 
             </select>
           </div>
 
-          {/* Recurring — only for new requests */}
-          {!isEditing && !isHeleDag && (
-            <label className="flex items-center gap-2.5 cursor-pointer bg-slate-800 border border-slate-700 rounded-lg px-3 py-2">
+          {/* Recurring + Zonder TOA */}
+          <div className={`flex gap-2 ${!isEditing && !isHeleDag ? '' : ''}`}>
+            {!isEditing && !isHeleDag && (
+              <label className="flex-1 flex items-center gap-2 cursor-pointer bg-slate-800 border border-slate-700 rounded-lg px-3 py-2">
+                <input
+                  type="checkbox"
+                  checked={recurring}
+                  onChange={e => setRecurring(e.target.checked)}
+                />
+                <span className="text-sm text-slate-200">
+                  Wekelijks
+                  {recurring && (
+                    <span className="text-blue-400 ml-1 text-xs">
+                      ({weeklyDates(selectedDate, schoolYearEnd(selectedDate)).length}×)
+                    </span>
+                  )}
+                </span>
+              </label>
+            )}
+            <label className={`${!isEditing && !isHeleDag ? 'flex-1' : 'w-full'} flex items-center gap-2 cursor-pointer bg-slate-800 border border-slate-700 rounded-lg px-3 py-2`}>
               <input
                 type="checkbox"
-                checked={recurring}
-                onChange={e => setRecurring(e.target.checked)}
+                checked={withoutToa}
+                onChange={e => setWithoutToa(e.target.checked)}
               />
-              <span className="text-sm text-slate-200">
-                Wekelijks herhalen
-                {recurring && (
-                  <span className="text-blue-400 ml-1 text-xs">
-                    ({weeklyDates(selectedDate, schoolYearEnd(selectedDate)).length}×)
-                  </span>
-                )}
-              </span>
+              <span className="text-sm text-slate-200">Zonder TOA</span>
             </label>
-          )}
+          </div>
 
           {error && <p className="text-red-400 text-xs">{error}</p>}
 

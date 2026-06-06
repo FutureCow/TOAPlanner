@@ -26,7 +26,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   }
 
   const body = await req.json()
-  const { title, klas, classroom, date, period, periodEnd, subject, status } = body
+  const { title, klas, classroom, date, period, periodEnd, subject, status, withoutToa } = body
 
   const updateData: Record<string, unknown> = {}
   if (title !== undefined) updateData.title = title
@@ -41,6 +41,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   }
   if (subject !== undefined) updateData.subject = subject
   if (status !== undefined && (isTOA || isAdmin)) updateData.status = status
+  if (withoutToa !== undefined) updateData.withoutToa = withoutToa === true
 
   const updated = await db.request.update({
     where: { id: params.id },

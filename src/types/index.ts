@@ -24,6 +24,7 @@ export interface RequestWithUser {
   recurringGroupId: string | null
   subject: string
   status: Status
+  withoutToa: boolean
   createdById: string | null
   createdBy: {
     id: string

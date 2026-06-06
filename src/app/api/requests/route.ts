@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await req.json()
-  const { title, klas, classroom, date, period, periodEnd, subject, recurringGroupId } = body
+  const { title, klas, classroom, date, period, periodEnd, subject, recurringGroupId, withoutToa } = body
 
   if (!title || (Number(period) !== 0 && !classroom) || !date || period === undefined || !subject) {
     return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
@@ -58,6 +58,7 @@ export async function POST(req: NextRequest) {
       periodEnd: periodEnd != null && Number(periodEnd) !== Number(period) ? Number(periodEnd) : null,
       recurringGroupId: recurringGroupId ?? null,
       subject,
+      withoutToa: withoutToa === true,
       createdById: session.user.id,
     },
     include: INCLUDE_USER,
@@ -72,7 +73,7 @@ export async function PATCH(req: NextRequest) {
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await req.json()
-  const { recurringGroupId, title, klas, classroom, period, periodEnd, subject, status } = body
+  const { recurringGroupId, title, klas, classroom, period, periodEnd, subject, status, withoutToa } = body
   if (!recurringGroupId) return NextResponse.json({ error: 'recurringGroupId required' }, { status: 400 })
 
   const isTOAOrAdmin = session.user.isTOA || session.user.isAdmin
@@ -91,6 +92,7 @@ export async function PATCH(req: NextRequest) {
       ...(periodEnd !== undefined ? { periodEnd: periodEnd != null ? Number(periodEnd) : null } : {}),
       ...(subject !== undefined ? { subject } : {}),
       ...(status !== undefined && isTOAOrAdmin ? { status } : {}),
+      ...(withoutToa !== undefined ? { withoutToa: withoutToa === true } : {}),
     },
   })
   return NextResponse.json({ updated: result.count })

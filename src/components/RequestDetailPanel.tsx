@@ -93,6 +93,9 @@ export default function RequestDetailPanel({ request, session, onClose, onEdit, 
             {request.recurringGroupId && (
               <p className="text-xs text-blue-400 mt-1">↺ Wekelijks herhalend</p>
             )}
+            {request.withoutToa && (
+              <p className="text-xs text-amber-400 mt-1">Docent heeft aangegeven geen TOA nodig te hebben</p>
+            )}
           </div>
           <button onClick={onClose} className="text-slate-600 hover:text-slate-300 text-lg leading-none">×</button>
         </div>
