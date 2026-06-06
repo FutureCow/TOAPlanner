@@ -471,6 +471,13 @@ export default function SettingsTab() {
   const [statusSaving, setStatusSaving] = useState(false)
   const [statusSaved, setStatusSaved] = useState(false)
 
+  // Placeholder text
+  const [placeholderKlas, setPlaceholderKlas] = useState('')
+  const [placeholderTitle, setPlaceholderTitle] = useState('')
+  const [placeholderClassroom, setPlaceholderClassroom] = useState('')
+  const [placeholderSaving, setPlaceholderSaving] = useState(false)
+  const [placeholderSaved, setPlaceholderSaved] = useState(false)
+
   // Exception schedules
   const [exceptionSchedules, setExceptionSchedules] = useState<ExceptionSchedule[]>([])
   const [showAddException, setShowAddException] = useState(false)
@@ -497,6 +504,9 @@ export default function SettingsTab() {
       setBreaks(Array.isArray(d.breaks) ? d.breaks : [])
       setAbbreviationFormat(d.abbreviationFormat ?? 'email')
       setAbbreviationLength(d.abbreviationLength ?? 4)
+      setPlaceholderKlas(d.placeholderKlas ?? '')
+      setPlaceholderTitle(d.placeholderTitle ?? '')
+      setPlaceholderClassroom(d.placeholderClassroom ?? '')
       setSettingsLoading(false)
       const sl = d.statusLabels || {}
       const sc = d.statusColors || {}
@@ -576,6 +586,21 @@ export default function SettingsTab() {
     })
     setAbbrSaving(false); setAbbrSaved(true)
     setTimeout(() => setAbbrSaved(false), 2000)
+  }
+
+  async function savePlaceholders() {
+    setPlaceholderSaving(true); setPlaceholderSaved(false)
+    await fetch('/api/admin/settings', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        placeholderKlas:      placeholderKlas.trim()      || null,
+        placeholderTitle:     placeholderTitle.trim()     || null,
+        placeholderClassroom: placeholderClassroom.trim() || null,
+      }),
+    })
+    setPlaceholderSaving(false); setPlaceholderSaved(true)
+    setTimeout(() => setPlaceholderSaved(false), 2000)
   }
 
   async function savePeriods(value: number) {
@@ -1054,6 +1079,56 @@ export default function SettingsTab() {
               >
                 {abbrSaving ? 'Opslaan…' : abbrSaved ? '✓ Opgeslagen' : 'Opslaan'}
               </button>
+            </div>
+          </div>
+
+          {/* Placeholder text */}
+          <div className="bg-slate-900 border border-slate-700 rounded-lg p-4">
+            <p className="font-semibold text-slate-200 text-sm mb-1">Voorbeeldtekst aanvraagformulier</p>
+            <p className="text-xs text-slate-500 mb-3">
+              Grijze voorbeeldtekst in de velden van het aanvraagformulier. Laat leeg voor de standaardtekst.
+            </p>
+            <div className="space-y-3">
+              <div className="grid grid-cols-[5rem_1fr] gap-2">
+                <div>
+                  <label className="block text-xs text-slate-400 mb-1">Klas</label>
+                  <input
+                    value={placeholderKlas}
+                    onChange={e => setPlaceholderKlas(e.target.value)}
+                    placeholder="3HB"
+                    className="w-full bg-slate-800 border border-slate-600 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-slate-400 mb-1">Naam van de proef</label>
+                  <input
+                    value={placeholderTitle}
+                    onChange={e => setPlaceholderTitle(e.target.value)}
+                    placeholder="bijv. H4 proef 3 Lampjes"
+                    className="w-full bg-slate-800 border border-slate-600 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs text-slate-400 mb-1">Gewenst lokaal</label>
+                <input
+                  value={placeholderClassroom}
+                  onChange={e => setPlaceholderClassroom(e.target.value)}
+                  placeholder="bijv. W107"
+                  className="w-full bg-slate-800 border border-slate-600 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                />
+              </div>
+              <div className="flex justify-end">
+                <button
+                  onClick={savePlaceholders}
+                  disabled={placeholderSaving}
+                  className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${
+                    placeholderSaved ? 'bg-green-700 text-white' : 'bg-blue-600 hover:bg-blue-500 disabled:opacity-40 text-white'
+                  }`}
+                >
+                  {placeholderSaving ? 'Opslaan…' : placeholderSaved ? '✓ Opgeslagen' : 'Opslaan'}
+                </button>
+              </div>
             </div>
           </div>
 

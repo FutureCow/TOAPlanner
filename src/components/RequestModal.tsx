@@ -30,11 +30,12 @@ interface Props {
   period: number
   subject: string | null
   request?: RequestWithUser
+  placeholders?: { klas: string; title: string; classroom: string }
   onClose: () => void
   onSaved: () => void
 }
 
-export default function RequestModal({ date, period, subject, request, onClose, onSaved }: Props) {
+export default function RequestModal({ date, period, subject, request, placeholders, onClose, onSaved }: Props) {
   const [subjects, setSubjects] = useState<SubjectConfig[]>([])
   const [title, setTitle] = useState(request?.title ?? '')
   const [klas, setKlas] = useState(request?.klas ?? '')
@@ -184,7 +185,7 @@ export default function RequestModal({ date, period, subject, request, onClose, 
                 value={klas}
                 onChange={e => setKlas(e.target.value)}
                 className="w-full bg-slate-800 border border-slate-600 rounded px-3 py-1.5 sm:py-2 text-sm text-white focus:outline-none focus:border-blue-500"
-                placeholder="3HB"
+                placeholder={placeholders?.klas ?? '3HB'}
               />
             </div>
             <div>
@@ -193,7 +194,7 @@ export default function RequestModal({ date, period, subject, request, onClose, 
                 value={title}
                 onChange={e => setTitle(e.target.value)}
                 className="w-full bg-slate-800 border border-slate-600 rounded px-3 py-1.5 sm:py-2 text-sm text-white focus:outline-none focus:border-blue-500"
-                placeholder="bijv. H4 proef 3 Lampjes"
+                placeholder={placeholders?.title ?? 'bijv. H4 proef 3 Lampjes'}
               />
             </div>
           </div>
@@ -206,7 +207,7 @@ export default function RequestModal({ date, period, subject, request, onClose, 
                 value={classroom}
                 onChange={e => setClassroom(e.target.value)}
                 className="w-full bg-slate-800 border border-slate-600 rounded px-3 py-1.5 sm:py-2 text-sm text-white focus:outline-none focus:border-blue-500"
-                placeholder="bijv. W107"
+                placeholder={placeholders?.classroom ?? 'bijv. W107'}
               />
             </div>
           )}

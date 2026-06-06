@@ -34,6 +34,7 @@ export default function WeekCalendar({ subject, session, subjectConfig, periodsP
   const [periodDuration, setPeriodDuration]   = useState(50)
   const [calBreaks, setCalBreaks]             = useState<Break[]>([])
   const [exceptionSchedules, setExceptionSchedules] = useState<{ id: string; name: string; periodStartTime: string; periodDuration: number; breaks: Break[]; weeks: string[] }[]>([])
+  const [placeholders, setPlaceholders] = useState<{ klas: string; title: string; classroom: string }>({ klas: '3HB', title: 'bijv. H4 proef 3 Lampjes', classroom: 'bijv. W107' })
   const [showTimeLine, setShowTimeLine] = useState(() => typeof window !== 'undefined' && localStorage.getItem('show-timeline') === 'true')
   const [lineY, setLineY] = useState<number | null>(null)
   const periodGridRef = useRef<HTMLDivElement>(null)
@@ -88,6 +89,11 @@ export default function WeekCalendar({ subject, session, subjectConfig, periodsP
         if (d.periodDuration)  setPeriodDuration(d.periodDuration)
         if (Array.isArray(d.breaks)) setCalBreaks(d.breaks)
         if (Array.isArray(d.exceptionSchedules)) setExceptionSchedules(d.exceptionSchedules)
+        setPlaceholders({
+          klas:      d.placeholderKlas      || '3HB',
+          title:     d.placeholderTitle     || 'bijv. H4 proef 3 Lampjes',
+          classroom: d.placeholderClassroom || 'bijv. W107',
+        })
       })
       .catch(() => {})
   }, [])
@@ -419,6 +425,7 @@ export default function WeekCalendar({ subject, session, subjectConfig, periodsP
           date={modal.date}
           period={modal.period}
           subject={subject}
+          placeholders={placeholders}
           onClose={() => setModal(null)}
           onSaved={() => { setModal(null); load() }}
         />
@@ -429,6 +436,7 @@ export default function WeekCalendar({ subject, session, subjectConfig, periodsP
           date={new Date(editing.date)}
           period={editing.period}
           subject={editing.subject}
+          placeholders={placeholders}
           onClose={() => setEditing(null)}
           onSaved={() => { setEditing(null); setSelected(null); load() }}
         />
