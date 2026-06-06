@@ -76,7 +76,7 @@ export default function NavBar() {
     window.dispatchEvent(new CustomEvent('timeline-changed', { detail: next }))
   }
 
-  async function copyCalendarUrl() {
+  async function copyCalendarUrl(subjectId: string) {
     // Fetch existing token, generate if missing
     let res = await fetch('/api/calendar/token')
     let { token } = await res.json()
@@ -84,7 +84,7 @@ export default function NavBar() {
       res = await fetch('/api/calendar/token', { method: 'POST' })
       token = (await res.json()).token
     }
-    const url = `${window.location.origin}/api/calendar/${token}`
+    const url = `${window.location.origin}/api/calendar/${token}?subject=${subjectId}`
     await navigator.clipboard.writeText(url)
     setCalendarCopied(true)
     setTimeout(() => setCalendarCopied(false), 2000)
@@ -201,18 +201,22 @@ export default function NavBar() {
           ◔
         </button>
 
-        {/* Calendar subscribe — alleen voor TOA en Admin */}
-        {(session.user.isTOA || session.user.isAdmin) && (
-          <button
-            onClick={copyCalendarUrl}
-            title="Kopieer agenda-abonnement URL"
-            className={`w-7 h-7 flex items-center justify-center rounded bg-slate-800 transition-colors text-sm ${
-              calendarCopied ? 'text-green-400' : 'text-slate-400 hover:text-white'
-            }`}
-          >
-            {calendarCopied ? '✓' : '📅'}
-          </button>
-        )}
+        {/* Calendar subscribe — alleen voor TOA/Admin op een vakpagina */}
+        {(session.user.isTOA || session.user.isAdmin) && (() => {
+          const currentSubject = subjects.find(s => pathname === `/${s.id}`)
+          if (!currentSubject) return null
+          return (
+            <button
+              onClick={() => copyCalendarUrl(currentSubject.id)}
+              title={`Kopieer agenda-abonnement URL voor ${currentSubject.name}`}
+              className={`w-7 h-7 flex items-center justify-center rounded bg-slate-800 transition-colors text-sm ${
+                calendarCopied ? 'text-green-400' : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              {calendarCopied ? '✓' : '📅'}
+            </button>
+          )
+        })()}
 
         {/* User / logout */}
         <button

@@ -73,10 +73,11 @@ function getAllSlugs(): string[] {
 }
 
 export async function GET(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: { token: string } }
 ) {
   const { token } = params
+  const subject = new URL(req.url).searchParams.get('subject') ?? null
 
   // Find which school this token belongs to
   let slug: string | null = null
@@ -102,9 +103,10 @@ export async function GET(
   }
 
   const db = getPrisma(slug)
-  const [settings, exceptions] = await Promise.all([
+  const [settings, exceptions, subjectConfig] = await Promise.all([
     db.appSettings.findUnique({ where: { id: 1 } }),
     db.exceptionSchedule.findMany(),
+    subject ? db.subjectConfig.findUnique({ where: { id: subject } }) : Promise.resolve(null),
   ])
 
   const defaultStart = settings?.periodStartTime ?? '08:30'
@@ -118,19 +120,23 @@ export async function GET(
     weeks: e.weeks,
   }))
 
-  // Fetch requests: TOA sees all APPROVED_WITH_TOA, teachers see their own (non-rejected)
+  // TOA ziet alle aanvragen (niet-afgekeurd) gefilterd op vak
+  // Docent ziet eigen aanvragen (niet-afgekeurd)
   const requests = await db.request.findMany({
     where: userIsTOA
-      ? { status: 'APPROVED_WITH_TOA' }
-      : { createdById: userId, status: { not: 'REJECTED' } },
+      ? { status: { not: 'REJECTED' }, ...(subject ? { subject } : {}) }
+      : { createdById: userId, status: { not: 'REJECTED' }, ...(subject ? { subject } : {}) },
     include: {
       createdBy: { select: { name: true, abbreviation: true } },
     },
     orderBy: [{ date: 'asc' }, { period: 'asc' }],
   })
 
+  const subjectName = subjectConfig?.name ?? subject ?? null
   const now = new Date().toISOString().replace(/[-:.]/g, '').slice(0, 15) + 'Z'
-  const calName = userIsTOA ? 'TOA Planning' : 'Mijn Planning'
+  const calName = subjectName
+    ? `TOA Planning – ${subjectName}`
+    : userIsTOA ? 'TOA Planning' : 'Mijn Planning'
 
   const lines: string[] = [
     'BEGIN:VCALENDAR',
