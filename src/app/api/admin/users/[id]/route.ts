@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
+import bcrypt from 'bcryptjs'
 import { getAuthOptions } from '@/lib/auth'
 import { getSchoolSlug, getPrisma } from '@/lib/school'
 
@@ -9,7 +10,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   if (!session?.user.isAdmin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 
   const body = await req.json()
-  const { isTeacher, isTOA, isAdmin, allowed, defaultPage, abbreviation } = body
+  const { isTeacher, isTOA, isAdmin, allowed, defaultPage, abbreviation, password } = body
 
   const updateData: Record<string, unknown> = {}
   if (isTeacher !== undefined) updateData.isTeacher = isTeacher
@@ -18,6 +19,13 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   if (allowed !== undefined) updateData.allowed = allowed
   if (defaultPage !== undefined) updateData.defaultPage = defaultPage || null
   if (abbreviation !== undefined) updateData.abbreviation = String(abbreviation).toUpperCase().slice(0, 6)
+  if (password !== undefined) {
+    if (typeof password === 'string' && password.length >= 6) {
+      updateData.passwordHash = await bcrypt.hash(password, 10)
+    } else {
+      return NextResponse.json({ error: 'Wachtwoord moet minimaal 6 tekens zijn' }, { status: 400 })
+    }
+  }
 
   const db = getPrisma(slug)
   const user = await db.user.update({ where: { id: params.id }, data: updateData })

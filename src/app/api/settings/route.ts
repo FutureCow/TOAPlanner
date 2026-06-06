@@ -13,6 +13,7 @@ export async function GET() {
   return NextResponse.json({
     hasGoogle:          Boolean(config.googleClientId),
     hasAzure:           Boolean(config.azureClientId),
+    hasCredentials:     !config.googleClientId && !config.azureClientId,
     schoolLogo:         settings?.schoolLogo         ?? null,
     statusLabels:       settings?.statusLabels       ?? null,
     statusColors:       settings?.statusColors       ?? null,

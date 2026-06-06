@@ -2,6 +2,8 @@ import { NextAuthOptions, getServerSession } from 'next-auth'
 import type { JWT } from 'next-auth/jwt'
 import GoogleProvider from 'next-auth/providers/google'
 import AzureADProvider from 'next-auth/providers/azure-ad'
+import CredentialsProvider from 'next-auth/providers/credentials'
+import bcrypt from 'bcryptjs'
 import { getSchoolConfig, getPrisma } from './school'
 import { generateAbbreviation, type AbbreviationFormat } from './week'
 
@@ -76,9 +78,70 @@ export function getAuthOptions(slug: string): NextAuthOptions {
             tenantId: config.azureTenantId ?? 'common',
           })]
         : []),
+      // Credentials alleen als er geen OAuth geconfigureerd is
+      ...(!config.googleClientId && !config.azureClientId
+        ? [CredentialsProvider({
+            credentials: {
+              email:    { label: 'E-mailadres', type: 'email' },
+              password: { label: 'Wachtwoord',  type: 'password' },
+            },
+            async authorize(credentials) {
+              if (!credentials?.email || !credentials?.password) return null
+
+              const domain = credentials.email.split('@')[1] ?? ''
+              const allowed = config.allowedDomain.split(',').map(d => d.trim().toLowerCase()).filter(Boolean)
+              if (!allowed.includes(domain.toLowerCase())) return null
+
+              const db = getPrisma(slug)
+              const user = await db.user.findUnique({ where: { email: credentials.email } })
+
+              if (user) {
+                if (!user.allowed) return null
+                if (!user.passwordHash) {
+                  // Eerste keer inloggen: wachtwoord instellen
+                  const hash = await bcrypt.hash(credentials.password, 10)
+                  await db.user.update({ where: { id: user.id }, data: { passwordHash: hash } })
+                } else {
+                  const valid = await bcrypt.compare(credentials.password, user.passwordHash)
+                  if (!valid) return null
+                }
+                return { id: user.id, email: user.email, name: user.name, image: user.image }
+              }
+
+              // Nieuwe gebruiker — alleen als registratie open is
+              const settings = await db.appSettings.findUnique({ where: { id: 1 } })
+              if (settings !== null && !settings.registrationOpen) return null
+
+              const userCount = await db.user.count()
+              const isFirst = userCount === 0
+              const abbr = generateAbbreviation(
+                credentials.email,
+                credentials.email.split('@')[0],
+                (settings?.abbreviationFormat ?? 'email') as AbbreviationFormat,
+                settings?.abbreviationLength ?? 4,
+              )
+              const hash = await bcrypt.hash(credentials.password, 10)
+              const newUser = await db.user.create({
+                data: {
+                  id: crypto.randomUUID(),
+                  email: credentials.email,
+                  name: credentials.email.split('@')[0],
+                  image: null,
+                  abbreviation: abbr,
+                  passwordHash: hash,
+                  isAdmin: isFirst,
+                  isTOA: isFirst,
+                },
+              })
+              return { id: newUser.id, email: newUser.email, name: newUser.name, image: null }
+            },
+          })]
+        : []),
     ],
     callbacks: {
-      async signIn({ user }) {
+      async signIn({ user, account }) {
+        // Credentials-login is volledig afgehandeld in authorize()
+        if (account?.provider === 'credentials') return true
         return buildSignInResult(
           user.email ?? '',
           user.id!,

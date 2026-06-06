@@ -70,10 +70,14 @@ function AbbreviationCell({ value, onSave }: { value: string; onSave: (v: string
 export default function UsersTab() {
   const [users, setUsers] = useState<UserRow[]>([])
   const [subjects, setSubjects] = useState<SubjectConfig[]>([])
+  const [hasCredentials, setHasCredentials] = useState(false)
 
   useEffect(() => {
     load()
     fetch('/api/admin/subjects').then(r => r.ok ? r.json() : []).then(setSubjects).catch(() => {})
+    fetch('/api/settings').then(r => r.ok ? r.json() : null).then(d => {
+      if (d?.hasCredentials) setHasCredentials(true)
+    }).catch(() => {})
   }, [])
 
   async function load() {
@@ -94,6 +98,18 @@ export default function UsersTab() {
     if (!confirm(`Gebruiker "${name}" verwijderen? Hun aanvragen blijven bestaan.`)) return
     await fetch(`/api/admin/users/${id}`, { method: 'DELETE' })
     load()
+  }
+
+  async function setPassword(id: string, name: string) {
+    const pw = prompt(`Nieuw wachtwoord voor ${name} (minimaal 6 tekens):`)
+    if (!pw) return
+    if (pw.length < 6) { alert('Wachtwoord moet minimaal 6 tekens zijn.'); return }
+    const res = await fetch(`/api/admin/users/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: pw }),
+    })
+    if (!res.ok) alert('Opslaan mislukt.')
   }
 
   return (
@@ -177,15 +193,26 @@ export default function UsersTab() {
                 <td className="px-3 py-2.5 text-slate-500 text-[0.65rem] whitespace-nowrap">
                   {format(new Date(u.createdAt), 'd MMM yyyy', { locale: nl })}
                 </td>
-                {/* Delete */}
+                {/* Password + Delete */}
                 <td className="px-3 py-2.5">
-                  <button
-                    onClick={() => deleteUser(u.id, u.name)}
-                    className="text-slate-600 hover:text-red-400 transition-colors text-base"
-                    title="Verwijder gebruiker"
-                  >
-                    🗑
-                  </button>
+                  <div className="flex items-center gap-1.5">
+                    {hasCredentials && (
+                      <button
+                        onClick={() => setPassword(u.id, u.name)}
+                        className="text-slate-600 hover:text-blue-400 transition-colors text-base"
+                        title="Wachtwoord instellen"
+                      >
+                        🔑
+                      </button>
+                    )}
+                    <button
+                      onClick={() => deleteUser(u.id, u.name)}
+                      className="text-slate-600 hover:text-red-400 transition-colors text-base"
+                      title="Verwijder gebruiker"
+                    >
+                      🗑
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
